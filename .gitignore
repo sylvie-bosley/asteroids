@@ -1,3 +1,30 @@
+# Windows files
+# Windows thumbnail cache files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+
+# Dump file
+*.stackdump
+
+# Folder config file
+[Dd]esktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Windows shortcuts
+*.lnk
+
+# C++/gcc files
 # Prerequisites
 *.d
 
@@ -24,6 +51,7 @@
 *.lai
 *.la
 *.a
+!data/SFML/lib/*
 *.lib
 
 # Executables
@@ -31,5 +59,14 @@
 *.out
 *.app
 
-#my additions
+# VSCode files
+# Workspace files
 .vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
