@@ -51,7 +51,6 @@ $RECYCLE.BIN/
 *.lai
 *.la
 *.a
-!data/SFML/lib/*
 *.lib
 
 # Executables
