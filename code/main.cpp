@@ -1,66 +1,57 @@
-#include "include/asteroids.h"
+#include "include/main.h"
 #include "include/helpers.h"
+#include "include/game.h"
 
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-int main(int argc, char *argv[]) {
-  sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-  sf::CircleShape shape(100.f);
-  shape.setFillColor(sf::Color::Green);
+int main() {
+  ag::Game game;
+  sf::RenderWindow window{sf::VideoMode(ag::DISPLAY_SIZE.x, ag::DISPLAY_SIZE.y),
+                          "Asteroids"};
+  // TODO: Maybe this should be in a Display object?
 
-  sf::Font font;
-  if (!font.loadFromFile("data/test/sansation.ttf"))
+  // TODO: Clean all this code up. It shouldn't be here.
+  sf::Music bgm;
+  if (!bgm.openFromFile("data/test/orchestral.ogg"))
     return 1;
-  sf::Text text;
-  text.setFont(font);
+  bgm.setLoop(true);
 
-  if (argc > 1)
-    text.setString("Hello " + Asteroids::capitalize(argv[1]) + "!");
-  else
-    text.setString("Hello user!");
-
-  text.setCharacterSize(24);
-  text.setFillColor(sf::Color::Red);
-  text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-  float x_pos = 100.f - (text.getGlobalBounds().width / 2.f);
-  float y_pos = 100.f - (text.getGlobalBounds().height);
-  text.setPosition(x_pos, y_pos);
-
-  sf::Music orchestral;
-  if (!orchestral.openFromFile("data/test/orchestral.ogg"))
+  sf::SoundBuffer sound_effect_buffer1;
+  sf::SoundBuffer sound_effect_buffer2;
+  sf::Sound sound_effect;
+  if (!sound_effect_buffer1.loadFromFile("data/test/ball.wav"))
     return 1;
-  orchestral.setLoop(true);
+  sound_effect.setBuffer(sound_effect_buffer1);
+  // END TODO
 
-  sf::SoundBuffer ball_buffer;
-  sf::Sound ball;
-  if (!ball_buffer.loadFromFile("data/test/ball.wav"))
-    return 1;
-  ball.setBuffer(ball_buffer);
-
-  while (window.isOpen()) {
+  while (game.running) {
     sf::Event event;
     while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
-        window.close();
+      switch (event.type) {
+      case sf::Event::Closed:
+        game.game_over();
+        break;
+
+      case sf::Event::LostFocus:
+        game.pause();
+        break;
+
+      case sf::Event::KeyPressed:
+        game.process_input(event.key);
+        break;
+
+      default:
+        break;
+      }
     }
 
-    if (orchestral.getStatus() == sf::Sound::Stopped)
-      orchestral.play();
-
-    window.clear();
-    window.draw(shape);
-    window.draw(text);
-    window.display();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-        ball.getStatus() == sf::Sound::Stopped) {
-      ball.play();
+    if (!game.update()) {
+      // TODO: Error handling
+      return 1;
     }
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-      break;
+    game.render(&window);
   }
 
   return 0;

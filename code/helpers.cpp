@@ -2,9 +2,8 @@
 
 #include <string>
 
-namespace Asteroids {
-  char upcase(char character)
-  {
+namespace ag {
+  char upcase(char character) {
     char upcased_char;
 
     if (character >= 97 && character <= 122)
@@ -15,8 +14,7 @@ namespace Asteroids {
     return upcased_char;
   }
 
-  char downcase(char character)
-  {
+  char downcase(char character) {
     char downcased_char;
 
     if (character >= 65 && character <= 90)
@@ -27,13 +25,11 @@ namespace Asteroids {
     return downcased_char;
   }
 
-  std::string capitalize(std::string str)
-  {
+  std::string capitalize(std::string str) {
     std::string new_str;
     new_str += upcase(str[0]);
 
-    for (int i = 1; i < str.size(); i++)
-    {
+    for (int i = 1; i < str.size(); i++) {
       char next_char = str[i];
 
       if (next_char >= 65 && next_char <= 90)
