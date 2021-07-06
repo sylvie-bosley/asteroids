@@ -28,11 +28,16 @@ int main(int argc, char *argv[]) {
   float y_pos = 100.f - (text.getGlobalBounds().height);
   text.setPosition(x_pos, y_pos);
 
-  sf::SoundBuffer buffer;
-  sf::Sound sound;
-  if (!buffer.loadFromFile("data/test/ball.wav"))
+  sf::Music orchestral;
+  if (!orchestral.openFromFile("data/test/orchestral.ogg"))
     return 1;
-  sound.setBuffer(buffer);
+  orchestral.setLoop(true);
+
+  sf::SoundBuffer ball_buffer;
+  sf::Sound ball;
+  if (!ball_buffer.loadFromFile("data/test/ball.wav"))
+    return 1;
+  ball.setBuffer(ball_buffer);
 
   while (window.isOpen()) {
     sf::Event event;
@@ -41,14 +46,18 @@ int main(int argc, char *argv[]) {
         window.close();
     }
 
+    if (orchestral.getStatus() == sf::Sound::Stopped)
+      orchestral.play();
+
     window.clear();
     window.draw(shape);
     window.draw(text);
     window.display();
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) &&
-        sound.getStatus() == sf::Sound::Stopped)
-      sound.play();
+        ball.getStatus() == sf::Sound::Stopped) {
+      ball.play();
+    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
       break;
