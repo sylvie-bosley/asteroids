@@ -1,3 +1,5 @@
+#define DEBUG
+
 #include "include/spaceship.h"
 #include "include/game.h"
 #include "include/helpers.h"
@@ -97,6 +99,7 @@ void Game::render() {
 
   // TODO: This is placeholder code to test functionality. This logic needs to
   // be moved to the correct places and actual rendering logic added here
+#ifdef DEBUG
   sf::CircleShape ship(10.0f, 3);
   ship.setOrigin(10.0f, 10.0f);
   ship.setOutlineThickness(1.0f);
@@ -122,9 +125,11 @@ void Game::render() {
   ship_stats.setCharacterSize(20);
   ship_stats.setFillColor(sf::Color::White);
   ship_stats.setPosition(5.0f, 5.0f);
-
   game_window.draw(ship_stats);
+
   game_window.draw(ship);
+#endif
+
   game_window.display();
 }
 
