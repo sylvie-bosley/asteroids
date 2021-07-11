@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <string>
 
 namespace ag {
 
@@ -97,12 +98,33 @@ void Game::render() {
   // TODO: This is placeholder code to test functionality. This logic needs to
   // be moved to the correct places and actual rendering logic added here
   sf::CircleShape ship(10.0f, 3);
+  ship.setOrigin(10.0f, 10.0f);
   ship.setOutlineThickness(1.0f);
   ship.setFillColor(sf::Color::Black);
   ship.setOutlineColor(sf::Color::White);
   ship.setPosition(player.position.x, player.position.y);
-  game_window.draw(ship);
+  ship.setRotation(-player.orientation);
 
+  sf::Font font;
+  font.loadFromFile("data/test/sansation.ttf");
+  sf::Text ship_stats;
+  ship_stats.setFont(font);
+
+  std::string velocity_x_str = std::to_string(player.velocity.x);
+  std::string velocity_y_str = std::to_string(player.velocity.y);
+  std::string rotation_str = std::to_string(player.orientation);
+
+  std::string stats_str = "X Velocity: " + velocity_x_str + "\n" +
+                          "Y Velocity: " + velocity_y_str + "\n" +
+                          "Rotation: " + rotation_str;
+
+  ship_stats.setString(stats_str);
+  ship_stats.setCharacterSize(20);
+  ship_stats.setFillColor(sf::Color::White);
+  ship_stats.setPosition(5.0f, 5.0f);
+
+  game_window.draw(ship_stats);
+  game_window.draw(ship);
   game_window.display();
 }
 

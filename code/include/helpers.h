@@ -3,6 +3,8 @@
 
 namespace ag {
 
+const float PI32 = 3.14159265359f;
+
 enum Action {
   FireGun,
   Up,
