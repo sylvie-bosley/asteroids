@@ -2,38 +2,47 @@
 #define ASTEROIDS_GAME_CODE_INCLUDE_GAME_H
 
 #include "spaceship.h"
+#include "helpers.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 namespace ag {
-  class Game {
-  public:
 
-    Game();
-    ~Game();
+class Game {
+ public:
+  Game();
+  ~Game();
 
-    void pause();
-    void resume();
-    void process_input(const sf::Event::KeyEvent &key);
-    bool update();
-    void render(sf::RenderWindow *window_p);
-    void game_over();
+  void pause_game();
+  void resume();
+  Action process_input();
+  bool update(const Action action, const sf::Time dt);
+  void render();
+  void close_game();
 
-    bool running;
+  bool running;
 
-  private:
-
-    enum GameState {TitleScreen, InGame, Paused};
-
-    bool play_bgm();
-
-    GameState game_state;
-    ag::Spaceship player;
-    sf::Music bgm;
-    sf::SoundBuffer sfx_buffer;
-    sf::Sound sfx;
+ private:
+  enum GameState {
+    TitleScreen,
+    InGame,
+    Paused,
+    GameOver
   };
+
+  const sf::Vector2i dspl_size{1280, 720};
+
+  Spaceship player;
+  sf::RenderWindow game_window;
+  sf::Music bgm;
+
+  bool play_bgm();
+  Action parse_player_action(const sf::Keyboard::Key key);
+
+  GameState game_state;
+};
+
 }
 
 #endif
