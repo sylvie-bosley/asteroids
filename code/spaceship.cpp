@@ -20,9 +20,12 @@ void Spaceship::control_ship(Action action, sf::Time dt) {
       fire_weapon();
       break;
     case Up:
-      thrust(dt);
+      main_thruster(dt);
+      apply_speed_limit(dt);
       break;
     case Down:
+      retro_trusters(dt);
+      apply_speed_limit(dt);
       break;
     case Left:
       break;
@@ -49,9 +52,19 @@ void Spaceship::update_pos(sf::Vector2i dspl_size) {
   }
 }
 
-void Spaceship::thrust(sf::Time dt) {
+void Spaceship::main_thruster(sf::Time dt) {
+  float d_accel = ACCELERATION * dt.asSeconds();
   sf::Vector2f direction(std::sin(rotation), std::cos(rotation));
-  velocity += (normalize_vector2f(direction) * (ACCELERATION * dt.asSeconds()));
+  velocity += (normalize_vector2f(direction) * d_accel);
+}
+
+void Spaceship::retro_trusters(sf::Time dt) {
+  float d_retro_accel = ACCELERATION * dt.asSeconds() / 2.0f;
+  sf::Vector2f direction(std::sin(rotation), std::cos(rotation));
+  velocity -= (normalize_vector2f(direction) * d_retro_accel);
+}
+
+void Spaceship::apply_speed_limit(sf::Time dt) {
   if (velocity.x > MAX_SPEED * dt.asSeconds()) {
     velocity.x = MAX_SPEED * dt.asSeconds();
   } else if (velocity.x < -MAX_SPEED * dt.asSeconds()) {

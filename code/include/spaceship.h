@@ -27,10 +27,12 @@ class Spaceship {
 
   const float PI32 = 3.14159265359f;
   const float ROTATION_SPEED = PI32;
-  const int ACCELERATION = 200;
-  const int MAX_SPEED = 250;
+  const int ACCELERATION = 150;
+  const int MAX_SPEED = 500;
 
-  void thrust(sf::Time dt);
+  void main_thruster(sf::Time dt);
+  void retro_trusters(sf::Time dt);
+  void apply_speed_limit(sf::Time dt);
   void fire_weapon();
   sf::Vector2f normalize_vector2f(const sf::Vector2f vector);
 
