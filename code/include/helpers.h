@@ -8,19 +8,19 @@ namespace ag {
 const sf::Vector2u DISPLAY_SIZE{1280U, 720U};
 
 enum Action {
-  FireGun,
+  Space,
   Up,
   Down,
   Left,
   Right,
-  Select,
+  Enter,
   Escape,
   Unused,
 };
 
-sf::Vector2f normalize_vector2f(const sf::Vector2f vector);
-float vector2f_length(const sf::Vector2f vector);
-sf::Vector2f screen_wrap(const sf::Vector2f position);
+sf::Vector2f normalize_vector2f(const sf::Vector2f &vector);
+float vector2f_length(const sf::Vector2f &vector);
+sf::Vector2f screen_wrap(const sf::Vector2f &position);
 
 }
 

@@ -2,20 +2,24 @@
 
 #include <cmath>
 
+#include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
 #include "include/helpers.h"
 
 namespace ag {
 
-Spaceship::Spaceship()
+Spaceship::Spaceship(const sf::Font &font)
     : position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)},
-      velocity{0.0F, 0.0F}, orientation{0.0F}, ship_sfx_buffer1{},
-      ship_sfx_buffer2{}, ship_gun_sound{}, ship_engines_sound{} {}
+      velocity{0.0F, 0.0F}, orientation{0.0F}, sprite{10.0F, 3U} {
+  initialize_sprite_graphics();
+  initialize_sprite_position();
+  initialize_stats_string(font);
+}
 
-void Spaceship::control_ship(const Action action, const sf::Time dt) {
+void Spaceship::control_ship(const Action action, const sf::Time &dt) {
   switch (action) {
-    case FireGun:
+    case Space:
       fire_weapon();
       break;
     case Up:
@@ -35,9 +39,11 @@ void Spaceship::control_ship(const Action action, const sf::Time dt) {
   }
 }
 
-void Spaceship::update_pos() {
+void Spaceship::update() {
   position += velocity;
   position = screen_wrap(position);
+  sprite.setPosition(position);
+  update_ship_stats();
 }
 
 void Spaceship::reset_ship() {
@@ -45,9 +51,25 @@ void Spaceship::reset_ship() {
   velocity.x = 0.0F;
   velocity.y = 0.0F;
   orientation = 0.0F;
+  initialize_sprite_position();
 }
 
-void Spaceship::main_thruster(const sf::Time dt) {
+sf::CircleShape Spaceship::get_sprite() {
+  return sprite;
+}
+
+sf::Text Spaceship::get_ship_stats() {
+  return ship_stats;
+}
+
+void Spaceship::update_ship_stats() {
+  std::string stats_str = "X Velocity: " + std::to_string(velocity.x) + "\n" +
+                          "Y Velocity: " + std::to_string(velocity.y) + "\n" +
+                          "Rotation: " + std::to_string(orientation);
+  ship_stats.setString(stats_str);
+}
+
+void Spaceship::main_thruster(const sf::Time &dt) {
   float d_accel = ACCELERATION * dt.asSeconds();
   sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),
                          std::cos(orientation * (M_PI / 180.0F)));
@@ -58,7 +80,7 @@ void Spaceship::main_thruster(const sf::Time dt) {
   }
 }
 
-void Spaceship::retro_trusters(const sf::Time dt) {
+void Spaceship::retro_trusters(const sf::Time &dt) {
   float d_retro_accel = ACCELERATION * dt.asSeconds() / 2.0F;
   sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),
                          std::cos(orientation * (M_PI / 180.0F)));
@@ -69,9 +91,10 @@ void Spaceship::retro_trusters(const sf::Time dt) {
   }
 }
 
-void Spaceship::rotate_ship(const float direction, const sf::Time dt) {
-  orientation += (direction * ROTATION_SPEED * dt.asSeconds());
-  clamp_orientation();
+void Spaceship::rotate_ship(const float direction, const sf::Time &dt) {
+  float angular_velocity = direction * ROTATION_SPEED * dt.asSeconds();
+  orientation = clamp_orientation(orientation + angular_velocity);
+  sprite.rotate(-angular_velocity);
 }
 
 void Spaceship::fire_weapon() {
@@ -80,13 +103,35 @@ void Spaceship::fire_weapon() {
   ship_gun_sound.play();
 }
 
-void Spaceship::clamp_orientation() {
-  while (orientation >= 360.0F) {
-    orientation -= 360.0F;
+float Spaceship::clamp_orientation(const float raw_orientation) {
+  float clamped_orientation = raw_orientation;
+  while (clamped_orientation >= 360.0F) {
+    clamped_orientation -= 360.0F;
   }
-  while (orientation < 0.0F) {
-    orientation += 360.0F;
+  while (clamped_orientation < 0.0F) {
+    clamped_orientation += 360.0F;
   }
+  return clamped_orientation;
+}
+
+void Spaceship::initialize_sprite_graphics() {
+  sprite.setOrigin(10.0F, 10.0F);
+  sprite.setOutlineThickness(1.0F);
+  sprite.setFillColor(sf::Color::Black);
+  sprite.setOutlineColor(sf::Color::White);
+}
+
+void Spaceship::initialize_sprite_position() {
+  sprite.setPosition(position);
+  sprite.setRotation(-orientation);
+}
+
+void Spaceship::initialize_stats_string(const sf::Font &font) {
+  ship_stats.setFont(font);
+  ship_stats.setCharacterSize(20U);
+  ship_stats.setFillColor(sf::Color::White);
+  ship_stats.setPosition(5.0F, 5.0F);
+  ship_stats.setString("X Velocity:\nY Velocity:\nRotation:");
 }
 
 }

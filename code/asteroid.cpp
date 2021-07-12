@@ -19,17 +19,11 @@ Asteroid::Asteroid()
   velocity = normal_direction * static_cast<float>(ASTEROID_SPEED);
 }
 
-void Asteroid::update_pos(const sf::Time dt) {
+void Asteroid::update(const sf::Time &dt) {
   sf::Vector2f pos_f;
   position += (velocity * dt.asSeconds());
   position = screen_wrap(position);
   sprite.setPosition(position);
-}
-
-void Asteroid::reset_asteroid() {
-  orientation = static_cast<float>(rand() % 360U);
-  position = {generate_valid_asteroid_x(), generate_valid_asteroid_y()};
-  initialize_sprite_position();
 }
 
 float Asteroid::generate_valid_asteroid_x() {

@@ -12,13 +12,14 @@ namespace ag {
 
 class Game {
  public:
-  Game();
+  Game() {};
+  Game(const sf::Font &font);
   ~Game() {};
 
-  Action process_input();
-  bool update(const Action action, const sf::Time dt);
-  void render();
   bool is_running();
+  Action process_input();
+  bool update(const Action action, const sf::Time &dt);
+  void render();
 
  private:
   enum GameState {
@@ -28,21 +29,14 @@ class Game {
     GameOver
   };
 
-  Spaceship player;
-  sf::RenderWindow game_window;
-  sf::Music bgm;
-
   void generate_asteroids(const unsigned int asteroid_count);
-  void start_game();
-  void pause_game();
-  void resume_game();
   void reset_game();
-  void close_game();
   bool play_bgm();
   Action parse_player_action(const sf::Keyboard::Key key);
-  float generate_valid_asteroid_x();
-  float generate_valid_asteroid_y();
 
+  sf::RenderWindow game_window;
+  Spaceship player;
+  sf::Music bgm;
   std::vector<Asteroid> asteroids;
   unsigned int starting_asteroids;
   unsigned int difficulty;

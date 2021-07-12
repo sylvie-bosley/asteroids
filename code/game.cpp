@@ -1,9 +1,4 @@
-#define DEBUG
-
 #include "include/game.h"
-
-#include <string>
-#include <random>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -14,14 +9,18 @@
 
 namespace ag {
 
-Game::Game()
+Game::Game(const sf::Font &font)
     : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      player{} {
+      player{font} {
   starting_asteroids = 4U;
   difficulty = 0U;
   generate_asteroids(starting_asteroids);
   running = true;
   game_state = TitleScreen;
+}
+
+bool Game::is_running() {
+  return running;
 }
 
 Action Game::process_input() {
@@ -49,14 +48,14 @@ Action Game::process_input() {
   return action;
 }
 
-bool Game::update(const Action action, const sf::Time dt) {
+bool Game::update(const Action action, const sf::Time &dt) {
   if (bgm.getStatus() == sf::Music::Stopped) {
     if (!play_bgm()) {return false;}
   }
 
   switch (game_state) {
     case TitleScreen: {
-      if (action == Select) {
+      if (action == Enter) {
         game_state = InGame;
       } else if (action == Escape) {
         running = false;
@@ -65,13 +64,13 @@ bool Game::update(const Action action, const sf::Time dt) {
       break;
     }
     case GameOver: {
-      if (action == Select) {
+      if (action == Enter) {
         reset_game();
       }
       break;
     }
     case Paused: {
-      if (action == Select) {
+      if (action == Enter) {
         game_state = InGame;
       } else if (action == Escape) {
         reset_game();
@@ -81,12 +80,12 @@ bool Game::update(const Action action, const sf::Time dt) {
     case InGame: {
       if (action == Escape) {
         game_state = Paused;
-      } else if (action != Select && action != Unused) {
+      } else if (action != Enter && action != Unused) {
         player.control_ship(action, dt);
       }
-      player.update_pos();
+      player.update();
       for (unsigned int i = 0U; i < (starting_asteroids + difficulty); ++i) {
-        asteroids[i].update_pos(dt);
+        asteroids[i].update(dt);
       }
       break;
     }
@@ -96,48 +95,12 @@ bool Game::update(const Action action, const sf::Time dt) {
 
 void Game::render() {
   game_window.clear(sf::Color::Black);
-
-  // TODO: This is placeholder code to test functionality. This logic needs to
-  // be moved to the correct places and actual rendering logic added here
-#ifdef DEBUG
-  sf::CircleShape ship(10.0F, 3U);
-  ship.setOrigin(10.0F, 10.0F);
-  ship.setOutlineThickness(1.0F);
-  ship.setFillColor(sf::Color::Black);
-  ship.setOutlineColor(sf::Color::White);
-  ship.setPosition(player.position);
-  ship.setRotation(-player.orientation);
-
-  sf::Font font;
-  font.loadFromFile("data/test/sansation.ttf");
-  sf::Text ship_stats;
-  ship_stats.setFont(font);
-
-  std::string velocity_x_str = std::to_string(player.velocity.x);
-  std::string velocity_y_str = std::to_string(player.velocity.y);
-  std::string rotation_str = std::to_string(player.orientation);
-
-  std::string stats_str = "X Velocity: " + velocity_x_str + "\n" +
-                          "Y Velocity: " + velocity_y_str + "\n" +
-                          "Rotation: " + rotation_str;
-
-  ship_stats.setString(stats_str);
-  ship_stats.setCharacterSize(20U);
-  ship_stats.setFillColor(sf::Color::White);
-  ship_stats.setPosition(5.0F, 5.0F);
-
-  game_window.draw(ship_stats);
-  game_window.draw(ship);
+  game_window.draw(player.get_ship_stats());
+  game_window.draw(player.get_sprite());
   for (unsigned int i = 0U; i < (starting_asteroids + difficulty); ++i) {
     game_window.draw(asteroids[i].sprite);
   }
-#endif
-
   game_window.display();
-}
-
-bool Game::is_running() {
-  return running;
 }
 
 void Game::generate_asteroids(const unsigned int asteroid_count) {
@@ -185,10 +148,10 @@ Action Game::parse_player_action(const sf::Keyboard::Key key) {
       action = Escape;
       break;
     case sf::Keyboard::Key::Enter:
-      action = Select;
+      action = Enter;
       break;
     case sf::Keyboard::Key::Space:
-      action = FireGun;
+      action = Space;
       break;
     case sf::Keyboard::Key::Up:
       action = Up;

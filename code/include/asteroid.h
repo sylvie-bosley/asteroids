@@ -10,8 +10,7 @@ class Asteroid {
   Asteroid();
   ~Asteroid() {};
 
-  void update_pos(const sf::Time dt);
-  void reset_asteroid();
+  void update(const sf::Time &dt);
 
   sf::CircleShape sprite;
   sf::Vector2f position;
