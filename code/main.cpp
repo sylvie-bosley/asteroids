@@ -1,10 +1,10 @@
 #include "include/game.h"
 #include "include/helpers.h"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include <SFML/System.hpp>
 
 int main() {
+  std::srand(std::time(nullptr));
   ag::Game game;
   ag::Action action;
   sf::Clock frame_clock;

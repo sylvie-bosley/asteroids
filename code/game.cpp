@@ -1,5 +1,6 @@
 #define DEBUG
 
+#include "include/asteroid.h"
 #include "include/spaceship.h"
 #include "include/game.h"
 #include "include/helpers.h"
@@ -7,27 +8,19 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <string>
+#include <random>
+#include <functional>
 
 namespace ag {
 
 Game::Game()
-    : player{sf::Vector2i{dspl_size.x / 2, dspl_size.y / 2}},
-      game_window{sf::VideoMode(dspl_size.x, dspl_size.y), "Asteroids"} {
+    : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
+      player{} {
+  starting_asteroids = 4;
+  difficulty = 0;
+  generate_asteroids(starting_asteroids);
   running = true;
   game_state = TitleScreen;
-}
-
-Game::~Game() {
-}
-
-void Game::pause_game() {
-  if (game_state == InGame)
-    game_state = Paused;
-}
-
-void Game::resume() {
-  if (game_state == Paused)
-    game_state = InGame;
 }
 
 Action Game::process_input() {
@@ -60,37 +53,41 @@ bool Game::update(const Action action, const sf::Time dt) {
   }
 
   switch (game_state) {
-    case TitleScreen:
+    case TitleScreen: {
       if (action == Select) {
-        game_state = InGame;
+        start_game();
       } else if (action == Escape) {
         close_game();
       }
       break;
-    case GameOver:
+    }
+    case GameOver: {
       if (action == Select) {
-        game_state = TitleScreen;
+        reset_game();
       }
       break;
-    case Paused:
+    }
+    case Paused: {
       if (action == Select) {
-        game_state = InGame;
+        resume_game();
       } else if (action == Escape) {
-        game_state = TitleScreen;
+        reset_game();
       }
       break;
-    case InGame:
+    }
+    case InGame: {
       if (action == Escape) {
         pause_game();
       } else if (action != Select && action != Unused) {
         player.control_ship(action, dt);
       }
+      player.update_pos();
+      for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+        asteroids[i].update_pos(dt);
+      }
       break;
+    }
   }
-
-  player.update_pos(dspl_size);
-  // TODO: Update game state
-
   return true;
 }
 
@@ -125,12 +122,43 @@ void Game::render() {
   ship_stats.setCharacterSize(20);
   ship_stats.setFillColor(sf::Color::White);
   ship_stats.setPosition(5.0f, 5.0f);
-  game_window.draw(ship_stats);
 
+  game_window.draw(ship_stats);
   game_window.draw(ship);
+  for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+    game_window.draw(asteroids[i].sprite);
+  }
 #endif
 
   game_window.display();
+}
+
+void Game::generate_asteroids(const int current_asteroid_count) {
+  for (int i = 0; i < current_asteroid_count; ++i) {
+    int random_x = rand() % DISPLAY_SIZE.x;
+    int random_y = rand() % DISPLAY_SIZE.y;
+    asteroids.push_back(Asteroid(sf::Vector2i{random_x, random_y}));
+  }
+}
+
+void Game::start_game() {
+  game_state = InGame;
+}
+
+void Game::pause_game() {
+  game_state = Paused;
+}
+
+void Game::resume_game() {
+  game_state = InGame;
+}
+
+void Game::reset_game() {
+  game_state = TitleScreen;
+  player.reset_ship();
+  for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+    asteroids[i].reset_asteroid();
+  }
 }
 
 void Game::close_game() {
