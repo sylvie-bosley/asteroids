@@ -60,11 +60,11 @@ void Spaceship::reset_ship() {
   initialize_sprite_position();
 }
 
-sf::CircleShape Spaceship::get_sprite() {
+const sf::CircleShape &Spaceship::get_sprite() {
   return sprite;
 }
 
-sf::Text Spaceship::get_ship_stats() {
+const sf::Text &Spaceship::get_ship_stats() {
   return ship_stats;
 }
 

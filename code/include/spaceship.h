@@ -16,8 +16,8 @@ class Spaceship {
   void control_ship(const Action action, const sf::Time &dt);
   void update();
   void reset_ship();
-  sf::CircleShape get_sprite();
-  sf::Text get_ship_stats();
+  const sf::CircleShape &get_sprite();
+  const sf::Text &get_ship_stats();
 
  private:
   const unsigned int ROTATION_SPEED = 180U;

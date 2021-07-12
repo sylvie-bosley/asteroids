@@ -11,12 +11,10 @@ class Asteroid {
   explicit Asteroid(const float size);
   ~Asteroid() {};
 
+  const sf::CircleShape &get_sprite();
   void update(const sf::Time &dt);
 
-  sf::CircleShape sprite;
-  sf::Vector2f position;
-
- private:
+private:
   const unsigned int ASTEROID_SPEED = 100U;
 
   float generate_valid_asteroid_x();
@@ -26,6 +24,8 @@ class Asteroid {
 
   sf::Vector2f velocity;
   float orientation;
+  sf::CircleShape sprite;
+  sf::Vector2f position;
 };
 
 }

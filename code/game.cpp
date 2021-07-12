@@ -12,7 +12,6 @@ namespace ag {
 Game::Game()
     : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
       player{} {
-  starting_asteroids = 4U;
   difficulty = 0U;
   generate_asteroids(starting_asteroids, 50.0F);
   running = true;
@@ -95,11 +94,11 @@ bool Game::update(const Action action, const sf::Time &dt) {
 
 void Game::render() {
   game_window.clear(sf::Color::Black);
-  game_window.draw(player.get_ship_stats());
   game_window.draw(player.get_sprite());
   for (unsigned int i = 0U; i < (starting_asteroids + difficulty); ++i) {
-    game_window.draw(asteroids[i].sprite);
+    game_window.draw(asteroids[i].get_sprite());
   }
+  game_window.draw(player.get_ship_stats());
   game_window.display();
 }
 

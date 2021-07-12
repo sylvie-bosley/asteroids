@@ -19,6 +19,10 @@ Asteroid::Asteroid(const float size)
   velocity = normal_direction * static_cast<float>(ASTEROID_SPEED);
 }
 
+const sf::CircleShape &Asteroid::get_sprite() {
+  return sprite;
+}
+
 void Asteroid::update(const sf::Time &dt) {
   sf::Vector2f pos_f;
   position += (velocity * dt.asSeconds());

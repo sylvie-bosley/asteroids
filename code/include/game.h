@@ -28,6 +28,8 @@ class Game {
     GameOver
   };
 
+  const unsigned int starting_asteroids = 4U;
+
   void generate_asteroids(const unsigned int asteroid_count, const float size);
   void reset_game();
   bool play_bgm();
@@ -37,7 +39,6 @@ class Game {
   Spaceship player;
   sf::Music bgm;
   std::vector<Asteroid> asteroids;
-  unsigned int starting_asteroids;
   unsigned int difficulty;
   GameState game_state;
   bool running;
