@@ -9,8 +9,8 @@
 namespace ag {
 
 Spaceship::Spaceship()
-    : position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2u)},
-      velocity{0.0f, 0.0f}, orientation{0.0f}, ship_sfx_buffer1{},
+    : position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)},
+      velocity{0.0F, 0.0F}, orientation{0.0F}, ship_sfx_buffer1{},
       ship_sfx_buffer2{}, ship_gun_sound{}, ship_engines_sound{} {}
 
 void Spaceship::control_ship(const Action action, const sf::Time dt) {
@@ -25,10 +25,10 @@ void Spaceship::control_ship(const Action action, const sf::Time dt) {
       retro_trusters(dt);
       break;
     case Left:
-      rotate_ship(1.0f, dt);
+      rotate_ship(1.0F, dt);
       break;
     case Right:
-      rotate_ship(-1.0f, dt);
+      rotate_ship(-1.0F, dt);
       break;
     default:
       break;
@@ -41,16 +41,16 @@ void Spaceship::update_pos() {
 }
 
 void Spaceship::reset_ship() {
-  position = static_cast<sf::Vector2f>(DISPLAY_SIZE / 2u);
-  velocity.x = 0.0f;
-  velocity.y = 0.0f;
-  orientation = 0.0f;
+  position = static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U);
+  velocity.x = 0.0F;
+  velocity.y = 0.0F;
+  orientation = 0.0F;
 }
 
 void Spaceship::main_thruster(const sf::Time dt) {
   float d_accel = ACCELERATION * dt.asSeconds();
-  sf::Vector2f direction(std::sin(orientation * (PI32 / 180.0f)),
-                         std::cos(orientation * (PI32 / 180.0f)));
+  sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),
+                         std::cos(orientation * (M_PI / 180.0F)));
   velocity -= (normalize_vector2f(direction) * d_accel);
   if (vector2f_length(velocity) > (MAX_SPEED * dt.asSeconds())) {
     sf::Vector2f normal_velocity = normalize_vector2f(velocity);
@@ -59,9 +59,9 @@ void Spaceship::main_thruster(const sf::Time dt) {
 }
 
 void Spaceship::retro_trusters(const sf::Time dt) {
-  float d_retro_accel = ACCELERATION * dt.asSeconds() / 2.0f;
-  sf::Vector2f direction(std::sin(orientation * (PI32 / 180.0f)),
-                         std::cos(orientation * (PI32 / 180.0f)));
+  float d_retro_accel = ACCELERATION * dt.asSeconds() / 2.0F;
+  sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),
+                         std::cos(orientation * (M_PI / 180.0F)));
   velocity += (normalize_vector2f(direction) * d_retro_accel);
   if (vector2f_length(velocity) > (MAX_SPEED * dt.asSeconds())) {
     sf::Vector2f normal_velocity = normalize_vector2f(velocity);
@@ -81,11 +81,11 @@ void Spaceship::fire_weapon() {
 }
 
 void Spaceship::clamp_orientation() {
-  while (orientation >= 360.0f) {
-    orientation -= 360.0f;
+  while (orientation >= 360.0F) {
+    orientation -= 360.0F;
   }
-  while (orientation < 0.0f) {
-    orientation += 360.0f;
+  while (orientation < 0.0F) {
+    orientation += 360.0F;
   }
 }
 

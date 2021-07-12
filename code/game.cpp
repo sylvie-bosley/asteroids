@@ -17,8 +17,8 @@ namespace ag {
 Game::Game()
     : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
       player{} {
-  starting_asteroids = 4u;
-  difficulty = 0u;
+  starting_asteroids = 4U;
+  difficulty = 0U;
   generate_asteroids(starting_asteroids);
   running = true;
   game_state = TitleScreen;
@@ -30,13 +30,14 @@ Action Game::process_input() {
   while (game_window.pollEvent(event)) {
     switch (event.type) {
     case sf::Event::Closed:
-      close_game();
+      running = false;
+      game_window.close();
       break;
     case sf::Event::LostFocus:
-      pause_game();
+      game_state = Paused;
       break;
     case sf::Event::Resized:
-      pause_game();
+      game_state = Paused;
       break;
     case sf::Event::KeyPressed:
       action = parse_player_action(event.key.code);
@@ -56,9 +57,10 @@ bool Game::update(const Action action, const sf::Time dt) {
   switch (game_state) {
     case TitleScreen: {
       if (action == Select) {
-        start_game();
+        game_state = InGame;
       } else if (action == Escape) {
-        close_game();
+        running = false;
+        game_window.close();
       }
       break;
     }
@@ -70,7 +72,7 @@ bool Game::update(const Action action, const sf::Time dt) {
     }
     case Paused: {
       if (action == Select) {
-        resume_game();
+        game_state = InGame;
       } else if (action == Escape) {
         reset_game();
       }
@@ -78,12 +80,12 @@ bool Game::update(const Action action, const sf::Time dt) {
     }
     case InGame: {
       if (action == Escape) {
-        pause_game();
+        game_state = Paused;
       } else if (action != Select && action != Unused) {
         player.control_ship(action, dt);
       }
       player.update_pos();
-      for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
+      for (unsigned int i = 0U; i < (starting_asteroids + difficulty); ++i) {
         asteroids[i].update_pos(dt);
       }
       break;
@@ -98,9 +100,9 @@ void Game::render() {
   // TODO: This is placeholder code to test functionality. This logic needs to
   // be moved to the correct places and actual rendering logic added here
 #ifdef DEBUG
-  sf::CircleShape ship(10.0f, 3u);
-  ship.setOrigin(10.0f, 10.0f);
-  ship.setOutlineThickness(1.0f);
+  sf::CircleShape ship(10.0F, 3U);
+  ship.setOrigin(10.0F, 10.0F);
+  ship.setOutlineThickness(1.0F);
   ship.setFillColor(sf::Color::Black);
   ship.setOutlineColor(sf::Color::White);
   ship.setPosition(player.position);
@@ -120,13 +122,13 @@ void Game::render() {
                           "Rotation: " + rotation_str;
 
   ship_stats.setString(stats_str);
-  ship_stats.setCharacterSize(20u);
+  ship_stats.setCharacterSize(20U);
   ship_stats.setFillColor(sf::Color::White);
-  ship_stats.setPosition(5.0f, 5.0f);
+  ship_stats.setPosition(5.0F, 5.0F);
 
   game_window.draw(ship_stats);
   game_window.draw(ship);
-  for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
+  for (unsigned int i = 0U; i < (starting_asteroids + difficulty); ++i) {
     game_window.draw(asteroids[i].sprite);
   }
 #endif
@@ -134,35 +136,21 @@ void Game::render() {
   game_window.display();
 }
 
+bool Game::is_running() {
+  return running;
+}
+
 void Game::generate_asteroids(const unsigned int asteroid_count) {
-  for (unsigned int i = 0; i < asteroid_count; ++i) {
+  for (unsigned int i = 0U; i < asteroid_count; ++i) {
     asteroids.push_back(Asteroid{});
   }
-}
-
-void Game::start_game() {
-  game_state = InGame;
-}
-
-void Game::pause_game() {
-  game_state = Paused;
-}
-
-void Game::resume_game() {
-  game_state = InGame;
 }
 
 void Game::reset_game() {
   game_state = TitleScreen;
   player.reset_ship();
-  for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
-    asteroids[i].reset_asteroid();
-  }
-}
-
-void Game::close_game() {
-  running = false;
-  game_window.close();
+  asteroids.clear();
+  generate_asteroids(starting_asteroids);
 }
 
 bool Game::play_bgm() {

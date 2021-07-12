@@ -26,9 +26,9 @@ class Spaceship {
   sf::Sound ship_gun_sound;
   sf::Sound ship_engines_sound;
 
-  const unsigned int ROTATION_SPEED = 180u;
-  const unsigned int ACCELERATION = 25u;
-  const unsigned int MAX_SPEED = 300u;
+  const unsigned int ROTATION_SPEED = 180U;
+  const unsigned int ACCELERATION = 25U;
+  const unsigned int MAX_SPEED = 300U;
 
   void main_thruster(const sf::Time dt);
   void retro_trusters(const sf::Time dt);

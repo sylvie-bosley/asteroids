@@ -17,7 +17,7 @@ class Asteroid {
   sf::Vector2f position;
 
  private:
-  const unsigned int ASTEROID_SPEED = 100u;
+  const unsigned int ASTEROID_SPEED = 100U;
 
   float generate_valid_asteroid_x();
   float generate_valid_asteroid_y();

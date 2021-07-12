@@ -5,9 +5,7 @@
 
 namespace ag {
 
-constexpr unsigned int MAX_ASTEROIDS = 40u;
-constexpr float PI32 = 3.14159265359f;
-const sf::Vector2u DISPLAY_SIZE{1280u, 720u};
+const sf::Vector2u DISPLAY_SIZE{1280U, 720U};
 
 enum Action {
   FireGun,

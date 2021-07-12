@@ -18,8 +18,7 @@ class Game {
   Action process_input();
   bool update(const Action action, const sf::Time dt);
   void render();
-
-  bool running;
+  bool is_running();
 
  private:
   enum GameState {
@@ -48,6 +47,7 @@ class Game {
   unsigned int starting_asteroids;
   unsigned int difficulty;
   GameState game_state;
+  bool running;
 };
 
 }
