@@ -9,12 +9,12 @@
 
 namespace ag {
 
-Game::Game(const sf::Font &font)
+Game::Game()
     : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      player{font} {
+      player{} {
   starting_asteroids = 4U;
   difficulty = 0U;
-  generate_asteroids(starting_asteroids);
+  generate_asteroids(starting_asteroids, 50.0F);
   running = true;
   game_state = TitleScreen;
 }
@@ -103,9 +103,10 @@ void Game::render() {
   game_window.display();
 }
 
-void Game::generate_asteroids(const unsigned int asteroid_count) {
+void Game::generate_asteroids(
+    const unsigned int asteroid_count, const float size) {
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    asteroids.push_back(Asteroid{});
+    asteroids.push_back(Asteroid{size});
   }
 }
 
@@ -113,7 +114,7 @@ void Game::reset_game() {
   game_state = TitleScreen;
   player.reset_ship();
   asteroids.clear();
-  generate_asteroids(starting_asteroids);
+  generate_asteroids(starting_asteroids, 50.0F);
 }
 
 bool Game::play_bgm() {

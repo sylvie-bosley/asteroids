@@ -12,8 +12,7 @@ namespace ag {
 
 class Game {
  public:
-  Game() {};
-  Game(const sf::Font &font);
+  Game();
   ~Game() {};
 
   bool is_running();
@@ -29,7 +28,7 @@ class Game {
     GameOver
   };
 
-  void generate_asteroids(const unsigned int asteroid_count);
+  void generate_asteroids(const unsigned int asteroid_count, const float size);
   void reset_game();
   bool play_bgm();
   Action parse_player_action(const sf::Keyboard::Key key);

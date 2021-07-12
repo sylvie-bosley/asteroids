@@ -8,9 +8,9 @@
 
 namespace ag {
 
-Asteroid::Asteroid()
+Asteroid::Asteroid(const float size)
     : position{generate_valid_asteroid_x(), generate_valid_asteroid_y()},
-      sprite{50.0F}, orientation{static_cast<float>(rand() % 360U)} {
+      sprite{size}, orientation{static_cast<float>(rand() % 360U)} {
   initialize_sprite_graphics();
   initialize_sprite_position();
   sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),

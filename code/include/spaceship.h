@@ -10,8 +10,7 @@ namespace ag {
 
 class Spaceship {
  public:
-  Spaceship() {};
-  Spaceship(const sf::Font &font);
+  Spaceship();
   ~Spaceship() {};
 
   void control_ship(const Action action, const sf::Time &dt);
@@ -33,16 +32,16 @@ class Spaceship {
   float clamp_orientation(const float new_orientation);
   void initialize_sprite_graphics();
   void initialize_sprite_position();
-  void initialize_stats_string(const sf::Font &font);
+  void initialize_stats_string();
 
-  sf::SoundBuffer ship_sfx_buffer1;
-  sf::SoundBuffer ship_sfx_buffer2;
-  sf::Sound ship_gun_sound;
-  sf::Sound ship_engines_sound;
+  sf::SoundBuffer gun_sound_buffer;
+  sf::Sound gun_sound;
+  sf::SoundBuffer thruster_sound_buffer;
   sf::Vector2f position;
   sf::Vector2f velocity;
   float orientation;
   sf::CircleShape sprite;
+  sf::Font stats_font;
   sf::Text ship_stats;
 };
 

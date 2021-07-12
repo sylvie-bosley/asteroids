@@ -5,9 +5,7 @@
 
 int main() {
   std::srand(std::time(nullptr));
-  sf::Font font;
-  font.loadFromFile("data/test/sansation.ttf");
-  ag::Game game{font};
+  ag::Game game{};
   ag::Action action;
   sf::Clock frame_clock;
   do {

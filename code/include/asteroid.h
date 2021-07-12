@@ -7,7 +7,8 @@ namespace ag {
 
 class Asteroid {
  public:
-  Asteroid();
+  Asteroid() {};
+  explicit Asteroid(const float size);
   ~Asteroid() {};
 
   void update(const sf::Time &dt);

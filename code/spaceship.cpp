@@ -9,12 +9,18 @@
 
 namespace ag {
 
-Spaceship::Spaceship(const sf::Font &font)
+Spaceship::Spaceship()
     : position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)},
       velocity{0.0F, 0.0F}, orientation{0.0F}, sprite{10.0F, 3U} {
+  if (!stats_font.loadFromFile("data/test/sansation.ttf") ||
+      !gun_sound_buffer.loadFromFile("data/test/ball.wav")) {
+    // TODO: Not this
+    exit(1);
+  }
+  gun_sound.setBuffer(gun_sound_buffer);
   initialize_sprite_graphics();
   initialize_sprite_position();
-  initialize_stats_string(font);
+  initialize_stats_string();
 }
 
 void Spaceship::control_ship(const Action action, const sf::Time &dt) {
@@ -98,9 +104,9 @@ void Spaceship::rotate_ship(const float direction, const sf::Time &dt) {
 }
 
 void Spaceship::fire_weapon() {
-  ship_sfx_buffer1.loadFromFile("data/test/ball.wav");
-  ship_gun_sound.setBuffer(ship_sfx_buffer1);
-  ship_gun_sound.play();
+  if (gun_sound.getStatus() == sf::Sound::Stopped) {
+    gun_sound.play();
+  }
 }
 
 float Spaceship::clamp_orientation(const float raw_orientation) {
@@ -126,12 +132,12 @@ void Spaceship::initialize_sprite_position() {
   sprite.setRotation(-orientation);
 }
 
-void Spaceship::initialize_stats_string(const sf::Font &font) {
-  ship_stats.setFont(font);
+void Spaceship::initialize_stats_string() {
+  ship_stats.setFont(stats_font);
   ship_stats.setCharacterSize(20U);
   ship_stats.setFillColor(sf::Color::White);
   ship_stats.setPosition(5.0F, 5.0F);
-  ship_stats.setString("X Velocity:\nY Velocity:\nRotation:");
+  ship_stats.setString("X Velocity: 0\nY Velocity: 0\nRotation: 0");
 }
 
 }
