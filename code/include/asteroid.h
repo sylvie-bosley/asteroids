@@ -7,8 +7,7 @@ namespace ag {
 
 class Asteroid {
  public:
-  Asteroid() {};
-  Asteroid(sf::Vector2f start_position);
+  Asteroid();
   ~Asteroid() {};
 
   void update_pos(const sf::Time dt);
@@ -20,8 +19,10 @@ class Asteroid {
  private:
   const unsigned int ASTEROID_SPEED = 100u;
 
-  void initialize_sprite_position();
+  float generate_valid_asteroid_x();
+  float generate_valid_asteroid_y();
   void initialize_sprite_graphics();
+  void initialize_sprite_position();
 
   sf::Vector2f velocity;
   float orientation;

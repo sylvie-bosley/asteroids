@@ -17,8 +17,8 @@ namespace ag {
 Game::Game()
     : game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
       player{} {
-  starting_asteroids = 4;
-  difficulty = 0;
+  starting_asteroids = 4u;
+  difficulty = 0u;
   generate_asteroids(starting_asteroids);
   running = true;
   game_state = TitleScreen;
@@ -134,12 +134,9 @@ void Game::render() {
   game_window.display();
 }
 
-void Game::generate_asteroids(const unsigned int current_asteroid_count) {
-  float random_x, random_y;
-  for (unsigned int i = 0u; i < current_asteroid_count; ++i) {
-    random_x = static_cast<float>(rand() % DISPLAY_SIZE.x);
-    random_y = static_cast<float>(rand() % DISPLAY_SIZE.y);
-    asteroids.push_back(Asteroid(sf::Vector2f{random_x, random_y}));
+void Game::generate_asteroids(const unsigned int asteroid_count) {
+  for (unsigned int i = 0; i < asteroid_count; ++i) {
+    asteroids.push_back(Asteroid{});
   }
 }
 
