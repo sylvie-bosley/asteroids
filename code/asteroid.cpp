@@ -22,7 +22,7 @@ void Asteroid::update_pos(const sf::Time dt) {
   sf::Vector2f pos_f;
   pos_f = static_cast<sf::Vector2f>(position) + (velocity * dt.asSeconds());
   position = screen_wrap(static_cast<sf::Vector2i>(pos_f));
-  sprite.setPosition(position.x, position.y);
+  sprite.setPosition(static_cast<sf::Vector2f>(position));
 }
 
 void Asteroid::reset_asteroid() {

@@ -103,7 +103,7 @@ void Game::render() {
   ship.setOutlineThickness(1.0f);
   ship.setFillColor(sf::Color::Black);
   ship.setOutlineColor(sf::Color::White);
-  ship.setPosition(player.position.x, player.position.y);
+  ship.setPosition(static_cast<sf::Vector2f>(player.position));
   ship.setRotation(-player.orientation);
 
   sf::Font font;
