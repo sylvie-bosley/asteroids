@@ -9,9 +9,9 @@
 namespace ag {
 
 Spaceship::Spaceship()
-    : position{DISPLAY_SIZE / 2}, velocity{0.0f, 0.0f}, orientation{0},
-      ship_sfx_buffer1{}, ship_sfx_buffer2{}, ship_gun_sound{},
-      ship_engines_sound{} {}
+    : position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2u)},
+      velocity{0.0f, 0.0f}, orientation{0.0f}, ship_sfx_buffer1{},
+      ship_sfx_buffer2{}, ship_gun_sound{}, ship_engines_sound{} {}
 
 void Spaceship::control_ship(const Action action, const sf::Time dt) {
   switch (action) {
@@ -25,10 +25,10 @@ void Spaceship::control_ship(const Action action, const sf::Time dt) {
       retro_trusters(dt);
       break;
     case Left:
-      rotate_ship(1, dt);
+      rotate_ship(1.0f, dt);
       break;
     case Right:
-      rotate_ship(-1, dt);
+      rotate_ship(-1.0f, dt);
       break;
     default:
       break;
@@ -36,15 +36,15 @@ void Spaceship::control_ship(const Action action, const sf::Time dt) {
 }
 
 void Spaceship::update_pos() {
-  position += static_cast<sf::Vector2i>(velocity);
+  position += velocity;
   position = screen_wrap(position);
 }
 
 void Spaceship::reset_ship() {
-  position = DISPLAY_SIZE / 2;
-  velocity.x = 0;
-  velocity.y = 0;
-  orientation = 0;
+  position = static_cast<sf::Vector2f>(DISPLAY_SIZE / 2u);
+  velocity.x = 0.0f;
+  velocity.y = 0.0f;
+  orientation = 0.0f;
 }
 
 void Spaceship::main_thruster(const sf::Time dt) {
@@ -69,19 +69,24 @@ void Spaceship::retro_trusters(const sf::Time dt) {
   }
 }
 
-void Spaceship::rotate_ship(const int direction, const sf::Time dt) {
-  float d_rotation = direction * ROTATION_SPEED * dt.asSeconds();
-  orientation = static_cast<int>(static_cast<float>(orientation) + d_rotation);
-  if (orientation <= 0) {
-    orientation = 360 + orientation;
-  }
-  orientation %= 360;
+void Spaceship::rotate_ship(const float direction, const sf::Time dt) {
+  orientation += (direction * ROTATION_SPEED * dt.asSeconds());
+  clamp_orientation();
 }
 
 void Spaceship::fire_weapon() {
   ship_sfx_buffer1.loadFromFile("data/test/ball.wav");
   ship_gun_sound.setBuffer(ship_sfx_buffer1);
   ship_gun_sound.play();
+}
+
+void Spaceship::clamp_orientation() {
+  while (orientation >= 360.0f) {
+    orientation -= 360.0f;
+  }
+  while (orientation < 0.0f) {
+    orientation += 360.0f;
+  }
 }
 
 }

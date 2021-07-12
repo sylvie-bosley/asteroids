@@ -33,7 +33,7 @@ class Game {
   sf::RenderWindow game_window;
   sf::Music bgm;
 
-  void generate_asteroids(const int current_asteroid_count);
+  void generate_asteroids(const unsigned int current_asteroid_count);
   void start_game();
   void pause_game();
   void resume_game();
@@ -43,8 +43,8 @@ class Game {
   Action parse_player_action(const sf::Keyboard::Key key);
 
   std::vector<Asteroid> asteroids;
-  int starting_asteroids;
-  int difficulty;
+  unsigned int starting_asteroids;
+  unsigned int difficulty;
   GameState game_state;
 };
 

@@ -16,9 +16,9 @@ class Spaceship {
   void update_pos();
   void reset_ship();
 
-  sf::Vector2i position;
+  sf::Vector2f position;
   sf::Vector2f velocity;
-  int orientation;
+  float orientation;
 
  private:
   sf::SoundBuffer ship_sfx_buffer1;
@@ -26,14 +26,15 @@ class Spaceship {
   sf::Sound ship_gun_sound;
   sf::Sound ship_engines_sound;
 
-  const int ROTATION_SPEED = 180;
-  const int ACCELERATION = 25;
-  const int MAX_SPEED = 300;
+  const unsigned int ROTATION_SPEED = 180u;
+  const unsigned int ACCELERATION = 25u;
+  const unsigned int MAX_SPEED = 300u;
 
   void main_thruster(const sf::Time dt);
   void retro_trusters(const sf::Time dt);
-  void rotate_ship(const int direction, const sf::Time dt);
+  void rotate_ship(const float direction, const sf::Time dt);
   void fire_weapon();
+  void clamp_orientation();
 };
 
 }

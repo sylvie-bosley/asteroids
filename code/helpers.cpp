@@ -14,18 +14,19 @@ float vector2f_length(const sf::Vector2f vector) {
   return sqrt(vector.x * vector.x + vector.y * vector.y);
 }
 
-sf::Vector2i screen_wrap(sf::Vector2i position) {
-  if (position.x < 0) {
-    position.x = DISPLAY_SIZE.x - 1;
-  } else if (position.x > DISPLAY_SIZE.x) {
-    position.x = 0;
+sf::Vector2f screen_wrap(const sf::Vector2f position) {
+  sf::Vector2f wrapped_position = position;
+  if (wrapped_position.x < 0.0f) {
+    wrapped_position.x = static_cast<float>(DISPLAY_SIZE.x - 1u);
+  } else if (wrapped_position.x > DISPLAY_SIZE.x) {
+    wrapped_position.x = 0.0f;
   }
-  if (position.y < 0) {
-    position.y = DISPLAY_SIZE.y - 1;
-  } else if (position.y > DISPLAY_SIZE.y) {
-    position.y = 0;
+  if (wrapped_position.y < 0.0f) {
+    wrapped_position.y = static_cast<float>(DISPLAY_SIZE.y - 1u);
+  } else if (wrapped_position.y > DISPLAY_SIZE.y) {
+    wrapped_position.y = 0.0f;
   }
-  return position;
+  return wrapped_position;
 }
 
 }

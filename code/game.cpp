@@ -83,7 +83,7 @@ bool Game::update(const Action action, const sf::Time dt) {
         player.control_ship(action, dt);
       }
       player.update_pos();
-      for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+      for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
         asteroids[i].update_pos(dt);
       }
       break;
@@ -98,12 +98,12 @@ void Game::render() {
   // TODO: This is placeholder code to test functionality. This logic needs to
   // be moved to the correct places and actual rendering logic added here
 #ifdef DEBUG
-  sf::CircleShape ship(10.0f, 3);
+  sf::CircleShape ship(10.0f, 3u);
   ship.setOrigin(10.0f, 10.0f);
   ship.setOutlineThickness(1.0f);
   ship.setFillColor(sf::Color::Black);
   ship.setOutlineColor(sf::Color::White);
-  ship.setPosition(static_cast<sf::Vector2f>(player.position));
+  ship.setPosition(player.position);
   ship.setRotation(-player.orientation);
 
   sf::Font font;
@@ -120,13 +120,13 @@ void Game::render() {
                           "Rotation: " + rotation_str;
 
   ship_stats.setString(stats_str);
-  ship_stats.setCharacterSize(20);
+  ship_stats.setCharacterSize(20u);
   ship_stats.setFillColor(sf::Color::White);
   ship_stats.setPosition(5.0f, 5.0f);
 
   game_window.draw(ship_stats);
   game_window.draw(ship);
-  for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+  for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
     game_window.draw(asteroids[i].sprite);
   }
 #endif
@@ -134,10 +134,12 @@ void Game::render() {
   game_window.display();
 }
 
-void Game::generate_asteroids(const int current_asteroid_count) {
-  for (int i = 0; i < current_asteroid_count; ++i) {
-    sf::Vector2i random{rand() % DISPLAY_SIZE.x, rand() % DISPLAY_SIZE.y};
-    asteroids.push_back(Asteroid(random));
+void Game::generate_asteroids(const unsigned int current_asteroid_count) {
+  float random_x, random_y;
+  for (unsigned int i = 0u; i < current_asteroid_count; ++i) {
+    random_x = static_cast<float>(rand() % DISPLAY_SIZE.x);
+    random_y = static_cast<float>(rand() % DISPLAY_SIZE.y);
+    asteroids.push_back(Asteroid(sf::Vector2f{random_x, random_y}));
   }
 }
 
@@ -156,7 +158,7 @@ void Game::resume_game() {
 void Game::reset_game() {
   game_state = TitleScreen;
   player.reset_ship();
-  for (int i = 0; i < (starting_asteroids + difficulty); ++i) {
+  for (unsigned int i = 0u; i < (starting_asteroids + difficulty); ++i) {
     asteroids[i].reset_asteroid();
   }
 }
