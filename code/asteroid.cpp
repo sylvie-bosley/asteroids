@@ -13,14 +13,13 @@ Asteroid::Asteroid(sf::Vector2i start_position)
   sf::Vector2f direction(std::sin(orientation * (PI32 / 180.0f)),
                          std::cos(orientation * (PI32 / 180.0f)));
   sf::Vector2f normal_direction = normalize_vector2f(direction);
-  velocity.x = (normal_direction.x * ASTEROID_SPEED);
-  velocity.y = (normal_direction.y * ASTEROID_SPEED);
+  velocity = normal_direction * ASTEROID_SPEED;
 }
 
 void Asteroid::update_pos(const sf::Time dt) {
-  position.x = static_cast<int>(position.x + velocity.x * dt.asSeconds());
-  position.y = static_cast<int>(position.y + velocity.y * dt.asSeconds());
-  position = screen_wrap(position);
+  sf::Vector2f pos_f;
+  pos_f = static_cast<sf::Vector2f>(position) + (velocity * dt.asSeconds());
+  position = screen_wrap(static_cast<sf::Vector2i>(pos_f));
   sprite.setPosition(position.x, position.y);
 }
 

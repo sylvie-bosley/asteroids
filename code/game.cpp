@@ -135,9 +135,8 @@ void Game::render() {
 
 void Game::generate_asteroids(const int current_asteroid_count) {
   for (int i = 0; i < current_asteroid_count; ++i) {
-    int random_x = rand() % DISPLAY_SIZE.x;
-    int random_y = rand() % DISPLAY_SIZE.y;
-    asteroids.push_back(Asteroid(sf::Vector2i{random_x, random_y}));
+    sf::Vector2i random{rand() % DISPLAY_SIZE.x, rand() % DISPLAY_SIZE.y};
+    asteroids.push_back(Asteroid(random));
   }
 }
 

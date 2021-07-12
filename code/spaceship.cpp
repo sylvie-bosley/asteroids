@@ -34,8 +34,7 @@ void Spaceship::control_ship(const Action action, const sf::Time dt) {
 }
 
 void Spaceship::update_pos() {
-  position.x += static_cast<int>(velocity.x);
-  position.y += static_cast<int>(velocity.y);
+  position += static_cast<sf::Vector2i>(velocity);
   position = screen_wrap(position);
 }
 
@@ -53,8 +52,7 @@ void Spaceship::main_thruster(const sf::Time dt) {
   velocity -= (normalize_vector2f(direction) * d_accel);
   if (vector2f_length(velocity) > (MAX_SPEED * dt.asSeconds())) {
     sf::Vector2f normal_velocity = normalize_vector2f(velocity);
-    velocity.x = normal_velocity.x * MAX_SPEED * dt.asSeconds();
-    velocity.y = normal_velocity.y * MAX_SPEED * dt.asSeconds();
+    velocity = normal_velocity * (MAX_SPEED * dt.asSeconds());
   }
 }
 
@@ -65,8 +63,7 @@ void Spaceship::retro_trusters(const sf::Time dt) {
   velocity += (normalize_vector2f(direction) * d_retro_accel);
   if (vector2f_length(velocity) > (MAX_SPEED * dt.asSeconds())) {
     sf::Vector2f normal_velocity = normalize_vector2f(velocity);
-    velocity.x = normal_velocity.x * MAX_SPEED * dt.asSeconds();
-    velocity.y = normal_velocity.y * MAX_SPEED * dt.asSeconds();
+    velocity = normal_velocity * (MAX_SPEED * dt.asSeconds());
   }
 }
 
