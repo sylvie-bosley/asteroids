@@ -1,7 +1,7 @@
+#include <SFML/System.hpp>
+
 #include "include/game.h"
 #include "include/helpers.h"
-
-#include <SFML/System.hpp>
 
 int main() {
   std::srand(std::time(nullptr));

@@ -1,15 +1,16 @@
 #define DEBUG
 
-#include "include/asteroid.h"
-#include "include/spaceship.h"
 #include "include/game.h"
-#include "include/helpers.h"
+
+#include <string>
+#include <random>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <string>
-#include <random>
-#include <functional>
+
+#include "include/asteroid.h"
+#include "include/spaceship.h"
+#include "include/helpers.h"
 
 namespace ag {
 

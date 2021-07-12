@@ -1,12 +1,12 @@
 #ifndef ASTEROIDS_GAME_CODE_INCLUDE_GAME_H
 #define ASTEROIDS_GAME_CODE_INCLUDE_GAME_H
 
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
 #include "asteroid.h"
 #include "spaceship.h"
 #include "helpers.h"
-
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
 
 namespace ag {
 

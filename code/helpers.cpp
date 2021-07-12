@@ -1,7 +1,8 @@
 #include "include/helpers.h"
 
-#include <SFML/System.hpp>
 #include <cmath>
+
+#include <SFML/System.hpp>
 
 namespace ag {
 

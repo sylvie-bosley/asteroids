@@ -1,9 +1,9 @@
 #ifndef ASTEROIDS_GAME_CODE_INCLUDE_SPACESHIP_H
 #define ASTEROIDS_GAME_CODE_INCLUDE_SPACESHIP_H
 
-#include "helpers.h"
-
 #include <SFML/Audio.hpp>
+
+#include "helpers.h"
 
 namespace ag {
 

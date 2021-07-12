@@ -1,8 +1,10 @@
 #include "include/spaceship.h"
-#include "include/helpers.h"
+
+#include <cmath>
 
 #include <SFML/Audio.hpp>
-#include <cmath>
+
+#include "include/helpers.h"
 
 namespace ag {
 
