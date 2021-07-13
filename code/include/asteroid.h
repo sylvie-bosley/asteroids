@@ -22,10 +22,10 @@ private:
   void initialize_sprite_graphics();
   void initialize_sprite_position();
 
-  sf::Vector2f velocity;
-  float orientation;
-  sf::CircleShape sprite;
-  sf::Vector2f position;
+  sf::Vector2f m_velocity;
+  float m_orientation;
+  sf::CircleShape m_sprite;
+  sf::Vector2f m_position;
 };
 
 }

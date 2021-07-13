@@ -9,25 +9,25 @@
 namespace ag {
 
 Asteroid::Asteroid(const float size)
-    : position{generate_valid_asteroid_x(), generate_valid_asteroid_y()},
-      sprite{size}, orientation{static_cast<float>(rand() % 360U)} {
+    : m_position{generate_valid_asteroid_x(), generate_valid_asteroid_y()},
+      m_sprite{size}, m_orientation{static_cast<float>(rand() % 360U)} {
   initialize_sprite_graphics();
   initialize_sprite_position();
-  sf::Vector2f direction(std::sin(orientation * (M_PI / 180.0F)),
-                         std::cos(orientation * (M_PI / 180.0F)));
+  sf::Vector2f direction(std::sin(m_orientation * (M_PI / 180.0F)),
+                         std::cos(m_orientation * (M_PI / 180.0F)));
   sf::Vector2f normal_direction = normalize_vector2f(direction);
-  velocity = normal_direction * static_cast<float>(ASTEROID_SPEED);
+  m_velocity = normal_direction * static_cast<float>(ASTEROID_SPEED);
 }
 
 const sf::CircleShape &Asteroid::get_sprite() {
-  return sprite;
+  return m_sprite;
 }
 
 void Asteroid::update(const sf::Time &dt) {
   sf::Vector2f pos_f;
-  position += (velocity * dt.asSeconds());
-  position = screen_wrap(position);
-  sprite.setPosition(position);
+  m_position += (m_velocity * dt.asSeconds());
+  m_position = screen_wrap(m_position);
+  m_sprite.setPosition(m_position);
 }
 
 float Asteroid::generate_valid_asteroid_x() {
@@ -49,15 +49,15 @@ float Asteroid::generate_valid_asteroid_y() {
 }
 
 void Asteroid::initialize_sprite_graphics() {
-  sprite.setOrigin(50.0F, 50.0F);
-  sprite.setOutlineThickness(1.0F);
-  sprite.setFillColor(sf::Color::Black);
-  sprite.setOutlineColor(sf::Color::White);
+  m_sprite.setOrigin(50.0F, 50.0F);
+  m_sprite.setOutlineThickness(1.0F);
+  m_sprite.setFillColor(sf::Color::Black);
+  m_sprite.setOutlineColor(sf::Color::White);
 }
 
 void Asteroid::initialize_sprite_position() {
-  sprite.setPosition(position);
-  sprite.setRotation(-orientation);
+  m_sprite.setPosition(m_position);
+  m_sprite.setRotation(-m_orientation);
 }
 
 }

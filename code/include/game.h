@@ -15,6 +15,9 @@ class Game {
   Game();
   ~Game() {};
 
+  bool load_resources(
+      std::string title_bgm, std::string game_bgm, std::string end_bgm,
+      std::string ship_gun_sfx, std::string ship_font);
   bool is_running();
   Action process_input();
   bool update(const Action action, const sf::Time &dt);
@@ -28,20 +31,22 @@ class Game {
     GameOver
   };
 
-  const unsigned int starting_asteroids = 4U;
+  const unsigned int STARTING_ASTEROIDS = 4U;
 
   void generate_asteroids(const unsigned int asteroid_count, const float size);
   void reset_game();
-  bool play_bgm();
+  void update_bgm();
   Action parse_player_action(const sf::Keyboard::Key key);
 
-  sf::RenderWindow game_window;
-  Spaceship player;
-  sf::Music bgm;
-  std::vector<Asteroid> asteroids;
-  unsigned int difficulty;
-  GameState game_state;
-  bool running;
+  sf::RenderWindow m_game_window;
+  Spaceship m_player;
+  sf::Music m_title_bgm;
+  sf::Music m_game_bgm;
+  sf::Music m_end_bgm;
+  std::vector<Asteroid> m_asteroids;
+  unsigned int m_difficulty;
+  GameState m_game_state;
+  bool m_running;
 };
 
 }

@@ -13,6 +13,7 @@ class Spaceship {
   Spaceship();
   ~Spaceship() {};
 
+  bool load_resources(std::string gun_sfx, std::string font);
   void control_ship(const Action action, const sf::Time &dt);
   void update();
   void reset_ship();
@@ -34,15 +35,15 @@ class Spaceship {
   void initialize_sprite_position();
   void initialize_stats_string();
 
-  sf::SoundBuffer gun_sound_buffer;
-  sf::Sound gun_sound;
-  sf::SoundBuffer thruster_sound_buffer;
-  sf::Vector2f position;
-  sf::Vector2f velocity;
-  float orientation;
-  sf::CircleShape sprite;
-  sf::Font stats_font;
-  sf::Text ship_stats;
+  sf::SoundBuffer m_gun_sound_buffer;
+  sf::Sound m_gun_sound;
+  sf::SoundBuffer m_thruster_sound_buffer;
+  sf::Vector2f m_position;
+  sf::Vector2f m_velocity;
+  float m_orientation;
+  sf::CircleShape m_sprite;
+  sf::Font m_stats_font;
+  sf::Text m_ship_stats;
 };
 
 }
