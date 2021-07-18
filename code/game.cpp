@@ -39,80 +39,45 @@ bool Game::is_running() {
   return m_running;
 }
 
-Action Game::process_input() {
-  Action action;
+void Game::process_input() {
   sf::Event event;
   while (m_game_window.pollEvent(event)) {
     switch (event.type) {
-    case sf::Event::Closed:
-      m_running = false;
-      m_game_window.close();
-      break;
-    case sf::Event::LostFocus:
-      m_game_state = Paused;
-      break;
-    case sf::Event::Resized:
-      m_game_state = Paused;
-      break;
-    case sf::Event::KeyPressed:
-      action = parse_player_action(event.key.code);
-      break;
-    default:
-      break;
+      case sf::Event::Closed:
+        close_game();
+        break;
+      case sf::Event::LostFocus:
+        if (m_game_state == InGame) {
+          pause_game();
+        }
+        break;
+      case sf::Event::Resized:
+        if (m_game_state == InGame) {
+          pause_game();
+        }
+        break;
+      case sf::Event::KeyPressed:
+        if (m_game_state == InGame) {
+          m_player.control_ship(event.key.code);
+        }
+        break;
+      case sf::Event::KeyReleased:
+        process_menu_keys(event.key.code);
+        break;
+      default:
+        break;
     }
   }
-  return action;
 }
 
-bool Game::update(const Action action, const sf::Time &dt) {
-  switch (m_game_state) {
-    case TitleScreen: {
-      if (action == Enter) {
-        m_title_bgm.stop();
-        m_game_bgm.play();
-        m_game_state = InGame;
-      } else if (action == Escape) {
-        m_title_bgm.stop();
-        m_running = false;
-        m_game_window.close();
-      }
-      break;
+bool Game::update(const sf::Time &dt) {
+  if (m_game_state == InGame) {
+    m_player.update(dt);
+    for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
+      m_asteroids[i].update(dt);
     }
-    case InGame: {
-      if (action == Escape) {
-        m_game_bgm.setVolume(25.0F);
-        m_game_state = Paused;
-      } else if (action != Enter && action != Unused) {
-        m_player.control_ship(action, dt);
-      }
-      m_player.update();
-      for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-        m_asteroids[i].update(dt);
-      }
-      if (/*player dies*/false) {
-        m_game_bgm.stop();
-        m_end_bgm.play();
-        m_game_state = GameOver;
-      }
-      break;
-    }
-    case Paused: {
-      if (action == Enter) {
-        m_game_bgm.setVolume(100.0F);
-        m_game_state = InGame;
-      } else if (action == Escape) {
-        m_game_bgm.setVolume(100.0F);
-        m_game_bgm.stop();
-        reset_game();
-      }
-      break;
-    }
-    case GameOver: {
-      if (action == Enter) {
-        m_end_bgm.stop();
-        reset_game();
-      }
-      break;
+    if (/* TODO: check for collision */false) {
+      game_over();
     }
   }
   return true;
@@ -120,96 +85,88 @@ bool Game::update(const Action action, const sf::Time &dt) {
 
 void Game::render() {
   m_game_window.clear(sf::Color::Black);
-  m_game_window.draw(m_player.get_sprite());
-  for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-    m_game_window.draw(m_asteroids[i].get_sprite());
+  if (m_game_state == GameOver) {
+    // TODO: Game over stuff
+  } else {
+    m_game_window.draw(m_player.get_sprite());
+    for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
+      m_game_window.draw(m_asteroids[i].get_sprite());
+    }
+    m_game_window.draw(m_player.get_ship_stats());
   }
-  m_game_window.draw(m_player.get_ship_stats());
   m_game_window.display();
 }
 
-void Game::generate_asteroids(
-    const unsigned int asteroid_count, const float size) {
+void Game::process_menu_keys(const sf::Keyboard::Key key) {
+  switch (m_game_state) {
+    case TitleScreen:
+      if (key == sf::Keyboard::Key::Enter) {
+        start_game();
+      } else if (key == sf::Keyboard::Key::Escape) {
+        close_game();
+      }
+      break;
+    case InGame:
+      if (key == sf::Keyboard::Key::Escape) {
+        pause_game();
+      }
+      break;
+    case Paused:
+      if (key == sf::Keyboard::Key::Escape) {
+        reset_game();
+      } else if (key == sf::Keyboard::Key::Enter) {
+        resume_game();
+      }
+      break;
+    case GameOver:
+      if (key == sf::Keyboard::Key::Enter) {
+        reset_game();
+      }
+      break;
+  }
+}
+
+void Game::generate_asteroids(const unsigned int asteroid_count,
+    const float size) {
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
     m_asteroids.push_back(Asteroid{size});
   }
 }
 
+void Game::start_game() {
+  m_game_state = InGame;
+  m_title_bgm.stop();
+  m_game_bgm.play();
+}
+
+void Game::pause_game() {
+  m_game_state = Paused;
+  m_game_bgm.setVolume(25.0F);
+}
+
+void Game::resume_game() {
+  m_game_state = InGame;
+  m_game_bgm.setVolume(100.0F);
+}
+
+void Game::game_over() {
+  m_game_state = GameOver;
+  m_game_bgm.stop();
+  m_end_bgm.play();
+}
+
 void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
+  m_game_bgm.setVolume(100.0F);
   m_player.reset_ship();
   m_asteroids.clear();
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
 }
 
-void Game::update_bgm() {
-  switch (m_game_state) {
-    case TitleScreen:
-      if (m_game_bgm.getStatus() == sf::Sound::Playing) {
-        m_game_bgm.stop();
-      } else if (m_end_bgm.getStatus() == sf::Sound::Playing) {
-        m_end_bgm.stop();
-      }
-      if (m_title_bgm.getStatus() != sf::Sound::Playing) {
-        m_title_bgm.play();
-      }
-      break;
-    case InGame:
-      m_title_bgm.stop();
-      m_end_bgm.stop();
-      m_game_bgm.setVolume(100.0F);
-      if (m_game_bgm.getStatus() != sf::Sound::Playing) {
-        m_game_bgm.play();
-      }
-      break;
-    case Paused:
-      m_title_bgm.stop();
-      m_end_bgm.stop();
-      m_game_bgm.setVolume(25.0F);
-      if (m_game_bgm.getStatus() != sf::Sound::Playing) {
-        m_game_bgm.play();
-      }
-      break;
-    case GameOver:
-      m_title_bgm.stop();
-      m_game_bgm.stop();
-      if (m_end_bgm.getStatus() != sf::Sound::Playing) {
-        m_end_bgm.play();
-      }
-      break;
-  }
-}
-
-Action Game::parse_player_action(const sf::Keyboard::Key key) {
-  Action action;
-  switch (key) {
-    case sf::Keyboard::Key::Escape:
-      action = Escape;
-      break;
-    case sf::Keyboard::Key::Enter:
-      action = Enter;
-      break;
-    case sf::Keyboard::Key::Space:
-      action = Space;
-      break;
-    case sf::Keyboard::Key::Up:
-      action = Up;
-      break;
-    case sf::Keyboard::Key::Down:
-      action = Down;
-      break;
-    case sf::Keyboard::Key::Left:
-      action = Left;
-      break;
-    case sf::Keyboard::Key::Right:
-      action = Right;
-      break;
-    default:
-      action = Unused;
-      break;
-  }
-  return action;
+void Game::close_game() {
+  m_running = false;
+  m_game_window.close();
 }
 
 }

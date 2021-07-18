@@ -4,8 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "helpers.h"
-
 namespace ag {
 
 class Spaceship {
@@ -14,21 +12,19 @@ class Spaceship {
   ~Spaceship() {};
 
   bool load_resources(std::string gun_sfx, std::string font);
-  void control_ship(const Action action, const sf::Time &dt);
-  void update();
+  void control_ship(const sf::Keyboard::Key key);
+  void update(const sf::Time &dt);
   void reset_ship();
   const sf::CircleShape &get_sprite();
   const sf::Text &get_ship_stats();
 
  private:
   const unsigned int ROTATION_SPEED = 180U;
-  const unsigned int ACCELERATION = 25U;
-  const unsigned int MAX_SPEED = 300U;
+  const float MAX_SPEED = 300.0F;
+  const float ACCELERATION = 25.0F;
 
   void update_ship_stats();
-  void main_thruster(const sf::Time &dt);
-  void retro_trusters(const sf::Time &dt);
-  void rotate_ship(const float direction, const sf::Time &dt);
+  void engage_thrusters(const float magnitude);
   void fire_weapon();
   float clamp_orientation(const float new_orientation);
   void initialize_sprite_graphics();
@@ -41,6 +37,7 @@ class Spaceship {
   sf::Vector2f m_position;
   sf::Vector2f m_velocity;
   float m_orientation;
+  float m_angular_velocity;
   sf::CircleShape m_sprite;
   sf::Font m_stats_font;
   sf::Text m_ship_stats;

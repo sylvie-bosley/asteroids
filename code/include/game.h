@@ -6,7 +6,6 @@
 
 #include "asteroid.h"
 #include "spaceship.h"
-#include "helpers.h"
 
 namespace ag {
 
@@ -19,8 +18,8 @@ class Game {
       std::string title_bgm, std::string game_bgm, std::string end_bgm,
       std::string ship_gun_sfx, std::string ship_font);
   bool is_running();
-  Action process_input();
-  bool update(const Action action, const sf::Time &dt);
+  void process_input();
+  bool update(const sf::Time &dt);
   void render();
 
  private:
@@ -33,10 +32,15 @@ class Game {
 
   const unsigned int STARTING_ASTEROIDS = 4U;
 
+  void process_menu_keys(const sf::Keyboard::Key key);
   void generate_asteroids(const unsigned int asteroid_count, const float size);
+  void start_game();
+  void pause_game();
+  void resume_game();
+  void game_over();
   void reset_game();
+  void close_game();
   void update_bgm();
-  Action parse_player_action(const sf::Keyboard::Key key);
 
   sf::RenderWindow m_game_window;
   Spaceship m_player;

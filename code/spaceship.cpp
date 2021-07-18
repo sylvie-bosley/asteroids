@@ -28,32 +28,38 @@ bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
   return loaded;
 }
 
-void Spaceship::control_ship(const Action action, const sf::Time &dt) {
-  switch (action) {
-    case Space:
+void Spaceship::control_ship(const sf::Keyboard::Key key) {
+  switch (key) {
+    case sf::Keyboard::Key::Space:
       fire_weapon();
       break;
-    case Up:
-      main_thruster(dt);
+    case sf::Keyboard::Key::Up:
+      engage_thrusters(1.0F);
       break;
-    case Down:
-      retro_trusters(dt);
+    case sf::Keyboard::Key::Down:
+      engage_thrusters(-0.5F);
       break;
-    case Left:
-      rotate_ship(1.0F, dt);
+    case sf::Keyboard::Key::Left:
+      m_angular_velocity = 1.0F * ROTATION_SPEED;
       break;
-    case Right:
-      rotate_ship(-1.0F, dt);
+    case sf::Keyboard::Key::Right:
+      m_angular_velocity = -1.0F * ROTATION_SPEED;
       break;
     default:
       break;
   }
 }
 
-void Spaceship::update() {
-  m_position += m_velocity;
+void Spaceship::update(const sf::Time &dt) {
+  m_position += (m_velocity * dt.asSeconds());
   m_position = screen_wrap(m_position);
   m_sprite.setPosition(m_position);
+  if (m_angular_velocity != 0.0F) {
+    m_orientation += (m_angular_velocity * dt.asSeconds());
+    m_orientation = clamp_orientation(m_orientation);
+    m_sprite.rotate(-(m_angular_velocity * dt.asSeconds()));
+    m_angular_velocity = 0.0F;
+  }
   update_ship_stats();
 }
 
@@ -80,32 +86,14 @@ void Spaceship::update_ship_stats() {
   m_ship_stats.setString(stats_str);
 }
 
-void Spaceship::main_thruster(const sf::Time &dt) {
-  float d_accel = ACCELERATION * dt.asSeconds();
+void Spaceship::engage_thrusters(const float magnitude) {
   sf::Vector2f direction(std::sin(m_orientation * (M_PI / 180.0F)),
                          std::cos(m_orientation * (M_PI / 180.0F)));
-  m_velocity -= (normalize_vector2f(direction) * d_accel);
-  if (vector2f_length(m_velocity) > (MAX_SPEED * dt.asSeconds())) {
+  m_velocity -= (normalize_vector2f(direction) * ACCELERATION * magnitude);
+  if (vector2f_length(m_velocity) > MAX_SPEED) {
     sf::Vector2f normal_velocity = normalize_vector2f(m_velocity);
-    m_velocity = normal_velocity * (MAX_SPEED * dt.asSeconds());
+    m_velocity = normal_velocity * MAX_SPEED;
   }
-}
-
-void Spaceship::retro_trusters(const sf::Time &dt) {
-  float d_retro_accel = ACCELERATION * dt.asSeconds() / 2.0F;
-  sf::Vector2f direction(std::sin(m_orientation * (M_PI / 180.0F)),
-                         std::cos(m_orientation * (M_PI / 180.0F)));
-  m_velocity += (normalize_vector2f(direction) * d_retro_accel);
-  if (vector2f_length(m_velocity) > (MAX_SPEED * dt.asSeconds())) {
-    sf::Vector2f normal_velocity = normalize_vector2f(m_velocity);
-    m_velocity = normal_velocity * (MAX_SPEED * dt.asSeconds());
-  }
-}
-
-void Spaceship::rotate_ship(const float direction, const sf::Time &dt) {
-  float angular_velocity = direction * ROTATION_SPEED * dt.asSeconds();
-  m_orientation = clamp_orientation(m_orientation + angular_velocity);
-  m_sprite.rotate(-angular_velocity);
 }
 
 void Spaceship::fire_weapon() {
@@ -116,10 +104,10 @@ void Spaceship::fire_weapon() {
 
 float Spaceship::clamp_orientation(const float raw_orientation) {
   float clamped_orientation = raw_orientation;
-  while (clamped_orientation >= 360.0F) {
+  if (clamped_orientation >= 360.0F) {
     clamped_orientation -= 360.0F;
   }
-  while (clamped_orientation < 0.0F) {
+  if (clamped_orientation < 0.0F) {
     clamped_orientation += 360.0F;
   }
   return clamped_orientation;

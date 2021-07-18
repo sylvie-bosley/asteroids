@@ -15,12 +15,11 @@ int main() {
                            ship_gun_sfx_file, ship_stats_font_file)) {
     return 1;
   }
-  ag::Action action;
   sf::Clock frame_clock;
   do {
     sf::Time dt = frame_clock.restart();
-    action = game.process_input();
-    if (!game.update(action, dt)) {
+    game.process_input();
+    if (!game.update(dt)) {
       // TODO: Error handling
       return 1;
     }
