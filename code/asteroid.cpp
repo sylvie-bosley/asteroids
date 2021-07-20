@@ -24,7 +24,6 @@ const sf::CircleShape &Asteroid::get_sprite() {
 }
 
 void Asteroid::update(const sf::Time &dt) {
-  sf::Vector2f pos_f;
   m_position += (m_velocity * dt.asSeconds());
   m_position = screen_wrap(m_position);
   m_sprite.setPosition(m_position);
