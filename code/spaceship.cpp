@@ -83,9 +83,10 @@ const sf::CircleShape &Spaceship::get_sprite() {
 }
 
 void Spaceship::engage_thrusters(const float direction) {
-  sf::Vector2f orientation(std::sin(get_orientation() * (M_PI / 180.0F)),
-                           std::cos(get_orientation() * (M_PI / 180.0F)));
-  set_velocity(get_velocity() - (orientation * ACCELERATION * direction));
+  float opp = static_cast<float>(std::sin(get_orientation() * (M_PI / 180.0F)));
+  float adj = static_cast<float>(std::cos(get_orientation() * (M_PI / 180.0F)));
+  sf::Vector2f orientation_v{opp, adj};
+  set_velocity(get_velocity() - (orientation_v * ACCELERATION * direction));
   if (vector2f_length(get_velocity()) > MAX_SPEED) {
     sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
     set_velocity(normal_velocity * MAX_SPEED);

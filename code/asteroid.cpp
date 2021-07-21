@@ -14,9 +14,10 @@ Asteroid::Asteroid(const float size) : m_sprite{size} {
   set_orientation(static_cast<float>(rand() % 360U));
   initialize_sprite_graphics();
   initialize_sprite_position();
-  sf::Vector2f orientation(std::sin(get_orientation() * (M_PI / 180.0F)),
-                         std::cos(get_orientation() * (M_PI / 180.0F)));
-  set_velocity(orientation * static_cast<float>(ASTEROID_SPEED));
+  float opp = static_cast<float>(std::sin(get_orientation() * (M_PI / 180.0F)));
+  float adj = static_cast<float>(std::cos(get_orientation() * (M_PI / 180.0F)));
+  sf::Vector2f orientation_v{opp, adj};
+  set_velocity(orientation_v * static_cast<float>(ASTEROID_SPEED));
 }
 
 const sf::CircleShape &Asteroid::get_sprite() {
