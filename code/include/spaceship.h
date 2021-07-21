@@ -4,9 +4,11 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+#include "game_object.h"
+
 namespace ag {
 
-class Spaceship {
+class Spaceship : public GameObject {
  public:
   Spaceship();
   ~Spaceship() {};
@@ -27,20 +29,17 @@ class Spaceship {
   const float MAX_SPEED = 300.0F;
   const float ACCELERATION = 25.0F;
 
-  void engage_thrusters(const float magnitude);
+  void engage_thrusters(const float direction);
   void fire_weapon();
   float clamp_orientation(const float new_orientation);
   void initialize_sprite_graphics();
   void initialize_sprite_position();
 
-  sf::SoundBuffer m_gun_sound_buffer;
-  sf::Sound m_gun_sound;
-  sf::SoundBuffer m_thruster_sound_buffer;
-  sf::Vector2f m_position;
-  sf::Vector2f m_velocity;
-  float m_orientation;
-  float m_angular_velocity;
   sf::CircleShape m_sprite;
+  sf::SoundBuffer m_gun_sound_buffer;
+  sf::SoundBuffer m_thruster_sound_buffer;
+  sf::Sound m_gun_sound;
+  float m_angular_velocity;
 
   // DEBUG
   void initialize_stats_string();

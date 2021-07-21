@@ -5,13 +5,15 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+#include "include/game_object.h"
 #include "include/helpers.h"
 
 namespace ag {
 
-Spaceship::Spaceship()
-    : m_position{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)},
-      m_velocity{0.0F, 0.0F}, m_orientation{0.0F}, m_sprite{10.0F, 3U} {
+Spaceship::Spaceship() : m_sprite{10.0F, 3U} {
+  set_position(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+  set_orientation(0.0F);
+  set_velocity({0.0F, 0.0F});
   initialize_sprite_graphics();
   initialize_sprite_position();
 
@@ -55,11 +57,11 @@ void Spaceship::control_ship() {
 }
 
 void Spaceship::update(const sf::Time &dt) {
-  m_position = screen_wrap(m_position + (m_velocity * dt.asSeconds()));
-  m_sprite.setPosition(m_position);
+  set_position(screen_wrap(get_position() + (get_velocity() * dt.asSeconds())));
+  m_sprite.setPosition(get_position());
   if (m_angular_velocity != 0.0F) {
-    m_orientation += (m_angular_velocity * dt.asSeconds());
-    m_orientation = clamp_orientation(m_orientation);
+    float new_ori = get_orientation() + (m_angular_velocity * dt.asSeconds());
+    set_orientation(clamp_orientation(new_ori));
     m_sprite.rotate(-(m_angular_velocity * dt.asSeconds()));
     m_angular_velocity = 0.0F;
   }
@@ -70,10 +72,9 @@ void Spaceship::update(const sf::Time &dt) {
 }
 
 void Spaceship::reset_ship() {
-  m_position = static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U);
-  m_velocity.x = 0.0F;
-  m_velocity.y = 0.0F;
-  m_orientation = 0.0F;
+  set_position(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+  set_velocity({0.0F, 0.0F});
+  set_orientation(0.0F);
   initialize_sprite_position();
 }
 
@@ -81,13 +82,13 @@ const sf::CircleShape &Spaceship::get_sprite() {
   return m_sprite;
 }
 
-void Spaceship::engage_thrusters(const float magnitude) {
-  sf::Vector2f direction(std::sin(m_orientation * (M_PI / 180.0F)),
-                         std::cos(m_orientation * (M_PI / 180.0F)));
-  m_velocity -= (normalize_vector2f(direction) * ACCELERATION * magnitude);
-  if (vector2f_length(m_velocity) > MAX_SPEED) {
-    sf::Vector2f normal_velocity = normalize_vector2f(m_velocity);
-    m_velocity = normal_velocity * MAX_SPEED;
+void Spaceship::engage_thrusters(const float direction) {
+  sf::Vector2f orientation(std::sin(get_orientation() * (M_PI / 180.0F)),
+                           std::cos(get_orientation() * (M_PI / 180.0F)));
+  set_velocity(get_velocity() - (orientation * ACCELERATION * direction));
+  if (vector2f_length(get_velocity()) > MAX_SPEED) {
+    sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
+    set_velocity(normal_velocity * MAX_SPEED);
   }
 }
 
@@ -116,8 +117,8 @@ void Spaceship::initialize_sprite_graphics() {
 }
 
 void Spaceship::initialize_sprite_position() {
-  m_sprite.setPosition(m_position);
-  m_sprite.setRotation(-m_orientation);
+  m_sprite.setPosition(get_position());
+  m_sprite.setRotation(-get_orientation());
 }
 
 // DEBUG
@@ -126,9 +127,9 @@ const sf::Text &Spaceship::get_ship_stats() {
 }
 
 void Spaceship::update_ship_stats() {
-  std::string stats_str = "X Velocity: " + std::to_string(m_velocity.x) + "\n" +
-                          "Y Velocity: " + std::to_string(m_velocity.y) + "\n" +
-                          "Rotation: " + std::to_string(m_orientation);
+  std::string stats_str = "X Velocity: " + std::to_string(get_velocity().x) +
+      "\n" + "Y Velocity: " + std::to_string(get_velocity().y) + "\n" +
+      "Rotation: " + std::to_string(get_orientation());
   m_ship_stats.setString(stats_str);
 }
 

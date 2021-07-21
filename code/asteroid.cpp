@@ -4,19 +4,19 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "include/game_object.h"
 #include "include/helpers.h"
 
 namespace ag {
 
-Asteroid::Asteroid(const float size)
-    : m_position{generate_valid_asteroid_x(), generate_valid_asteroid_y()},
-      m_sprite{size}, m_orientation{static_cast<float>(rand() % 360U)} {
+Asteroid::Asteroid(const float size) : m_sprite{size} {
+  set_position({generate_valid_asteroid_x(), generate_valid_asteroid_y()});
+  set_orientation(static_cast<float>(rand() % 360U));
   initialize_sprite_graphics();
   initialize_sprite_position();
-  sf::Vector2f direction(std::sin(m_orientation * (M_PI / 180.0F)),
-                         std::cos(m_orientation * (M_PI / 180.0F)));
-  sf::Vector2f normal_direction = normalize_vector2f(direction);
-  m_velocity = normal_direction * static_cast<float>(ASTEROID_SPEED);
+  sf::Vector2f orientation(std::sin(get_orientation() * (M_PI / 180.0F)),
+                         std::cos(get_orientation() * (M_PI / 180.0F)));
+  set_velocity(orientation * static_cast<float>(ASTEROID_SPEED));
 }
 
 const sf::CircleShape &Asteroid::get_sprite() {
@@ -24,8 +24,8 @@ const sf::CircleShape &Asteroid::get_sprite() {
 }
 
 void Asteroid::update(const sf::Time &dt) {
-  m_position = screen_wrap(m_position + (m_velocity * dt.asSeconds()));
-  m_sprite.setPosition(m_position);
+  set_position(screen_wrap(get_position() + (get_velocity() * dt.asSeconds())));
+  m_sprite.setPosition(get_position());
 }
 
 float Asteroid::generate_valid_asteroid_x() {
@@ -54,8 +54,8 @@ void Asteroid::initialize_sprite_graphics() {
 }
 
 void Asteroid::initialize_sprite_position() {
-  m_sprite.setPosition(m_position);
-  m_sprite.setRotation(-m_orientation);
+  m_sprite.setPosition(get_position());
+  m_sprite.setRotation(-get_orientation());
 }
 
 }
