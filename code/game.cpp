@@ -56,17 +56,15 @@ void Game::process_input() {
           pause_game();
         }
         break;
-      case sf::Event::KeyPressed:
-        if (m_game_state == InGame) {
-          m_player.control_ship(event.key.code);
-        }
-        break;
       case sf::Event::KeyReleased:
         process_menu_keys(event.key.code);
         break;
       default:
         break;
     }
+  }
+  if (m_game_state == InGame) {
+    m_player.control_ship();
   }
 }
 

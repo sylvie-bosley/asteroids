@@ -12,7 +12,7 @@ class Spaceship {
   ~Spaceship() {};
 
   bool load_resources(std::string gun_sfx, std::string font);
-  void control_ship(const sf::Keyboard::Key key);
+  void control_ship();
   void update(const sf::Time &dt);
   void reset_ship();
   const sf::CircleShape &get_sprite();

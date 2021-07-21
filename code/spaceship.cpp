@@ -28,31 +28,26 @@ bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
   return loaded;
 }
 
-void Spaceship::control_ship(const sf::Keyboard::Key key) {
-  switch (key) {
-    case sf::Keyboard::Key::Space:
-      fire_weapon();
-      break;
-    case sf::Keyboard::Key::Up:
-      engage_thrusters(1.0F);
-      break;
-    case sf::Keyboard::Key::Down:
-      engage_thrusters(-0.5F);
-      break;
-    case sf::Keyboard::Key::Left:
-      m_angular_velocity = 1.0F * ROTATION_SPEED;
-      break;
-    case sf::Keyboard::Key::Right:
-      m_angular_velocity = -1.0F * ROTATION_SPEED;
-      break;
-    default:
-      break;
+void Spaceship::control_ship() {
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+    fire_weapon();
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+    engage_thrusters(1.0F);
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+    engage_thrusters(-0.5F);
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    m_angular_velocity = 1.0F * ROTATION_SPEED;
+  }
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    m_angular_velocity = -1.0F * ROTATION_SPEED;
   }
 }
 
 void Spaceship::update(const sf::Time &dt) {
-  m_position += (m_velocity * dt.asSeconds());
-  m_position = screen_wrap(m_position);
+  m_position = screen_wrap(m_position + (m_velocity * dt.asSeconds()));
   m_sprite.setPosition(m_position);
   if (m_angular_velocity != 0.0F) {
     m_orientation += (m_angular_velocity * dt.asSeconds());
