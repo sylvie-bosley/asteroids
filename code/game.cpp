@@ -90,7 +90,10 @@ void Game::render() {
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
       m_game_window.draw(m_asteroids[i].get_sprite());
     }
+
+    // DEBUG
     m_game_window.draw(m_player.get_ship_stats());
+    // END DEBUG
   }
   m_game_window.display();
 }

@@ -14,17 +14,25 @@ Spaceship::Spaceship()
       m_velocity{0.0F, 0.0F}, m_orientation{0.0F}, m_sprite{10.0F, 3U} {
   initialize_sprite_graphics();
   initialize_sprite_position();
+
+  // DEBUG
   initialize_stats_string();
+  // END DEBUG
 }
 
-bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
+bool Spaceship::load_resources(std::string gun_sfx,
+    /*DEBUG*/ std::string font /*END DEBUG*/) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
-      !m_stats_font.loadFromFile(font)) {
+      /*DEBUG*/ !m_stats_font.loadFromFile(font) /*END DEBUG*/) {
     loaded - false;
   }
   m_gun_sound.setBuffer(m_gun_sound_buffer);
+
+  // DEBUG
   m_ship_stats.setFont(m_stats_font);
+  // END DEBUG
+
   return loaded;
 }
 
@@ -55,7 +63,10 @@ void Spaceship::update(const sf::Time &dt) {
     m_sprite.rotate(-(m_angular_velocity * dt.asSeconds()));
     m_angular_velocity = 0.0F;
   }
+
+  // DEBUG
   update_ship_stats();
+  // END DEBUG
 }
 
 void Spaceship::reset_ship() {
@@ -68,17 +79,6 @@ void Spaceship::reset_ship() {
 
 const sf::CircleShape &Spaceship::get_sprite() {
   return m_sprite;
-}
-
-const sf::Text &Spaceship::get_ship_stats() {
-  return m_ship_stats;
-}
-
-void Spaceship::update_ship_stats() {
-  std::string stats_str = "X Velocity: " + std::to_string(m_velocity.x) + "\n" +
-                          "Y Velocity: " + std::to_string(m_velocity.y) + "\n" +
-                          "Rotation: " + std::to_string(m_orientation);
-  m_ship_stats.setString(stats_str);
 }
 
 void Spaceship::engage_thrusters(const float magnitude) {
@@ -120,11 +120,24 @@ void Spaceship::initialize_sprite_position() {
   m_sprite.setRotation(-m_orientation);
 }
 
+// DEBUG
+const sf::Text &Spaceship::get_ship_stats() {
+  return m_ship_stats;
+}
+
+void Spaceship::update_ship_stats() {
+  std::string stats_str = "X Velocity: " + std::to_string(m_velocity.x) + "\n" +
+                          "Y Velocity: " + std::to_string(m_velocity.y) + "\n" +
+                          "Rotation: " + std::to_string(m_orientation);
+  m_ship_stats.setString(stats_str);
+}
+
 void Spaceship::initialize_stats_string() {
   m_ship_stats.setCharacterSize(20U);
   m_ship_stats.setFillColor(sf::Color::White);
   m_ship_stats.setPosition(5.0F, 5.0F);
   m_ship_stats.setString("X Velocity: 0\nY Velocity: 0\nRotation: 0");
 }
+// END DEBUG
 
 }
