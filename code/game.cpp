@@ -19,12 +19,13 @@ Game::Game()
 }
 
 bool Game::load_resources(std::string title_bgm, std::string game_bgm,
-    std::string end_bgm, std::string ship_gun_sfx, std::string ship_font) {
+    std::string end_bgm, std::string ship_gun_sfx, std::string font) {
   bool loaded = true;
-  if (!m_player.load_resources(ship_gun_sfx, ship_font) ||
+  if (!m_player.load_resources(ship_gun_sfx/*DEBUG*/, font/*END DEBUG*/) ||
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
-      !m_end_bgm.openFromFile(end_bgm)) {
+      !m_end_bgm.openFromFile(end_bgm) ||
+      !m_game_font.loadFromFile(font)) {
     loaded = false;
   } else {
     m_title_bgm.setLoop(true);
@@ -73,9 +74,10 @@ bool Game::update(const sf::Time &dt) {
     m_player.update(dt);
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
       m_asteroids[i].update(dt);
-    }
-    if (/* TODO: check for collision */false) {
-      game_over();
+      if (m_asteroids[i].check_for_collision(m_player.get_vertices())) {
+        game_over();
+        break;
+      }
     }
   }
   return true;
@@ -84,11 +86,24 @@ bool Game::update(const sf::Time &dt) {
 void Game::render() {
   m_game_window.clear(sf::Color::Black);
   if (m_game_state == GameOver) {
-    // TODO: Game over stuff
+    sf::Text game_over_string{"GAME OVER", m_game_font, 100U};
+    game_over_string.setFillColor(sf::Color::White);
+    sf::Vector2f new_origin{game_over_string.getLocalBounds().width / 2.0F,
+        game_over_string.getLocalBounds().height};
+    game_over_string.setOrigin(new_origin);
+    game_over_string.setPosition(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+    m_game_window.draw(game_over_string);
   } else {
     m_game_window.draw(m_player.get_sprite());
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
+      sf::Text asteroid_label{std::to_string(i), m_game_font, 100U};
+      asteroid_label.setFillColor(sf::Color::White);
+      sf::Vector2f new_origin{asteroid_label.getLocalBounds().width / 2.0F,
+                              asteroid_label.getLocalBounds().height};
+      asteroid_label.setOrigin(new_origin);
+      asteroid_label.setPosition(m_asteroids[i].get_sprite().getPosition());
       m_game_window.draw(m_asteroids[i].get_sprite());
+      m_game_window.draw(asteroid_label);
     }
 
     // DEBUG

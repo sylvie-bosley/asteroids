@@ -2,15 +2,15 @@
 
 namespace ag {
 
-const sf::Vector2f GameObject::get_position() {
+const sf::Vector2f GameObject::get_position() const {
   return m_position;
 }
 
-const float GameObject::get_orientation() {
+const float GameObject::get_orientation() const {
   return m_orientation;
 }
 
-const sf::Vector2f GameObject::get_velocity() {
+const sf::Vector2f GameObject::get_velocity() const {
   return m_velocity;
 }
 

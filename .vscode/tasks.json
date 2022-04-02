@@ -4,14 +4,14 @@
     {
       "type": "cppbuild",
       "label": "Build : debug",
-      "command": "C:/Program Files (x86)/mingw-w64/i686-7.3.0-posix-dwarf-rt_v5-rev0/mingw32/bin/g++.exe",
+      "command": "C:/mingw/mingw32/bin/g++.exe",
       "args": [
         "-g",
         "${workspaceFolder}/code/*.cpp",
         "-o",
         "${workspaceFolder}/build/asteroids.exe",
-        "-IW:/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/include",
-        "-LW:/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/lib",
+        "-IE:/repos/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/include",
+        "-LE:/repos/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/lib",
         "-lsfml-audio-d",
         "-lsfml-graphics-d",
         "-lsfml-window-d",
@@ -24,19 +24,19 @@
         "$gcc"
       ],
       "group": "build",
-      "detail": "compiler: \"C:/Program Files (x86)/mingw-w64/i686-7.3.0-posix-dwarf-rt_v5-rev0/mingw32/bin/g++.exe\""
+      "detail": "compiler: \"C:/mingw/mingw32/bin/g++.exe\""
     },
     {
       "type": "cppbuild",
       "label": "Build : prod",
-      "command": "C:/Program Files (x86)/mingw-w64/i686-7.3.0-posix-dwarf-rt_v5-rev0/mingw32/bin/g++.exe",
+      "command": "C:/mingw/mingw32/bin/g++.exe",
       "args": [
         "-g",
         "${workspaceFolder}/code/*.cpp",
         "-o",
         "${workspaceFolder}/build/asteroids.exe",
-        "-IW:/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/include",
-        "-LW:/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/lib",
+        "-IE:/repos/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/include",
+        "-LE:/repos/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/lib",
         "-lsfml-audio",
         "-lsfml-graphics",
         "-lsfml-window",
@@ -52,7 +52,7 @@
         "kind": "build",
         "isDefault": true
       },
-      "detail": "compiler: \"C:/Program Files (x86)/mingw-w64/i686-7.3.0-posix-dwarf-rt_v5-rev0/mingw32/bin/g++.exe\""
+      "detail": "compiler: \"C:/mingw/mingw32/bin/g++.exe\""
     }
   ]
 }

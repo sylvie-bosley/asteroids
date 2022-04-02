@@ -7,9 +7,9 @@ namespace ag {
 
 class GameObject {
  protected:
-  const sf::Vector2f get_position();
-  const float get_orientation();
-  const sf::Vector2f get_velocity();
+  const sf::Vector2f get_position() const;
+  const float get_orientation() const;
+  const sf::Vector2f get_velocity() const;
   void set_position(const sf::Vector2f position);
   void set_orientation(const float orientation);
   void set_velocity(const sf::Vector2f velocity);

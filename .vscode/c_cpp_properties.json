@@ -1,0 +1,21 @@
+{
+  "configurations": [
+    {
+      "name": "gcc",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "E:/repos/tools/SFML/SFML-2.5.1-windows-gcc-7.3.0-mingw-32-bit/SFML-2.5.1/include"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "compilerPath": "C:/mingw/mingw32/bin/g++.exe",
+      "cStandard": "gnu11",
+      "cppStandard": "gnu++17",
+      "intelliSenseMode": "windows-gcc-x86"
+    }
+  ],
+  "version": 4
+}

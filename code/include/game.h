@@ -47,6 +47,7 @@ class Game {
   sf::Music m_title_bgm;
   sf::Music m_game_bgm;
   sf::Music m_end_bgm;
+  sf::Font m_game_font;
   std::vector<Asteroid> m_asteroids;
   unsigned int m_difficulty;
   GameState m_game_state;

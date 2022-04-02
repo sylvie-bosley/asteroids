@@ -13,12 +13,13 @@ class Spaceship : public GameObject {
   Spaceship();
   ~Spaceship() {};
 
-  bool load_resources(std::string gun_sfx,
-      /*DEBUG*/ std::string font /*END DEBUG*/);
+  bool load_resources(std::string gun_sfx/*DEBUG*/,
+      std::string font/*END DEBUG*/);
   void control_ship();
   void update(const sf::Time &dt);
   void reset_ship();
   const sf::CircleShape &get_sprite();
+  const std::vector<sf::Vector2f> get_vertices() const;
 
   // DEBUG
   const sf::Text &get_ship_stats();
@@ -27,11 +28,11 @@ class Spaceship : public GameObject {
  private:
   const unsigned int ROTATION_SPEED = 180U;
   const float MAX_SPEED = 300.0F;
-  const float ACCELERATION = 25.0F;
+  const float ACCELERATION = 0.1F;
 
   void engage_thrusters(const float direction);
   void fire_weapon();
-  float clamp_orientation(const float new_orientation);
+  float clamp_orientation(const float new_orientation) const;
   void initialize_sprite_graphics();
   void initialize_sprite_position();
 
