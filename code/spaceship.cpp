@@ -83,23 +83,29 @@ const sf::CircleShape &Spaceship::get_sprite() {
 }
 
 const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
-  float x_offset = static_cast<float>(std::sin(get_orientation() * (M_PI / 180.0F)));
-  float y_offset = static_cast<float>(std::cos(get_orientation() * (M_PI / 180.0F)));
+  float y_offset = static_cast<float>(std::cos(get_orientation() * 
+                                      (M_PI / 180.0F)));
+  float x_offset = static_cast<float>(std::sin(get_orientation() * 
+                                      (M_PI / 180.0F)));
   sf::Vector2f offset{x_offset, y_offset};
   sf::Vector2f front_tip{get_position() + offset * 10.0F};
 
   x_offset = static_cast<float>(
-      std::sin(clamp_orientation(get_orientation() - 120.0F) * (M_PI / 180.0F)));
+      std::sin(clamp_orientation(get_orientation() - 120.0F) *
+               (M_PI / 180.0F)));
   y_offset = static_cast<float>(
-      std::cos(clamp_orientation(get_orientation() - 120.0F) * (M_PI / 180.0F)));
+      std::cos(clamp_orientation(get_orientation() - 120.0F) *
+               (M_PI / 180.0F)));
   offset.x = x_offset;
   offset.y = y_offset;
   sf::Vector2f back_left{get_position() + offset * 10.0F};
 
   x_offset = static_cast<float>(
-      std::sin(clamp_orientation(get_orientation() + 120.0F) * (M_PI / 180.0F)));
+      std::sin(clamp_orientation(get_orientation() + 120.0F) *
+               (M_PI / 180.0F)));
   y_offset = static_cast<float>(
-      std::cos(clamp_orientation(get_orientation() + 120.0F) * (M_PI / 180.0F)));
+      std::cos(clamp_orientation(get_orientation() + 120.0F) *
+               (M_PI / 180.0F)));
   offset.x = x_offset;
   offset.y = y_offset;
   sf::Vector2f back_right{get_position() + offset * 10.0F};
@@ -108,8 +114,10 @@ const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
 }
 
 void Spaceship::engage_thrusters(const float direction) {
-  float s_sin = static_cast<float>(std::sin(get_orientation() * (M_PI / 180.0F)));
-  float s_cos = static_cast<float>(std::cos(get_orientation() * (M_PI / 180.0F)));
+  float s_sin = static_cast<float>(std::sin(get_orientation() *
+                                   (M_PI / 180.0F)));
+  float s_cos = static_cast<float>(std::cos(get_orientation() *
+                                   (M_PI / 180.0F)));
   sf::Vector2f orientation_v{s_sin, s_cos};
   set_velocity(get_velocity() - (orientation_v * ACCELERATION * direction));
   if (vector2f_length(get_velocity()) > MAX_SPEED) {
