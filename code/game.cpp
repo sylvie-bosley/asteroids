@@ -191,7 +191,8 @@ void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_player.reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+  m_player.reset_ship(sf::Vector2f{DISPLAY_SIZE / 2U}, 0.0F,
+                      sf::Vector2f{0.0F, 0.0F});
   m_asteroids.clear();
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
 }

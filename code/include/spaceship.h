@@ -19,9 +19,11 @@ class Spaceship : public GameObject {
 #else
   bool load_resources(std::string gun_sfx);
 #endif
+
   void control_ship();
   void update(const sf::Time &dt);
-  void reset_ship(const sf::Vector2f position);
+  void reset_ship(const sf::Vector2f new_position, const float new_rotation,
+                  const sf::Vector2f new_velocity);
   const sf::ConvexShape &get_sprite();
   const std::vector<sf::Vector2f> get_vertices() const;
 
@@ -36,9 +38,6 @@ class Spaceship : public GameObject {
 
   void engage_thrusters(const float direction);
   void fire_weapon();
-  float clamp_orientation(const float new_orientation) const;
-  void initialize_sprite_graphics();
-  void initialize_sprite_position();
 
   sf::ConvexShape m_sprite;
   sf::SoundBuffer m_gun_sound_buffer;
