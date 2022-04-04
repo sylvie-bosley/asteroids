@@ -22,7 +22,8 @@ Game::Game()
 bool Game::load_resources(std::string title_bgm, std::string game_bgm,
     std::string end_bgm, std::string ship_gun_sfx, std::string font) {
   bool loaded = true;
-  if (!m_player.load_resources(ship_gun_sfx/*DEBUG*/, font/*END DEBUG*/) ||
+#ifdef DEBUG
+  if (!m_player.load_resources(ship_gun_sfx, font) ||
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
       !m_end_bgm.openFromFile(end_bgm) ||
@@ -34,6 +35,20 @@ bool Game::load_resources(std::string title_bgm, std::string game_bgm,
     m_end_bgm.setLoop(true);
     m_title_bgm.play();
   }
+#else
+  if (!m_player.load_resources(ship_gun_sfx) ||
+      !m_title_bgm.openFromFile(title_bgm) ||
+      !m_game_bgm.openFromFile(game_bgm) ||
+      !m_end_bgm.openFromFile(end_bgm) ||
+      !m_game_font.loadFromFile(font)) {
+    loaded = false;
+  } else {
+    m_title_bgm.setLoop(true);
+    m_game_bgm.setLoop(true);
+    m_end_bgm.setLoop(true);
+    m_title_bgm.play();
+  }
+#endif
   return loaded;
 }
 
@@ -107,9 +122,9 @@ void Game::render() {
       m_game_window.draw(asteroid_label);
     }
 
-    // DEBUG
+#ifdef DEBUG
     m_game_window.draw(m_player.get_ship_stats());
-    // END DEBUG
+#endif
   }
   m_game_window.display();
 }

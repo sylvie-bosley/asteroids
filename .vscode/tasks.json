@@ -15,7 +15,8 @@
         "-lsfml-audio-d",
         "-lsfml-graphics-d",
         "-lsfml-window-d",
-        "-lsfml-system-d"
+        "-lsfml-system-d",
+        "-DDEBUG"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -31,7 +32,6 @@
       "label": "Build : prod",
       "command": "C:/mingw/mingw32/bin/g++.exe",
       "args": [
-        "-g",
         "${workspaceFolder}/code/*.cpp",
         "-o",
         "${workspaceFolder}/build/asteroids.exe",
@@ -40,7 +40,7 @@
         "-lsfml-audio",
         "-lsfml-graphics",
         "-lsfml-window",
-        "-lsfml-system"
+        "-lsfml-system",
       ],
       "options": {
         "cwd": "${workspaceFolder}"

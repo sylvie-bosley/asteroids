@@ -14,17 +14,20 @@ class Spaceship : public GameObject {
   explicit Spaceship(const sf::Vector2f starting_pos);
   ~Spaceship() {};
 
-  bool load_resources(std::string gun_sfx/*DEBUG*/,
-      std::string font/*END DEBUG*/);
+#ifdef DEBUG
+  bool load_resources(std::string gun_sfx, std::string font);
+#else
+  bool load_resources(std::string gun_sfx);
+#endif
   void control_ship();
   void update(const sf::Time &dt);
   void reset_ship(const sf::Vector2f position);
   const sf::ConvexShape &get_sprite();
   const std::vector<sf::Vector2f> get_vertices() const;
 
-  // DEBUG
+#ifdef DEBUG
   const sf::Text &get_ship_stats();
-  // END DEBUG
+#endif
 
  private:
   const unsigned int ROTATION_SPEED = 180U;
@@ -43,12 +46,12 @@ class Spaceship : public GameObject {
   sf::Sound m_gun_sound;
   float m_angular_velocity;
 
-  // DEBUG
+#ifdef DEBUG
   void initialize_stats_string();
   void update_ship_stats();
   sf::Font m_stats_font;
   sf::Text m_ship_stats;
-  // END DEBUG
+#endif
 };
 
 }

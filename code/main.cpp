@@ -6,11 +6,11 @@
 int main() {
   std::srand(std::time(nullptr));
   ag::Game game{};
-  std::string title_bgm_file = "data/test/orchestral.ogg";
-  std::string game_bgm_file = "data/test/orchestral.ogg";
-  std::string gameover_bgm_file = "data/test/orchestral.ogg";
-  std::string ship_gun_sfx_file = "data/test/ball.wav";
-  std::string ship_stats_font_file = "data/test/sansation.ttf";
+  std::string title_bgm_file = "data/orchestral.ogg";
+  std::string game_bgm_file = "data/orchestral.ogg";
+  std::string gameover_bgm_file = "data/orchestral.ogg";
+  std::string ship_gun_sfx_file = "data/ball.wav";
+  std::string ship_stats_font_file = "data/sansation.ttf";
   if (!game.load_resources(title_bgm_file, game_bgm_file, gameover_bgm_file,
                            ship_gun_sfx_file, ship_stats_font_file)) {
     return 1;

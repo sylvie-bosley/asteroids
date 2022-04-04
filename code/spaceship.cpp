@@ -21,26 +21,32 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos) : m_sprite{3U} {
   initialize_sprite_graphics();
   initialize_sprite_position();
 
-  // DEBUG
+#ifdef DEBUG
   initialize_stats_string();
-  // END DEBUG
+#endif
 }
 
-bool Spaceship::load_resources(std::string gun_sfx,
-    /*DEBUG*/ std::string font /*END DEBUG*/) {
+#ifdef DEBUG
+bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
-      /*DEBUG*/ !m_stats_font.loadFromFile(font) /*END DEBUG*/) {
+      !m_stats_font.loadFromFile(font)) {
     loaded - false;
   }
   m_gun_sound.setBuffer(m_gun_sound_buffer);
-
-  // DEBUG
   m_ship_stats.setFont(m_stats_font);
-  // END DEBUG
-
   return loaded;
 }
+#else
+bool Spaceship::load_resources(std::string gun_sfx) {
+  bool loaded = true;
+  if (!m_gun_sound_buffer.loadFromFile(gun_sfx)) {
+    loaded - false;
+  }
+  m_gun_sound.setBuffer(m_gun_sound_buffer);
+  return loaded;
+}
+#endif
 
 void Spaceship::control_ship() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
@@ -70,9 +76,9 @@ void Spaceship::update(const sf::Time &dt) {
     m_angular_velocity = 0.0F;
   }
 
-  // DEBUG
+#ifdef DEBUG
   update_ship_stats();
-  // END DEBUG
+#endif
 }
 
 void Spaceship::reset_ship(const sf::Vector2f position) {
@@ -159,7 +165,7 @@ void Spaceship::initialize_sprite_position() {
   m_sprite.setRotation(-get_orientation());
 }
 
-// DEBUG
+#ifdef DEBUG
 const sf::Text &Spaceship::get_ship_stats() {
   return m_ship_stats;
 }
@@ -177,6 +183,6 @@ void Spaceship::initialize_stats_string() {
   m_ship_stats.setPosition(5.0F, 5.0F);
   m_ship_stats.setString("X Velocity: 0\nY Velocity: 0\nRotation: 0");
 }
-// END DEBUG
+#endif
 
 }
