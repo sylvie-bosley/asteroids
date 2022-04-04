@@ -15,9 +15,9 @@ class Asteroid : public GameObject {
 
   const sf::CircleShape &get_sprite();
   void update(const sf::Time &dt);
-  bool check_for_collision(const std::vector<sf::Vector2f> player_vertices);
+  bool collides(const std::vector<sf::Vector2f> player_vertices);
 
-private:
+ private:
   const unsigned int ASTEROID_SPEED = 25U;
 
   float generate_valid_asteroid_x();

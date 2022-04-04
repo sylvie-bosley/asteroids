@@ -15,9 +15,9 @@ Asteroid::Asteroid(const float size) : m_sprite{size} {
   initialize_sprite_graphics();
   initialize_sprite_position();
   float a_sin = static_cast<float>(std::sin(get_orientation() *
-                                   (M_PI / 180.0F)));
+                                            (M_PI / 180.0F)));
   float a_cos = static_cast<float>(std::cos(get_orientation() *
-                                   (M_PI / 180.0F)));
+                                            (M_PI / 180.0F)));
   sf::Vector2f orientation_v{a_sin, a_cos};
   set_velocity(orientation_v * static_cast<float>(ASTEROID_SPEED));
 }
@@ -32,7 +32,7 @@ void Asteroid::update(const sf::Time &dt) {
 }
 
 // TODO: Make this a template that accepts both ship types
-bool Asteroid::check_for_collision(const std::vector<sf::Vector2f> vertices) {
+bool Asteroid::collides(const std::vector<sf::Vector2f> vertices) {
   for (unsigned int i = 0; i < 3; ++i) {
     float distance = sqrt(pow((vertices[i].x - get_position().x), 2) +
                           pow((vertices[i].y - get_position().y), 2));

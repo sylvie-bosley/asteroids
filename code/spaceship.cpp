@@ -10,8 +10,12 @@
 
 namespace ag {
 
-Spaceship::Spaceship() : m_sprite{10.0F, 3U} {
-  set_position(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+Spaceship::Spaceship(const sf::Vector2f starting_pos) : m_sprite{3U} {
+  m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
+  m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
+  m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
+  m_sprite.setOrigin(7.5F, 10.0F);
+  set_position(starting_pos);
   set_orientation(0.0F);
   set_velocity({0.0F, 0.0F});
   initialize_sprite_graphics();
@@ -71,14 +75,14 @@ void Spaceship::update(const sf::Time &dt) {
   // END DEBUG
 }
 
-void Spaceship::reset_ship() {
-  set_position(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+void Spaceship::reset_ship(const sf::Vector2f position) {
+  set_position(position);
   set_velocity({0.0F, 0.0F});
   set_orientation(0.0F);
   initialize_sprite_position();
 }
 
-const sf::CircleShape &Spaceship::get_sprite() {
+const sf::ConvexShape &Spaceship::get_sprite() {
   return m_sprite;
 }
 

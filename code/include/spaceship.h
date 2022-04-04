@@ -11,14 +11,15 @@ namespace ag {
 class Spaceship : public GameObject {
  public:
   Spaceship();
+  explicit Spaceship(const sf::Vector2f starting_pos);
   ~Spaceship() {};
 
   bool load_resources(std::string gun_sfx/*DEBUG*/,
       std::string font/*END DEBUG*/);
   void control_ship();
   void update(const sf::Time &dt);
-  void reset_ship();
-  const sf::CircleShape &get_sprite();
+  void reset_ship(const sf::Vector2f position);
+  const sf::ConvexShape &get_sprite();
   const std::vector<sf::Vector2f> get_vertices() const;
 
   // DEBUG
@@ -36,7 +37,7 @@ class Spaceship : public GameObject {
   void initialize_sprite_graphics();
   void initialize_sprite_position();
 
-  sf::CircleShape m_sprite;
+  sf::ConvexShape m_sprite;
   sf::SoundBuffer m_gun_sound_buffer;
   sf::SoundBuffer m_thruster_sound_buffer;
   sf::Sound m_gun_sound;

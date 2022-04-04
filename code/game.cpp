@@ -6,12 +6,13 @@
 #include "include/asteroid.h"
 #include "include/spaceship.h"
 #include "include/helpers.h"
+#include "include/quadtree.h"
 
 namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{} {
+      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)} {
   m_difficulty = 0U;
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
   m_running = true;
@@ -74,7 +75,7 @@ bool Game::update(const sf::Time &dt) {
     m_player.update(dt);
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
       m_asteroids[i].update(dt);
-      if (m_asteroids[i].check_for_collision(m_player.get_vertices())) {
+      if (m_asteroids[i].collides(m_player.get_vertices())) {
         game_over();
         break;
       }
@@ -175,7 +176,7 @@ void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_player.reset_ship();
+  m_player.reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
   m_asteroids.clear();
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
 }
