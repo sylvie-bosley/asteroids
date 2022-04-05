@@ -10,7 +10,7 @@ namespace ag {
 
 class Spaceship : public GameObject {
  public:
-  Spaceship();
+  Spaceship() {};
   explicit Spaceship(const sf::Vector2f starting_pos, const unsigned int id);
   ~Spaceship() {};
 

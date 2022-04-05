@@ -43,7 +43,6 @@ class Game {
   void game_over();
   void reset_game();
   void close_game();
-  void update_bgm();
 
   sf::RenderWindow m_game_window;
   Spaceship m_player;
