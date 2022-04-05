@@ -5,22 +5,23 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "include/game_object.h"
 #include "include/helpers.h"
 
 namespace ag {
 
-Spaceship::Spaceship(const sf::Vector2f starting_pos) : m_sprite{3U} {
+Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
+    : m_sprite{3U} {
+  set_object_id(id);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
-  m_sprite.setOrigin(7.5F, 10.0F);
+  m_sprite.setOrigin(sf::Vector2f{7.5F, 10.0F});
   m_sprite.setPosition(starting_pos);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
   m_sprite.setOutlineColor(sf::Color::White);
   m_sprite.setRotation(0.0F);
-  set_velocity({0.0F, 0.0F});
+  m_velocity = sf::Vector2f{0.0F, 0.0F};
 
 #ifdef DEBUG
   initialize_stats_string();
@@ -68,7 +69,7 @@ void Spaceship::control_ship() {
 }
 
 void Spaceship::update(const sf::Time &dt) {
-  m_sprite.move(get_velocity() * dt.asSeconds());
+  m_sprite.move(m_velocity * dt.asSeconds());
   sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
   if (wrapped_position != m_sprite.getPosition()) {
     m_sprite.setPosition(wrapped_position);
@@ -88,7 +89,7 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
                            const sf::Vector2f new_velocity) {
   m_sprite.setPosition(new_position);
   m_sprite.setRotation(new_rotation);
-  set_velocity(new_velocity);
+  m_velocity = new_velocity;
 }
 
 const sf::ConvexShape &Spaceship::get_sprite() {
@@ -127,11 +128,11 @@ void Spaceship::engage_thrusters(const float direction) {
                                             (M_PI / 180.0F)));
   float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
-  sf::Vector2f velocity{r_sin, -r_cos};
-  set_velocity(get_velocity() + (velocity * ACCELERATION * direction));
-  if (vector2f_length(get_velocity()) > MAX_SPEED) {
-    sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
-    set_velocity(normal_velocity * MAX_SPEED);
+  sf::Vector2f heading{r_sin, -r_cos};
+  m_velocity = m_velocity + (heading * ACCELERATION * direction);
+  if (vector2f_length(m_velocity) > MAX_SPEED) {
+    sf::Vector2f normal_velocity = normalize_vector2f(m_velocity);
+    m_velocity = normal_velocity * MAX_SPEED;
   }
 }
 
@@ -147,8 +148,8 @@ const sf::Text &Spaceship::get_ship_stats() {
 }
 
 void Spaceship::update_ship_stats() {
-  std::string stats_str = "X Velocity: " + std::to_string(get_velocity().x) +
-      "\n" + "Y Velocity: " + std::to_string(get_velocity().y) + "\n" +
+  std::string stats_str = "X Velocity: " + std::to_string(m_velocity.x) +
+      "\n" + "Y Velocity: " + std::to_string(m_velocity.y) + "\n" +
       "Rotation: " + std::to_string(m_sprite.getRotation());
   m_ship_stats.setString(stats_str);
 }

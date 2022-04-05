@@ -4,22 +4,24 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "include/game_object.h"
 #include "include/helpers.h"
 
 namespace ag {
 
-Asteroid::Asteroid(const float size) : m_sprite{size} {
-  set_position({generate_valid_asteroid_x(), generate_valid_asteroid_y()});
-  set_orientation(static_cast<float>(rand() % 360U));
-  initialize_sprite_graphics();
-  initialize_sprite_position();
-  float a_sin = static_cast<float>(std::sin(get_orientation() *
+Asteroid::Asteroid(const float size, const unsigned int id) : m_sprite{size} {
+  set_object_id(id);
+  m_sprite.setOrigin(sf::Vector2f{50.0F, 50.0F});
+  m_sprite.setPosition(sf::Vector2f{generate_valid_asteroid_x(), generate_valid_asteroid_y()});
+  m_sprite.setOutlineThickness(1.0F);
+  m_sprite.setFillColor(sf::Color::Black);
+  m_sprite.setOutlineColor(sf::Color::White);
+  m_sprite.setRotation(static_cast<float>(rand() % 360U));
+  float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
-  float a_cos = static_cast<float>(std::cos(get_orientation() *
+  float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
-  sf::Vector2f orientation_v{a_sin, a_cos};
-  set_velocity(orientation_v * static_cast<float>(ASTEROID_SPEED));
+  sf::Vector2f heading{r_sin, -r_cos};
+  m_velocity = heading * ASTEROID_SPEED;
 }
 
 const sf::CircleShape &Asteroid::get_sprite() {
@@ -27,15 +29,17 @@ const sf::CircleShape &Asteroid::get_sprite() {
 }
 
 void Asteroid::update(const sf::Time &dt) {
-  set_position(screen_wrap(get_position() + (get_velocity() * dt.asSeconds())));
-  m_sprite.setPosition(get_position());
+  m_sprite.move(m_velocity * dt.asSeconds());
+  sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
+  if (wrapped_position != m_sprite.getPosition()) {
+    m_sprite.setPosition(wrapped_position);
+  }
 }
 
-// TODO: Make this a template that accepts both ship types
 bool Asteroid::collides(const std::vector<sf::Vector2f> vertices) {
   for (unsigned int i = 0; i < 3; ++i) {
-    float distance = sqrt(pow((vertices[i].x - get_position().x), 2) +
-                          pow((vertices[i].y - get_position().y), 2));
+    float distance = sqrt(pow((vertices[i].x - m_sprite.getPosition().x), 2) +
+                          pow((vertices[i].y - m_sprite.getPosition().y), 2));
     if (distance < 50.0F) {
       return true;
     }
@@ -59,18 +63,6 @@ float Asteroid::generate_valid_asteroid_y() {
   } while (new_y > (DISPLAY_SIZE.y * 0.33F) &&
            new_y < (DISPLAY_SIZE.y * 0.67F));
   return new_y;
-}
-
-void Asteroid::initialize_sprite_graphics() {
-  m_sprite.setOrigin(50.0F, 50.0F);
-  m_sprite.setOutlineThickness(1.0F);
-  m_sprite.setFillColor(sf::Color::Black);
-  m_sprite.setOutlineColor(sf::Color::White);
-}
-
-void Asteroid::initialize_sprite_position() {
-  m_sprite.setPosition(get_position());
-  m_sprite.setRotation(-get_orientation());
 }
 
 }

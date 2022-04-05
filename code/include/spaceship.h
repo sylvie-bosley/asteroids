@@ -11,7 +11,7 @@ namespace ag {
 class Spaceship : public GameObject {
  public:
   Spaceship();
-  explicit Spaceship(const sf::Vector2f starting_pos);
+  explicit Spaceship(const sf::Vector2f starting_pos, const unsigned int id);
   ~Spaceship() {};
 
 #ifdef DEBUG
@@ -43,6 +43,7 @@ class Spaceship : public GameObject {
   sf::SoundBuffer m_gun_sound_buffer;
   sf::SoundBuffer m_thruster_sound_buffer;
   sf::Sound m_gun_sound;
+  sf::Vector2f m_velocity;
   float m_angular_velocity;
 
 #ifdef DEBUG

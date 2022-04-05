@@ -6,18 +6,14 @@
 namespace ag {
 
 class GameObject {
+ public:
+  const unsigned int get_object_id() const;
+
  protected:
-  const sf::Vector2f get_position() const;
-  const float get_orientation() const;
-  const sf::Vector2f get_velocity() const;
-  void set_position(const sf::Vector2f position);
-  void set_orientation(const float orientation);
-  void set_velocity(const sf::Vector2f velocity);
+  void set_object_id(unsigned int new_id);
 
  private:
-  sf::Vector2f m_position;
-  float m_orientation;
-  sf::Vector2f m_velocity;
+  unsigned int m_object_id;
 };
 
 }

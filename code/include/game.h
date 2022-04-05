@@ -55,6 +55,7 @@ class Game {
   unsigned int m_difficulty;
   GameState m_game_state;
   bool m_running;
+  unsigned int next_object_id = 0;
 };
 
 }

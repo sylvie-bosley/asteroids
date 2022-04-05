@@ -10,7 +10,7 @@ namespace ag {
 class Asteroid : public GameObject {
  public:
   Asteroid() {};
-  explicit Asteroid(const float size);
+  explicit Asteroid(const float size, const unsigned int id);
   ~Asteroid() {};
 
   const sf::CircleShape &get_sprite();
@@ -18,14 +18,13 @@ class Asteroid : public GameObject {
   bool collides(const std::vector<sf::Vector2f> player_vertices);
 
  private:
-  const unsigned int ASTEROID_SPEED = 25U;
+  const float ASTEROID_SPEED = 25.0F;
 
   float generate_valid_asteroid_x();
   float generate_valid_asteroid_y();
-  void initialize_sprite_graphics();
-  void initialize_sprite_position();
 
   sf::CircleShape m_sprite;
+  sf::Vector2f m_velocity;
 };
 
 }

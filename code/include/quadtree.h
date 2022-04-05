@@ -1,10 +1,11 @@
 #ifndef ASTEROIDS_GAME_CODE_INCLUDE_QUADTREE_H
 #define ASTEROIDS_GAME_CODE_INCLUDE_QUADTREE_H
 
-#include "game_object.h"
-
 #include <vector>
+
 #include <SFML/Graphics.hpp>
+
+#include "game_object.h"
 
 namespace ag {
 

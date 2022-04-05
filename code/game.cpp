@@ -12,7 +12,8 @@ namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U)} {
+      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id} {
+  next_object_id++;
   m_difficulty = 0U;
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
   m_running = true;
@@ -161,7 +162,8 @@ void Game::process_menu_keys(const sf::Keyboard::Key key) {
 void Game::generate_asteroids(const unsigned int asteroid_count,
     const float size) {
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    m_asteroids.push_back(Asteroid{size});
+    m_asteroids.push_back(Asteroid{size, next_object_id});
+    next_object_id++;
   }
 }
 
