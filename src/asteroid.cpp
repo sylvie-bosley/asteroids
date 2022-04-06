@@ -24,6 +24,10 @@ Asteroid::Asteroid(const float size, const unsigned int id) : m_sprite{size} {
   m_velocity = heading * ASTEROID_SPEED;
 }
 
+sf::FloatRect Asteroid::get_sprite_bounds() {
+  return m_sprite.getGlobalBounds();
+}
+
 const sf::CircleShape Asteroid::get_sprite() {
   return m_sprite;
 }

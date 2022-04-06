@@ -12,7 +12,7 @@ namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id} {
+      m_player{sf::Vector2f{DISPLAY_SIZE / 2U}, next_object_id} {
   next_object_id++;
   m_difficulty = 0U;
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
@@ -111,19 +111,22 @@ void Game::render() {
     sf::Vector2f new_origin{game_over_string.getLocalBounds().width / 2.0F,
         game_over_string.getLocalBounds().height};
     game_over_string.setOrigin(new_origin);
-    game_over_string.setPosition(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+    game_over_string.setPosition(sf::Vector2f{DISPLAY_SIZE / 2U});
     m_game_window.draw(game_over_string);
   } else {
     m_game_window.draw(m_player.get_sprite());
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
+      m_game_window.draw(m_asteroids[i].get_sprite());
+
+#ifdef DEBUG
       sf::Text asteroid_label{std::to_string(i), m_game_font, 100U};
       asteroid_label.setFillColor(sf::Color::White);
       sf::Vector2f new_origin{asteroid_label.getLocalBounds().width / 2.0F,
                               asteroid_label.getLocalBounds().height};
       asteroid_label.setOrigin(new_origin);
       asteroid_label.setPosition(m_asteroids[i].get_sprite().getPosition());
-      m_game_window.draw(m_asteroids[i].get_sprite());
       m_game_window.draw(asteroid_label);
+#endif
     }
 
 #ifdef DEBUG

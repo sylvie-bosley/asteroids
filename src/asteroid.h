@@ -13,6 +13,7 @@ class Asteroid : public GameObject {
   explicit Asteroid(const float size, const unsigned int id);
   ~Asteroid() {};
 
+  sf::FloatRect get_sprite_bounds() override;
   const sf::CircleShape get_sprite();
   void update(const sf::Time dt);
   bool collides(const std::vector<sf::Vector2f> player_vertices);

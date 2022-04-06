@@ -20,6 +20,7 @@ class Spaceship : public GameObject {
   bool load_resources(const std::string gun_sfx);
 #endif
 
+  sf::FloatRect get_sprite_bounds() override;
   void control_ship();
   void update(const sf::Time dt);
   void reset_ship(const sf::Vector2f new_position, const float new_rotation,

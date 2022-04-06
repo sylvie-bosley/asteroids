@@ -20,8 +20,9 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
   m_sprite.setOutlineColor(sf::Color::White);
-  m_sprite.setRotation(0.0F);
-  m_velocity = sf::Vector2f{0.0F, 0.0F};
+  m_sprite.setRotation(360.0F);
+  m_velocity.x = 0.0F;
+  m_velocity.y = 0.0F;
 
 #ifdef DEBUG
   initialize_stats_string();
@@ -49,6 +50,10 @@ bool Spaceship::load_resources(const std::string gun_sfx) {
   return loaded;
 }
 #endif
+
+sf::FloatRect Spaceship::get_sprite_bounds() {
+  return m_sprite.getGlobalBounds();
+}
 
 void Spaceship::control_ship() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
@@ -90,6 +95,10 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
   m_sprite.setPosition(new_position);
   m_sprite.setRotation(new_rotation);
   m_velocity = new_velocity;
+
+#ifdef DEBUG
+  update_ship_stats();
+#endif
 }
 
 const sf::ConvexShape Spaceship::get_sprite() {

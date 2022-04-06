@@ -7,7 +7,7 @@
 
 namespace ag {
 
-QuadTree::QuadTree(const unsigned int level, const sf::IntRect world_area) {
+QuadTree::QuadTree(const unsigned int level, const sf::FloatRect world_area) {
    m_level = level;
    m_bounds = world_area;
 }
@@ -22,25 +22,25 @@ void QuadTree::clear() {
 }
 
 void QuadTree::split() {
-  int sub_width = static_cast<int>(m_bounds.width / 2.0F);
-  int sub_height = static_cast<int>(m_bounds.height / 2.0F);
-  int sub_x = m_bounds.left;
-  int sub_y = m_bounds.top;
+  float sub_width = (m_bounds.width / 2.0F);
+  float sub_height = (m_bounds.height / 2.0F);
+  float sub_x = m_bounds.left;
+  float sub_y = m_bounds.top;
 
   m_nodes.push_back(QuadTree(m_level + 1U,
-                             sf::IntRect{sub_x, sub_y, sub_width, sub_height}));
+                             sf::FloatRect{sub_x, sub_y, sub_width, sub_height}));
   m_nodes.push_back(QuadTree(m_level + 1U,
-                             sf::IntRect{sub_x + sub_width, sub_y, sub_width,
+                             sf::FloatRect{sub_x + sub_width, sub_y, sub_width,
                                          sub_height}));
   m_nodes.push_back(QuadTree(m_level + 1U,
-                             sf::IntRect{sub_x, sub_y + sub_height, sub_width,
+                             sf::FloatRect{sub_x, sub_y + sub_height, sub_width,
                                          sub_height}));
   m_nodes.push_back(QuadTree(m_level + 1U,
-                             sf::IntRect{sub_x + sub_width, sub_y + sub_height,
+                             sf::FloatRect{sub_x + sub_width, sub_y + sub_height,
                                          sub_width, sub_height}));
 }
 
-int QuadTree::get_index(const sf::IntRect bound_box) {
+int QuadTree::get_index(const sf::FloatRect bound_box) {
   int index = -1;
   float vertical_midpoint = m_bounds.left + (m_bounds.width / 2.0F);
   float horizontal_midpoint = m_bounds.top + (m_bounds.height / 2.0F);
@@ -64,29 +64,30 @@ int QuadTree::get_index(const sf::IntRect bound_box) {
   return index;
 }
 
-void insert(GameObject pRect) {
-   if (nodes[0] != null) {
-     int index = getIndex(pRect);
- 
+void QuadTree::insert(GameObject &collidable) {
+   if (!m_nodes.empty()) {
+     int index = get_index(collidable.get_sprite_bounds());
+
      if (index != -1) {
-       nodes[index].insert(pRect);
- 
+       m_nodes[index].insert(collidable);
+
        return;
      }
    }
- 
-   objects.add(pRect);
- 
-   if (objects.size() > MAX_OBJECTS && level < MAX_LEVELS) {
-      if (nodes[0] == null) { 
-         split(); 
+
+   m_objects.push_back(collidable);
+
+   if (m_objects.size() > MAX_OBJECTS && m_level < MAX_LEVELS) {
+      if (m_nodes.empty()) {
+         split();
       }
- 
-     int i = 0;
-     while (i < objects.size()) {
-       int index = getIndex(objects.get(i));
+
+     unsigned int i = 0;
+     while (i < m_objects.size()) {
+       int index = get_index(m_objects.at(i).get_sprite_bounds());
        if (index != -1) {
-         nodes[index].insert(objects.remove(i));
+         m_nodes.at(index).insert(m_objects.at(i));
+         m_objects.erase(m_objects.begin() + i);
        }
        else {
          i++;

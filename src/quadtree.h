@@ -13,13 +13,13 @@ namespace ag {
 class QuadTree {
  public:
   QuadTree() {};
-  explicit QuadTree(const unsigned int level, const sf::IntRect world_area);
+  explicit QuadTree(const unsigned int level, const sf::FloatRect world_area);
   ~QuadTree() {};
 
   void clear();
   void split();
-  int get_index(const sf::IntRect bound_box);
-  void insert(const GameObject &collidable);
+  int get_index(const sf::FloatRect bound_box);
+  void insert(GameObject &collidable);
 
  private:
 
@@ -28,7 +28,7 @@ class QuadTree {
 
   unsigned int m_level;
   std::vector<GameObject> m_objects;
-  sf::IntRect m_bounds;
+  sf::FloatRect m_bounds;
   std::vector<QuadTree> m_nodes;
 
 };
