@@ -15,20 +15,20 @@ class Spaceship : public GameObject {
   ~Spaceship() {};
 
 #ifdef DEBUG
-  bool load_resources(std::string gun_sfx, std::string font);
+  bool load_resources(const std::string gun_sfx, const std::string font);
 #else
-  bool load_resources(std::string gun_sfx);
+  bool load_resources(const std::string gun_sfx);
 #endif
 
   void control_ship();
-  void update(const sf::Time &dt);
+  void update(const sf::Time dt);
   void reset_ship(const sf::Vector2f new_position, const float new_rotation,
                   const sf::Vector2f new_velocity);
-  const sf::ConvexShape &get_sprite();
+  const sf::ConvexShape get_sprite();
   const std::vector<sf::Vector2f> get_vertices() const;
 
 #ifdef DEBUG
-  const sf::Text &get_ship_stats();
+  const sf::Text get_ship_stats();
 #endif
 
  private:

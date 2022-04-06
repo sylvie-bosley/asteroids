@@ -24,11 +24,11 @@ Asteroid::Asteroid(const float size, const unsigned int id) : m_sprite{size} {
   m_velocity = heading * ASTEROID_SPEED;
 }
 
-const sf::CircleShape &Asteroid::get_sprite() {
+const sf::CircleShape Asteroid::get_sprite() {
   return m_sprite;
 }
 
-void Asteroid::update(const sf::Time &dt) {
+void Asteroid::update(const sf::Time dt) {
   m_sprite.move(m_velocity * dt.asSeconds());
   sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
   if (wrapped_position != m_sprite.getPosition()) {

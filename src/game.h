@@ -17,12 +17,12 @@ class Game {
   Game();
   ~Game() {};
 
-  bool load_resources(
-      std::string title_bgm, std::string game_bgm, std::string end_bgm,
-      std::string ship_gun_sfx, std::string ship_font);
+  bool load_resources(const std::string title_bgm, const std::string game_bgm,
+                      const std::string end_bgm, const std::string ship_gun_sfx,
+                      const std::string ship_font);
   bool is_running();
   void process_input();
-  bool update(const sf::Time &dt);
+  bool update(const sf::Time dt);
   void render();
 
  private:

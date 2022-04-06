@@ -20,8 +20,11 @@ Game::Game()
   m_game_state = TitleScreen;
 }
 
-bool Game::load_resources(std::string title_bgm, std::string game_bgm,
-    std::string end_bgm, std::string ship_gun_sfx, std::string font) {
+bool Game::load_resources(const std::string title_bgm,
+                          const std::string game_bgm,
+                          const std::string end_bgm,
+                          const std::string ship_gun_sfx,
+                          const std::string font) {
   bool loaded = true;
 #ifdef DEBUG
   if (!m_player.load_resources(ship_gun_sfx, font) ||
@@ -86,7 +89,7 @@ void Game::process_input() {
   }
 }
 
-bool Game::update(const sf::Time &dt) {
+bool Game::update(const sf::Time dt) {
   if (m_game_state == InGame) {
     m_player.update(dt);
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {

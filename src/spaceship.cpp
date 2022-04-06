@@ -29,7 +29,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
 }
 
 #ifdef DEBUG
-bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
+bool Spaceship::load_resources(const std::string gun_sfx, const std::string font) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
       !m_stats_font.loadFromFile(font)) {
@@ -40,7 +40,7 @@ bool Spaceship::load_resources(std::string gun_sfx, std::string font) {
   return loaded;
 }
 #else
-bool Spaceship::load_resources(std::string gun_sfx) {
+bool Spaceship::load_resources(const std::string gun_sfx) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx)) {
     loaded - false;
@@ -68,7 +68,7 @@ void Spaceship::control_ship() {
   }
 }
 
-void Spaceship::update(const sf::Time &dt) {
+void Spaceship::update(const sf::Time dt) {
   m_sprite.move(m_velocity * dt.asSeconds());
   sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
   if (wrapped_position != m_sprite.getPosition()) {
@@ -92,7 +92,7 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
   m_velocity = new_velocity;
 }
 
-const sf::ConvexShape &Spaceship::get_sprite() {
+const sf::ConvexShape Spaceship::get_sprite() {
   return m_sprite;
 }
 
@@ -143,7 +143,7 @@ void Spaceship::fire_weapon() {
 }
 
 #ifdef DEBUG
-const sf::Text &Spaceship::get_ship_stats() {
+const sf::Text Spaceship::get_ship_stats() {
   return m_ship_stats;
 }
 
