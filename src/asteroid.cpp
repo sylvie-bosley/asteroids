@@ -1,10 +1,10 @@
-#include "include/asteroid.h"
+#include "asteroid.h"
 
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
 
-#include "include/helpers.h"
+#include "helpers.h"
 
 namespace ag {
 

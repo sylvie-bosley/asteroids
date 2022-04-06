@@ -60,17 +60,14 @@ $RECYCLE.BIN/
 
 # VSCode files
 # Workspace files
-.vscode/*
-!.vscode/c_cpp_properties.json
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
+.vscode/
 *.code-workspace
 
 # Local History for Visual Studio Code
 .history/
 
 # My stuff
-tools/
+bin/
 build/
+ext/*/include/
+ext/*/lib

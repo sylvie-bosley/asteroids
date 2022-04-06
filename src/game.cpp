@@ -1,12 +1,12 @@
-#include "include/game.h"
+#include "game.h"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "include/asteroid.h"
-#include "include/spaceship.h"
-#include "include/helpers.h"
-#include "include/quadtree.h"
+#include "asteroid.h"
+#include "spaceship.h"
+#include "helpers.h"
+#include "quadtree.h"
 
 namespace ag {
 

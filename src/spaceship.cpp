@@ -1,11 +1,11 @@
-#include "include/spaceship.h"
+#include "spaceship.h"
 
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "include/helpers.h"
+#include "helpers.h"
 
 namespace ag {
 
