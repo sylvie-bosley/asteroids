@@ -8,14 +8,22 @@ namespace ag {
 
 class GameObject {
  public:
+  enum ObjectType {
+    PlayerType,
+    AsteroidType
+  };
+
   const unsigned int get_object_id() const;
+  const unsigned int get_object_type() const;
   virtual sf::FloatRect get_sprite_bounds() {};
 
  protected:
-  void set_object_id(const unsigned int new_id);
+  void set_object_id(const unsigned int id);
+  void set_object_type(const ObjectType type);
 
  private:
   unsigned int m_object_id;
+  ObjectType m_object_type;
 };
 
 }

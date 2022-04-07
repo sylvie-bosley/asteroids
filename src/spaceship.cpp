@@ -12,6 +12,7 @@ namespace ag {
 Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
     : m_sprite{3U} {
   set_object_id(id);
+  set_object_type(PlayerType);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
@@ -27,10 +28,11 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
 }
 
 #ifdef DEBUG
-bool Spaceship::load_resources(const std::string gun_sfx, const std::string font) {
+bool Spaceship::load_resources(const std::string gun_sfx,
+                               const std::string game_font) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
-      !m_stats_font.loadFromFile(font)) {
+      !m_stats_font.loadFromFile(game_font)) {
     loaded - false;
   }
   m_gun_sound.setBuffer(m_gun_sound_buffer);

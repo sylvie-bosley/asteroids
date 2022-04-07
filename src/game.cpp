@@ -12,7 +12,10 @@ namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id} {
+      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id},
+      m_collision_mngr{0U, sf::FloatRect(0.0F, 0.0F,
+                                         static_cast<float>(DISPLAY_SIZE.x),
+                                         static_cast<float>(DISPLAY_SIZE.y))} {
   next_object_id++;
   m_difficulty = 0U;
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
@@ -24,14 +27,14 @@ bool Game::load_resources(const std::string title_bgm,
                           const std::string game_bgm,
                           const std::string end_bgm,
                           const std::string ship_gun_sfx,
-                          const std::string font) {
+                          const std::string game_font) {
   bool loaded = true;
 #ifdef DEBUG
-  if (!m_player.load_resources(ship_gun_sfx, font) ||
+  if (!m_player.load_resources(ship_gun_sfx, game_font) ||
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
       !m_end_bgm.openFromFile(end_bgm) ||
-      !m_game_font.loadFromFile(font)) {
+      !m_game_font.loadFromFile(game_font)) {
     loaded = false;
   } else {
     m_title_bgm.setLoop(true);
@@ -44,7 +47,7 @@ bool Game::load_resources(const std::string title_bgm,
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
       !m_end_bgm.openFromFile(end_bgm) ||
-      !m_game_font.loadFromFile(font)) {
+      !m_game_font.loadFromFile(game_font)) {
     loaded = false;
   } else {
     m_title_bgm.setLoop(true);
@@ -93,11 +96,11 @@ bool Game::update(const sf::Time dt) {
   if (m_game_state == InGame) {
     m_player.update(dt);
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-      m_asteroids[i].update(dt);
-      if (m_asteroids[i].collides(m_player.get_vertices())) {
-        game_over();
-        break;
-      }
+      m_asteroids.at(i).update(dt);
+    }
+    m_collision_mngr.clear();
+    for (unsigned int i = 0U; i < m_game_objects.size(); i++) {
+      m_collision_mngr.insert(m_game_objects.at(i));
     }
   }
   return true;
@@ -116,7 +119,7 @@ void Game::render() {
   } else {
     m_game_window.draw(m_player.get_sprite());
     for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-      m_game_window.draw(m_asteroids[i].get_sprite());
+      m_game_window.draw(m_asteroids.at(i).get_sprite());
 
 #ifdef DEBUG
       sf::Text asteroid_label{std::to_string(i), m_game_font, 100U};
@@ -124,7 +127,7 @@ void Game::render() {
       sf::Vector2f new_origin{asteroid_label.getLocalBounds().width / 2.0F,
                               asteroid_label.getLocalBounds().height};
       asteroid_label.setOrigin(new_origin);
-      asteroid_label.setPosition(m_asteroids[i].get_sprite().getPosition());
+      asteroid_label.setPosition(m_asteroids.at(i).get_sprite().getPosition());
       m_game_window.draw(asteroid_label);
 #endif
     }

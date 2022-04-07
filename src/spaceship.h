@@ -15,7 +15,7 @@ class Spaceship : public GameObject {
   ~Spaceship() {};
 
 #ifdef DEBUG
-  bool load_resources(const std::string gun_sfx, const std::string font);
+  bool load_resources(const std::string gun_sfx, const std::string game_font);
 #else
   bool load_resources(const std::string gun_sfx);
 #endif

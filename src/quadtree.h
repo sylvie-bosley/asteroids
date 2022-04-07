@@ -19,7 +19,9 @@ class QuadTree {
   void clear();
   void split();
   int get_index(const sf::FloatRect bound_box);
-  void insert(GameObject &collidable);
+  void insert(GameObject *collidable);
+  std::vector<GameObject*> retrieve(std::vector<GameObject*> collidables,
+                                   sf::FloatRect bound_box);
 
  private:
 
@@ -27,7 +29,7 @@ class QuadTree {
   const unsigned int MAX_LEVELS = 5;
 
   unsigned int m_level;
-  std::vector<GameObject> m_objects;
+  std::vector<GameObject*> m_collidables;
   sf::FloatRect m_bounds;
   std::vector<QuadTree> m_nodes;
 

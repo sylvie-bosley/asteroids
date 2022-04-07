@@ -10,8 +10,10 @@ namespace ag {
 
 Asteroid::Asteroid(const float size, const unsigned int id) : m_sprite{size} {
   set_object_id(id);
+  set_object_type(AsteroidType);
   m_sprite.setOrigin(sf::Vector2f{50.0F, 50.0F});
-  m_sprite.setPosition(sf::Vector2f{generate_valid_asteroid_x(), generate_valid_asteroid_y()});
+  m_sprite.setPosition(sf::Vector2f{generate_valid_asteroid_x(),
+                                    generate_valid_asteroid_y()});
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
   m_sprite.setRotation(static_cast<float>(rand() % 360U));
@@ -41,8 +43,8 @@ void Asteroid::update(const sf::Time dt) {
 
 bool Asteroid::collides(const std::vector<sf::Vector2f> vertices) {
   for (unsigned int i = 0; i < 3; ++i) {
-    float distance = sqrt(pow((vertices[i].x - m_sprite.getPosition().x), 2) +
-                          pow((vertices[i].y - m_sprite.getPosition().y), 2));
+    float distance = sqrt(pow((vertices.at(i).x - m_sprite.getPosition().x), 2) +
+                          pow((vertices.at(i).y - m_sprite.getPosition().y), 2));
     if (distance < 50.0F) {
       return true;
     }

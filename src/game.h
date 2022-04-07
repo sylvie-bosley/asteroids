@@ -19,7 +19,7 @@ class Game {
 
   bool load_resources(const std::string title_bgm, const std::string game_bgm,
                       const std::string end_bgm, const std::string ship_gun_sfx,
-                      const std::string ship_font);
+                      const std::string game_font);
   bool is_running();
   void process_input();
   bool update(const sf::Time dt);
@@ -45,16 +45,18 @@ class Game {
   void close_game();
 
   sf::RenderWindow m_game_window;
+  std::vector<GameObject*> m_game_objects;
   Spaceship m_player;
+  std::vector<Asteroid> m_asteroids;
+  unsigned int next_object_id = 0;
+  QuadTree m_collision_mngr;
   sf::Music m_title_bgm;
   sf::Music m_game_bgm;
   sf::Music m_end_bgm;
   sf::Font m_game_font;
-  std::vector<Asteroid> m_asteroids;
   unsigned int m_difficulty;
   GameState m_game_state;
   bool m_running;
-  unsigned int next_object_id = 0;
 };
 
 }
