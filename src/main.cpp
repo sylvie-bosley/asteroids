@@ -6,18 +6,19 @@
 int main() {
   std::srand(std::time(nullptr));
   ag::Game game{};
-  std::string title_bgm_file = "src/res/orchestral.ogg";
-  std::string game_bgm_file = "src/res/orchestral.ogg";
-  std::string gameover_bgm_file = "src/res/orchestral.ogg";
-  std::string ship_gun_sfx_file = "src/res/ball.wav";
-  std::string ship_stats_font_file = "src/res/sansation.ttf";
+  std::string title_bgm_file = "res/orchestral.ogg";
+  std::string game_bgm_file = "res/orchestral.ogg";
+  std::string gameover_bgm_file = "res/orchestral.ogg";
+  std::string ship_gun_sfx_file = "res/ball.wav";
+  std::string ship_stats_font_file = "res/sansation.ttf";
   if (!game.load_resources(title_bgm_file, game_bgm_file, gameover_bgm_file,
                            ship_gun_sfx_file, ship_stats_font_file)) {
     return 1;
   }
   sf::Clock frame_clock;
+  sf::Time dt;
   do {
-    sf::Time dt = frame_clock.restart();
+    dt = frame_clock.restart();
     game.process_input();
     if (!game.update(dt)) {
       // TODO: Error handling

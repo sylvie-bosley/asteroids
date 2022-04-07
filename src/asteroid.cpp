@@ -14,7 +14,6 @@ Asteroid::Asteroid(const float size, const unsigned int id) : m_sprite{size} {
   m_sprite.setPosition(sf::Vector2f{generate_valid_asteroid_x(), generate_valid_asteroid_y()});
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
-  m_sprite.setOutlineColor(sf::Color::White);
   m_sprite.setRotation(static_cast<float>(rand() % 360U));
   float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));

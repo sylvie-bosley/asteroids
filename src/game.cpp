@@ -12,7 +12,7 @@ namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{sf::Vector2f{DISPLAY_SIZE / 2U}, next_object_id} {
+      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id} {
   next_object_id++;
   m_difficulty = 0U;
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);
@@ -111,7 +111,7 @@ void Game::render() {
     sf::Vector2f new_origin{game_over_string.getLocalBounds().width / 2.0F,
         game_over_string.getLocalBounds().height};
     game_over_string.setOrigin(new_origin);
-    game_over_string.setPosition(sf::Vector2f{DISPLAY_SIZE / 2U});
+    game_over_string.setPosition(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
     m_game_window.draw(game_over_string);
   } else {
     m_game_window.draw(m_player.get_sprite());
@@ -199,7 +199,7 @@ void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_player.reset_ship(sf::Vector2f{DISPLAY_SIZE / 2U}, 0.0F,
+  m_player.reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
                       sf::Vector2f{0.0F, 0.0F});
   m_asteroids.clear();
   generate_asteroids(STARTING_ASTEROIDS, 50.0F);

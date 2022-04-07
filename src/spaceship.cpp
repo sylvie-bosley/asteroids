@@ -19,10 +19,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
   m_sprite.setPosition(starting_pos);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
-  m_sprite.setOutlineColor(sf::Color::White);
-  m_sprite.setRotation(360.0F);
-  m_velocity.x = 0.0F;
-  m_velocity.y = 0.0F;
+  m_velocity = sf::Vector2f{0.0F, 0.0F};
 
 #ifdef DEBUG
   initialize_stats_string();
@@ -106,24 +103,24 @@ const sf::ConvexShape Spaceship::get_sprite() {
 }
 
 const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
-  float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() * 
+  float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
-  float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() * 
+  float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
   sf::Vector2f offset{r_sin, r_cos};
   sf::Vector2f front_tip{m_sprite.getPosition() + offset * 10.0F};
 
-  r_cos = static_cast<float>(std::cos(m_sprite.getRotation() + 120.0F) * 
+  r_cos = static_cast<float>(std::cos(m_sprite.getRotation() + 120.0F) *
                                       (M_PI / 180.0F));
-  r_sin = static_cast<float>(std::sin(m_sprite.getRotation() + 120.0F) * 
+  r_sin = static_cast<float>(std::sin(m_sprite.getRotation() + 120.0F) *
                                       (M_PI / 180.0F));
   offset.x = r_sin;
   offset.y = r_cos;
   sf::Vector2f back_left{m_sprite.getPosition() + offset * 10.0F};
 
-  r_sin = static_cast<float>(std::sin(m_sprite.getRotation() + 240.0F) * 
+  r_sin = static_cast<float>(std::sin(m_sprite.getRotation() + 240.0F) *
                                       (M_PI / 180.0F));
-  r_cos = static_cast<float>(std::cos(m_sprite.getRotation() + 240.0F) * 
+  r_cos = static_cast<float>(std::cos(m_sprite.getRotation() + 240.0F) *
                                       (M_PI / 180.0F));
   offset.x = r_sin;
   offset.y = r_cos;
@@ -157,9 +154,12 @@ const sf::Text Spaceship::get_ship_stats() {
 }
 
 void Spaceship::update_ship_stats() {
-  std::string stats_str = "X Velocity: " + std::to_string(m_velocity.x) +
-      "\n" + "Y Velocity: " + std::to_string(m_velocity.y) + "\n" +
-      "Rotation: " + std::to_string(m_sprite.getRotation());
+  std::string stats_str = "Position: (" +
+      std::to_string(m_sprite.getPosition().x) + ", " +
+      std::to_string(m_sprite.getPosition().y) + ")\n" + "X Velocity: " +
+      std::to_string(m_velocity.x) + "\n" + "Y Velocity: " +
+      std::to_string(m_velocity.y) + "\n" + "Rotation: " +
+      std::to_string(m_sprite.getRotation());
   m_ship_stats.setString(stats_str);
 }
 
@@ -167,7 +167,7 @@ void Spaceship::initialize_stats_string() {
   m_ship_stats.setCharacterSize(20U);
   m_ship_stats.setFillColor(sf::Color::White);
   m_ship_stats.setPosition(5.0F, 5.0F);
-  m_ship_stats.setString("X Velocity: 0\nY Velocity: 0\nRotation: 0");
+  update_ship_stats();
 }
 #endif
 
