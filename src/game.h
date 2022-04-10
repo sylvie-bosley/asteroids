@@ -1,14 +1,14 @@
 #ifndef ASTEROIDS_GAME_CODE_INCLUDE_GAME_H
 #define ASTEROIDS_GAME_CODE_INCLUDE_GAME_H
 
-#include <vector>
+#include <memory>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "asteroid.h"
+#include "game_object.h"
 #include "spaceship.h"
-#include "quadtree.h"
+#include "collision_manager.h"
 
 namespace ag {
 
@@ -20,7 +20,7 @@ class Game {
   bool load_resources(const std::string title_bgm, const std::string game_bgm,
                       const std::string end_bgm, const std::string ship_gun_sfx,
                       const std::string game_font);
-  bool is_running();
+  bool is_running() const;
   void process_input();
   bool update(const sf::Time dt);
   void render();
@@ -34,9 +34,12 @@ class Game {
   };
 
   const unsigned int STARTING_ASTEROIDS = 4U;
+  const float L_ASTEROID = 50.0F;
+  const float M_ASTEROID = 25.0F;
+  const float S_ASTEROID = 12.5F;
 
-  void process_menu_keys(const sf::Keyboard::Key key);
   void generate_asteroids(const unsigned int asteroid_count, const float size);
+  void process_menu_keys(const sf::Keyboard::Key key);
   void start_game();
   void pause_game();
   void resume_game();
@@ -45,11 +48,10 @@ class Game {
   void close_game();
 
   sf::RenderWindow m_game_window;
-  std::vector<GameObject*> m_game_objects;
-  Spaceship m_player;
-  std::vector<Asteroid> m_asteroids;
-  unsigned int next_object_id = 0;
-  QuadTree m_collision_mngr;
+  std::vector<std::shared_ptr<GameObject>> m_game_objects;
+  std::shared_ptr<Spaceship> m_p_player;
+  unsigned int m_next_object_id = 0U;
+  CollisionManager m_collision_manager;
   sf::Music m_title_bgm;
   sf::Music m_game_bgm;
   sf::Music m_end_bgm;

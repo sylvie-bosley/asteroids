@@ -13,15 +13,16 @@ class Asteroid : public GameObject {
   explicit Asteroid(const float size, const unsigned int id);
   ~Asteroid() {};
 
-  sf::FloatRect get_sprite_bounds() override;
-  const sf::CircleShape get_sprite();
-  void update(const sf::Time dt);
-  bool collides(const std::vector<sf::Vector2f> player_vertices);
+  const sf::Drawable *get_sprite() const override;
+  const sf::FloatRect get_bounds() const override;
+  void update(const sf::Time dt) override;
+  void collide() override;
+  const sf::Vector2f get_position() const override;
 
  private:
   const float ASTEROID_SPEED = 25.0F;
 
-  float generate_valid_asteroid_x();
+  sf::Vector2f generate_valid_asteroid_position() const;
   float generate_valid_asteroid_y();
 
   sf::CircleShape m_sprite;

@@ -20,13 +20,15 @@ class Spaceship : public GameObject {
   bool load_resources(const std::string gun_sfx);
 #endif
 
-  sf::FloatRect get_sprite_bounds() override;
+  const sf::Drawable *get_sprite() const override;
+  const sf::FloatRect get_bounds() const override;
+  void update(const sf::Time dt) override;
+  void collide() override;
+  const sf::Vector2f get_position() const override;
+  const std::vector<sf::Vector2f> get_vertices() const override;
   void control_ship();
-  void update(const sf::Time dt);
   void reset_ship(const sf::Vector2f new_position, const float new_rotation,
                   const sf::Vector2f new_velocity);
-  const sf::ConvexShape get_sprite();
-  const std::vector<sf::Vector2f> get_vertices() const;
 
 #ifdef DEBUG
   const sf::Text get_ship_stats();

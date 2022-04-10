@@ -1,26 +1,23 @@
 #include "game.h"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include <memory>
 
-#include "asteroid.h"
+#include <SFML/Graphics.hpp>
+
+#include "game_object.h"
 #include "spaceship.h"
-#include "helpers.h"
-#include "quadtree.h"
+#include "asteroid.h"
 
 namespace ag {
 
 Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_player{static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), next_object_id},
-      m_collision_mngr{0U, sf::FloatRect(0.0F, 0.0F,
-                                         static_cast<float>(DISPLAY_SIZE.x),
-                                         static_cast<float>(DISPLAY_SIZE.y))} {
-  next_object_id++;
-  m_difficulty = 0U;
-  generate_asteroids(STARTING_ASTEROIDS, 50.0F);
-  m_running = true;
-  m_game_state = TitleScreen;
+      m_next_object_id{1U}, m_difficulty{0U}, m_running{true},
+      m_game_state{TitleScreen} {
+  m_p_player = std::make_shared<Spaceship>(
+      static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0U);
+  m_game_objects.push_back(m_p_player);
+  generate_asteroids(STARTING_ASTEROIDS, L_ASTEROID);
 }
 
 bool Game::load_resources(const std::string title_bgm,
@@ -30,20 +27,10 @@ bool Game::load_resources(const std::string title_bgm,
                           const std::string game_font) {
   bool loaded = true;
 #ifdef DEBUG
-  if (!m_player.load_resources(ship_gun_sfx, game_font) ||
-      !m_title_bgm.openFromFile(title_bgm) ||
-      !m_game_bgm.openFromFile(game_bgm) ||
-      !m_end_bgm.openFromFile(end_bgm) ||
-      !m_game_font.loadFromFile(game_font)) {
-    loaded = false;
-  } else {
-    m_title_bgm.setLoop(true);
-    m_game_bgm.setLoop(true);
-    m_end_bgm.setLoop(true);
-    m_title_bgm.play();
-  }
+  if (!m_p_player->load_resources(ship_gun_sfx, game_font) ||
 #else
-  if (!m_player.load_resources(ship_gun_sfx) ||
+  if (!m_p_player->load_resources(ship_gun_sfx) ||
+#endif
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
       !m_end_bgm.openFromFile(end_bgm) ||
@@ -55,11 +42,10 @@ bool Game::load_resources(const std::string title_bgm,
     m_end_bgm.setLoop(true);
     m_title_bgm.play();
   }
-#endif
   return loaded;
 }
 
-bool Game::is_running() {
+bool Game::is_running() const {
   return m_running;
 }
 
@@ -88,20 +74,19 @@ void Game::process_input() {
     }
   }
   if (m_game_state == InGame) {
-    m_player.control_ship();
+    m_p_player->control_ship();
   }
 }
 
 bool Game::update(const sf::Time dt) {
   if (m_game_state == InGame) {
-    m_player.update(dt);
-    for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-      m_asteroids.at(i).update(dt);
+    for (unsigned int i = 0U; i < m_game_objects.size(); ++i) {
+      m_game_objects.at(i)->update(dt);
     }
-    m_collision_mngr.clear();
-    for (unsigned int i = 0U; i < m_game_objects.size(); i++) {
-      m_collision_mngr.insert(m_game_objects.at(i));
-    }
+    m_collision_manager.check_for_collisions(m_game_objects);
+  }
+  if (m_p_player->destroyed()) {
+    game_over();
   }
   return true;
 }
@@ -117,26 +102,24 @@ void Game::render() {
     game_over_string.setPosition(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
     m_game_window.draw(game_over_string);
   } else {
-    m_game_window.draw(m_player.get_sprite());
-    for (unsigned int i = 0U; i < (STARTING_ASTEROIDS + m_difficulty); ++i) {
-      m_game_window.draw(m_asteroids.at(i).get_sprite());
-
-#ifdef DEBUG
-      sf::Text asteroid_label{std::to_string(i), m_game_font, 100U};
-      asteroid_label.setFillColor(sf::Color::White);
-      sf::Vector2f new_origin{asteroid_label.getLocalBounds().width / 2.0F,
-                              asteroid_label.getLocalBounds().height};
-      asteroid_label.setOrigin(new_origin);
-      asteroid_label.setPosition(m_asteroids.at(i).get_sprite().getPosition());
-      m_game_window.draw(asteroid_label);
-#endif
+    for (unsigned int i = 0U; i < m_game_objects.size(); ++i) {
+      m_game_window.draw(*m_game_objects.at(i)->get_sprite());
     }
 
 #ifdef DEBUG
-    m_game_window.draw(m_player.get_ship_stats());
+    m_game_window.draw(m_p_player->get_ship_stats());
 #endif
   }
   m_game_window.display();
+}
+
+void Game::generate_asteroids(const unsigned int asteroid_count,
+                              const float size) {
+  for (unsigned int i = 0U; i < asteroid_count; ++i) {
+    m_game_objects.push_back(std::make_shared<Asteroid>(size,
+                                                        m_next_object_id));
+    m_next_object_id++;
+  }
 }
 
 void Game::process_menu_keys(const sf::Keyboard::Key key) {
@@ -168,14 +151,6 @@ void Game::process_menu_keys(const sf::Keyboard::Key key) {
   }
 }
 
-void Game::generate_asteroids(const unsigned int asteroid_count,
-    const float size) {
-  for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    m_asteroids.push_back(Asteroid{size, next_object_id});
-    next_object_id++;
-  }
-}
-
 void Game::start_game() {
   m_game_state = InGame;
   m_title_bgm.stop();
@@ -199,13 +174,17 @@ void Game::game_over() {
 }
 
 void Game::reset_game() {
+  m_difficulty = 0U;
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_player.reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
-                      sf::Vector2f{0.0F, 0.0F});
-  m_asteroids.clear();
-  generate_asteroids(STARTING_ASTEROIDS, 50.0F);
+  m_p_player->reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
+                         sf::Vector2f{0.0F, 0.0F});
+  while (m_game_objects.size() > 1U) {
+    m_game_objects.pop_back();
+  }
+  m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
+  generate_asteroids(STARTING_ASTEROIDS, L_ASTEROID);
 }
 
 void Game::close_game() {
