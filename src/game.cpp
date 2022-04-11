@@ -117,7 +117,8 @@ void Game::generate_asteroids(const unsigned int asteroid_count,
                               const float size) {
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
     m_game_objects.push_back(std::make_shared<Asteroid>(size,
-                                                        m_next_object_id));
+                                                        m_next_object_id,
+                                                        m_game_objects));
     m_next_object_id++;
   }
 }
