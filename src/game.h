@@ -49,7 +49,7 @@ class Game {
 
   sf::RenderWindow m_game_window;
   std::vector<std::shared_ptr<GameObject>> m_game_objects;
-  std::shared_ptr<Spaceship> m_p_player;
+  std::shared_ptr<Spaceship> m_player;
   unsigned int m_next_object_id = 0U;
   CollisionManager m_collision_manager;
   sf::Music m_title_bgm;

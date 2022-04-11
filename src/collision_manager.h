@@ -14,12 +14,12 @@ class CollisionManager
   CollisionManager();
   ~CollisionManager() {};
 
-  void check_for_collisions(
-      std::vector<std::shared_ptr<GameObject>> m_game_objects);
+  void check_for_collisions(std::vector<
+      std::shared_ptr<GameObject>> m_game_objects);
 
  private:
-  bool collision(const std::shared_ptr<GameObject> object_one,
-                 const std::shared_ptr<GameObject> object_two);
+  bool collision(const GameObject &object_one,
+                 const GameObject &object_two);
 
   QuadTree m_collidables;
 };

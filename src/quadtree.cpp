@@ -23,15 +23,15 @@ void QuadTree::clear() {
   }
 }
 
-void QuadTree::insert(std::shared_ptr<GameObject> object) {
+void QuadTree::insert(GameObject &object) {
   if (!m_nodes.empty()) {
-    int index = get_index(object->get_bounds());
+    int index = get_index(object.get_bounds());
     if (index != -1) {
       m_nodes.at(index).insert(object);
       return;
     }
   }
-  m_collidables.push_back(object);
+  m_collidables.push_back(&object);
   if (m_collidables.size() > MAX_OBJECTS && m_level < MAX_LEVELS) {
     if (m_nodes.empty()) {
         split();
@@ -40,7 +40,7 @@ void QuadTree::insert(std::shared_ptr<GameObject> object) {
     while (i < m_collidables.size()) {
       int index = get_index(m_collidables.at(i)->get_bounds());
       if (index != -1) {
-        m_nodes.at(index).insert(m_collidables.at(i));
+        m_nodes.at(index).insert(*m_collidables.at(i));
         m_collidables.erase(m_collidables.begin() + i);
       }
       else {
@@ -50,9 +50,8 @@ void QuadTree::insert(std::shared_ptr<GameObject> object) {
   }
 }
 
-std::vector<std::shared_ptr<GameObject>> QuadTree::retrieve(
-    sf::FloatRect object_bounds) {
-  std::vector<std::shared_ptr<GameObject>> other_objects;
+std::vector<GameObject *> QuadTree::retrieve(sf::FloatRect object_bounds) {
+  std::vector<GameObject *> other_objects;
   int index = get_index(object_bounds);
   if (index != -1 && !m_nodes.empty()) {
     other_objects = m_nodes.at(index).retrieve(object_bounds);

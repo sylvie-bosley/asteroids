@@ -14,9 +14,9 @@ Game::Game()
     : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
       m_next_object_id{1U}, m_difficulty{0U}, m_running{true},
       m_game_state{TitleScreen} {
-  m_p_player = std::make_shared<Spaceship>(
+  m_player = std::make_shared<Spaceship>(
       static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0U);
-  m_game_objects.push_back(m_p_player);
+  m_game_objects.push_back(m_player);
   generate_asteroids(STARTING_ASTEROIDS, L_ASTEROID);
 }
 
@@ -27,9 +27,9 @@ bool Game::load_resources(const std::string title_bgm,
                           const std::string game_font) {
   bool loaded = true;
 #ifdef DEBUG
-  if (!m_p_player->load_resources(ship_gun_sfx, game_font) ||
+  if (!m_player->load_resources(ship_gun_sfx, game_font) ||
 #else
-  if (!m_p_player->load_resources(ship_gun_sfx) ||
+  if (!m_player->load_resources(ship_gun_sfx) ||
 #endif
       !m_title_bgm.openFromFile(title_bgm) ||
       !m_game_bgm.openFromFile(game_bgm) ||
@@ -74,7 +74,7 @@ void Game::process_input() {
     }
   }
   if (m_game_state == InGame) {
-    m_p_player->control_ship();
+    m_player->control_ship();
   }
 }
 
@@ -85,7 +85,7 @@ bool Game::update(const sf::Time dt) {
     }
     m_collision_manager.check_for_collisions(m_game_objects);
   }
-  if (m_p_player->destroyed()) {
+  if (m_player->destroyed()) {
     game_over();
   }
   return true;
@@ -107,7 +107,7 @@ void Game::render() {
     }
 
 #ifdef DEBUG
-    m_game_window.draw(m_p_player->get_ship_stats());
+    m_game_window.draw(m_player->get_ship_stats());
 #endif
   }
   m_game_window.display();
@@ -178,7 +178,7 @@ void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_p_player->reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
+  m_player->reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
                          sf::Vector2f{0.0F, 0.0F});
   while (m_game_objects.size() > 1U) {
     m_game_objects.pop_back();
