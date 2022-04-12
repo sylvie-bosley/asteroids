@@ -11,10 +11,10 @@
 namespace ag {
 
 Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
-    : m_sprite{3U},
-      m_velocity{0.0F, 0.0F} {
+    : m_sprite{3U} {
   set_object_id(id);
   set_object_type(PlayerType);
+  set_velocity(sf::Vector2f{0.0F, 0.0F});
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
@@ -60,7 +60,7 @@ const sf::FloatRect Spaceship::get_bounds() const {
 }
 
 void Spaceship::update(const sf::Time dt) {
-  m_sprite.move(m_velocity * dt.asSeconds());
+  m_sprite.move(get_velocity() * dt.asSeconds());
   sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
   if (wrapped_position != m_sprite.getPosition()) {
     m_sprite.setPosition(wrapped_position);
@@ -116,7 +116,7 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
                            const sf::Vector2f new_velocity) {
   m_sprite.setPosition(new_position);
   m_sprite.setRotation(new_rotation);
-  m_velocity = new_velocity;
+  set_velocity(new_velocity);
   set_destroyed(false);
 
 #ifdef DEBUG
@@ -130,10 +130,10 @@ void Spaceship::engage_thrusters(const float direction) {
   float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
   sf::Vector2f heading{r_sin, -r_cos};
-  m_velocity = m_velocity + (heading * ACCELERATION * direction);
-  if (vector2f_length(m_velocity) > MAX_SPEED) {
-    sf::Vector2f normal_velocity = normalize_vector2f(m_velocity);
-    m_velocity = normal_velocity * MAX_SPEED;
+  set_velocity(get_velocity() + (heading * ACCELERATION * direction));
+  if (vector2f_length(get_velocity()) > MAX_SPEED) {
+    sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
+    set_velocity(normal_velocity * MAX_SPEED);
   }
 }
 
@@ -153,8 +153,8 @@ void Spaceship::update_ship_stats() {
   std::string stats_str = "Position: (" +
       std::to_string(m_sprite.getPosition().x) + ", " +
       std::to_string(m_sprite.getPosition().y) + ")\n" + "X Velocity: " +
-      std::to_string(m_velocity.x) + "\n" + "Y Velocity: " +
-      std::to_string(m_velocity.y) + "\n" + "Rotation: " +
+      std::to_string(get_velocity().x) + "\n" + "Y Velocity: " +
+      std::to_string(get_velocity().y) + "\n" + "Rotation: " +
       std::to_string(m_sprite.getRotation());
   m_ship_stats.setString(stats_str);
 }

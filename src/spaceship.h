@@ -46,7 +46,6 @@ class Spaceship : public GameObject {
   sf::SoundBuffer m_gun_sound_buffer;
   sf::SoundBuffer m_thruster_sound_buffer;
   sf::Sound m_gun_sound;
-  sf::Vector2f m_velocity;
   float m_angular_velocity;
 
 #ifdef DEBUG

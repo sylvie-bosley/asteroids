@@ -3,6 +3,8 @@
 #include <cmath>
 #include <memory>
 
+#include <SFML/System.hpp>
+
 #include "game_object.h"
 #include "quadtree.h"
 #include "helpers.h"
@@ -23,11 +25,26 @@ void CollisionManager::check_for_collisions(
   for (unsigned int i = 0U; i < m_game_objects.size(); i++) {
     other_objects = m_collidables.retrieve(m_game_objects.at(i)->get_bounds());
     for (unsigned int j = 0U; j < other_objects.size(); j++) {
-      if (m_game_objects.at(i)->get_object_id() !=
-              other_objects.at(j)->get_object_id() &&
+      unsigned int id_one = m_game_objects.at(i)->get_object_id();
+      unsigned int id_two = other_objects.at(j)->get_object_id();
+      if (id_one != id_two &&
           collision(*m_game_objects.at(i), *other_objects.at(j))){
-        m_game_objects.at(i)->collide();
-        other_objects.at(j)->collide();
+        GameObject::ObjectType type_one, type_two;
+        type_one = m_game_objects.at(i)->get_object_type();
+        type_two = other_objects.at(j)->get_object_type();
+        if (type_one == GameObject::AsteroidType &&
+            type_two == GameObject::AsteroidType) {
+          sf::Vector2f center_one, center_two, velocity_one, velocity_two;
+          center_one = m_game_objects.at(i)->get_position();
+          center_two = other_objects.at(j)->get_position();
+          velocity_one = m_game_objects.at(i)->get_velocity();
+          velocity_two = other_objects.at(j)->get_velocity();
+          m_game_objects.at(i)->deflect(center_two, velocity_two);
+          other_objects.at(j)->deflect(center_one, velocity_one);
+        } else {
+          m_game_objects.at(i)->collide();
+          other_objects.at(j)->collide();
+        }
       }
     }
     other_objects.clear();
@@ -60,6 +77,14 @@ bool CollisionManager::collision(const GameObject &object_one,
         if (distance <= 50.0F) {
           collision_occurrs = true;
         }
+      }
+    } else if (object_one.get_object_type() == GameObject::AsteroidType &&
+               object_two.get_object_type() == GameObject::AsteroidType) {
+      distance = sqrt(
+          pow((object_one.get_position().x - object_two.get_position().x), 2) +
+          pow((object_one.get_position().y - object_two.get_position().y), 2));
+      if (distance <= 100.0F) {
+        collision_occurrs = true;
       }
     }
   }

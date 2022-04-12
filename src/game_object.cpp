@@ -10,7 +10,11 @@ const GameObject::ObjectType GameObject::get_object_type() const {
   return m_object_type;
 }
 
-const bool GameObject::destroyed() const{
+const sf::Vector2f GameObject::get_velocity() const {
+  return m_velocity;
+}
+
+const bool GameObject::is_destroyed() const{
   return m_destroyed;
 }
 
@@ -20,6 +24,10 @@ void GameObject::set_object_id(const unsigned int id) {
 
 void GameObject::set_object_type(const ObjectType type) {
   m_object_type = type;
+}
+
+void GameObject::set_velocity(const sf::Vector2f velocity) {
+  m_velocity = velocity;
 }
 
 void GameObject::set_destroyed(const bool state) {

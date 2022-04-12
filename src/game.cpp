@@ -85,7 +85,7 @@ bool Game::update(const sf::Time dt) {
     }
     m_collision_manager.check_for_collisions(m_game_objects);
   }
-  if (m_player->destroyed()) {
+  if (m_player->is_destroyed()) {
     game_over();
   }
   return true;
@@ -115,10 +115,11 @@ void Game::render() {
 
 void Game::generate_asteroids(const unsigned int asteroid_count,
                               const float size) {
+  std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    m_game_objects.push_back(std::make_shared<Asteroid>(size,
-                                                        m_next_object_id,
-                                                        m_game_objects));
+    new_asteroid = std::make_shared<Asteroid>(size, m_next_object_id,
+                                              m_game_objects);
+    m_game_objects.push_back(new_asteroid);
     m_next_object_id++;
   }
 }

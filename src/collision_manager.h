@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <SFML/System.hpp>
+
 #include "game_object.h"
 #include "quadtree.h"
 
