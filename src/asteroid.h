@@ -20,8 +20,7 @@ class Asteroid : public GameObject {
   const sf::FloatRect get_bounds() const override;
   const sf::Vector2f get_position() const override;
   void update(const sf::Time dt) override;
-  void deflect(const sf::Vector2f other_position,
-               const sf::Vector2f other_velocity) override;
+  void deflect(const sf::Vector2f other_velocity) override;
   void collide() override;
 
  private:
@@ -29,8 +28,6 @@ class Asteroid : public GameObject {
 
   sf::Vector2f generate_valid_asteroid_position(
       const std::vector<std::shared_ptr<GameObject>> other_objects) const;
-  sf::Vector2f deflected_velocity(const sf::Vector2f other_position,
-                                  const sf::Vector2f other_velocity) const;
 
   sf::CircleShape m_sprite;
   bool m_deflected;

@@ -49,11 +49,10 @@ void Asteroid::update(const sf::Time dt) {
   }
 }
 
-void Asteroid::deflect(const sf::Vector2f other_position,
-                       const sf::Vector2f other_velocity) {
+void Asteroid::deflect(const sf::Vector2f other_velocity) {
   if (!m_deflected) {
     m_deflected = true;
-    set_velocity(deflected_velocity(other_position, other_velocity));
+    set_velocity(other_velocity);
   }
 }
 
@@ -96,15 +95,6 @@ sf::Vector2f Asteroid::generate_valid_asteroid_position(
     }
   } while (invalid);
   return sf::Vector2f{new_x, new_y};
-}
-
-sf::Vector2f Asteroid::deflected_velocity(const sf::Vector2f other_position,
-    const sf::Vector2f other_velocity) const {
-  sf::Vector2f n = normalize_vector2f(get_position() - other_position);
-  float dot_product_one = (get_position().x * n.x) + (get_position().y * n.y);
-  float dot_product_two = (other_position.x * n.x) + (other_position.y * n.y);
-  float optimized_p = std::min(0.0F, ((2.0F * (dot_product_one - dot_product_two)) / 2.0F));
-  return get_position() - (optimized_p * n);
 }
 
 }

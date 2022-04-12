@@ -19,8 +19,7 @@ class GameObject {
   virtual const sf::Drawable *get_sprite() const {};
   virtual const sf::FloatRect get_bounds() const {};
   virtual void update(const sf::Time dt) {};
-  virtual void deflect(const sf::Vector2f other_position,
-                       const sf::Vector2f other_velocity) {};
+  virtual void deflect(const sf::Vector2f other_velocity) {};
   virtual void collide() {};
   virtual const sf::Vector2f get_position() const {};
   virtual const std::vector<sf::Vector2f> get_vertices() const {};

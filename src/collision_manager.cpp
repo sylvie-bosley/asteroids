@@ -34,13 +34,11 @@ void CollisionManager::check_for_collisions(
         type_two = other_objects.at(j)->get_object_type();
         if (type_one == GameObject::AsteroidType &&
             type_two == GameObject::AsteroidType) {
-          sf::Vector2f center_one, center_two, velocity_one, velocity_two;
-          center_one = m_game_objects.at(i)->get_position();
-          center_two = other_objects.at(j)->get_position();
+          sf::Vector2f velocity_one, velocity_two;
           velocity_one = m_game_objects.at(i)->get_velocity();
           velocity_two = other_objects.at(j)->get_velocity();
-          m_game_objects.at(i)->deflect(center_two, velocity_two);
-          other_objects.at(j)->deflect(center_one, velocity_one);
+          m_game_objects.at(i)->deflect(velocity_two);
+          other_objects.at(j)->deflect(velocity_one);
         } else {
           m_game_objects.at(i)->collide();
           other_objects.at(j)->collide();
@@ -56,34 +54,40 @@ bool CollisionManager::collision(const GameObject &object_one,
                                  const GameObject &object_two) {
   bool collision_occurrs = false;
   if (object_one.get_bounds().intersects(object_two.get_bounds())) {
-    float distance;
+    float distance_standard = 100.1F;
+    float distance_edge_wrapped = 100.1F;
     std::vector<sf::Vector2f> vertices;
     if (object_one.get_object_type() == GameObject::PlayerType) {
       vertices = object_one.get_vertices();
       for (unsigned int i = 0U; i < vertices.size(); i++) {
-        distance = sqrt(
+        distance_standard = sqrt(
             pow((vertices.at(i).x - object_two.get_position().x), 2) +
             pow((vertices.at(i).y - object_two.get_position().y), 2));
-        if (distance <= 50.0F) {
+        if (distance_standard <= 50.0F) {
           collision_occurrs = true;
         }
       }
     } else if (object_two.get_object_type() == GameObject::PlayerType) {
       vertices = object_two.get_vertices();
       for (unsigned int i = 0U; i < vertices.size(); i++) {
-        distance = sqrt(
+        distance_standard = sqrt(
             pow((vertices.at(i).x - object_one.get_position().x), 2) +
             pow((vertices.at(i).y - object_one.get_position().y), 2));
-        if (distance <= 50.0F) {
+        if (distance_standard <= 50.0F) {
           collision_occurrs = true;
         }
       }
     } else if (object_one.get_object_type() == GameObject::AsteroidType &&
                object_two.get_object_type() == GameObject::AsteroidType) {
-      distance = sqrt(
+      distance_standard = sqrt(
           pow((object_one.get_position().x - object_two.get_position().x), 2) +
           pow((object_one.get_position().y - object_two.get_position().y), 2));
-      if (distance <= 100.0F) {
+
+      // TODO: Check for collision around edges by checking object one distance
+      //       to edge + object two distance to edge. If the sum is less than
+      //       100 it collides.
+
+      if (distance_standard <= 100.0F || distance_edge_wrapped <= 100.0F) {
         collision_occurrs = true;
       }
     }
