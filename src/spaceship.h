@@ -22,10 +22,10 @@ class Spaceship : public GameObject {
 
   const sf::Drawable *get_sprite() const override;
   const sf::FloatRect get_bounds() const override;
-  void update(const sf::Time dt) override;
-  void collide() override;
   const sf::Vector2f get_position() const override;
   const std::vector<sf::Vector2f> get_vertices() const override;
+  void update(const sf::Time dt) override;
+  void collide() override;
   void control_ship();
   void reset_ship(const sf::Vector2f new_position, const float new_rotation,
                   const sf::Vector2f new_velocity);

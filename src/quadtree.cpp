@@ -89,10 +89,10 @@ int QuadTree::get_index(const sf::FloatRect bound_box) {
   bool top_half = (bound_box.top < horizontal_midpoint &&
                    bound_box.top + bound_box.height < horizontal_midpoint);
   bool bottom_half = (bound_box.top > horizontal_midpoint);
-  if (bound_box.top < m_bounds.top + 51.0F ||
-      bound_box.top + bound_box.height > m_bounds.height - 51.0 ||
-      bound_box.left < m_bounds.left + 51.0F ||
-      bound_box.left + bound_box.width > m_bounds.width - 51.0F) {
+  if (bound_box.top < m_bounds.top + 50.0F ||
+      bound_box.top + bound_box.height > m_bounds.top + m_bounds.height - 50.0 ||
+      bound_box.left < m_bounds.left + 50.0F ||
+      bound_box.left + bound_box.width > m_bounds.left + m_bounds.width - 50.0F) {
     if (bound_box.left < vertical_midpoint &&
         bound_box.left + bound_box.width < vertical_midpoint) {
       if (top_half) {

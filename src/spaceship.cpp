@@ -15,6 +15,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
+  set_destroyed(false);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
@@ -59,6 +60,19 @@ const sf::FloatRect Spaceship::get_bounds() const {
   return m_sprite.getGlobalBounds();
 }
 
+const sf::Vector2f Spaceship::get_position() const {
+  return m_sprite.getPosition();
+}
+
+const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
+  std::vector<sf::Vector2f> vertices;
+  for (unsigned int i = 0U; i < m_sprite.getPointCount(); i++) {
+      vertices.push_back(
+          m_sprite.getTransform().transformPoint(m_sprite.getPoint(i)));
+  }
+  return vertices;
+}
+
 void Spaceship::update(const sf::Time dt) {
   m_sprite.move(get_velocity() * dt.asSeconds());
   sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
@@ -77,20 +91,7 @@ void Spaceship::update(const sf::Time dt) {
 
 void Spaceship::collide() {
   // TODO: Trigger death animation
-  set_destroyed(true);
-}
-
-const sf::Vector2f Spaceship::get_position() const {
-  return m_sprite.getPosition();
-}
-
-const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
-  std::vector<sf::Vector2f> vertices;
-  for (unsigned int i = 0U; i < m_sprite.getPointCount(); i++) {
-      vertices.push_back(
-          m_sprite.getTransform().transformPoint(m_sprite.getPoint(i)));
-  }
-  return vertices;
+  // set_destroyed(true);
 }
 
 void Spaceship::control_ship() {
@@ -144,9 +145,15 @@ void Spaceship::fire_weapon() {
 }
 
 #ifdef DEBUG
-
 const sf::Text Spaceship::get_ship_stats() {
   return m_ship_stats;
+}
+
+void Spaceship::initialize_stats_string() {
+  m_ship_stats.setCharacterSize(20U);
+  m_ship_stats.setFillColor(sf::Color::White);
+  m_ship_stats.setPosition(5.0F, 5.0F);
+  update_ship_stats();
 }
 
 void Spaceship::update_ship_stats() {
@@ -157,13 +164,6 @@ void Spaceship::update_ship_stats() {
       std::to_string(get_velocity().y) + "\n" + "Rotation: " +
       std::to_string(m_sprite.getRotation());
   m_ship_stats.setString(stats_str);
-}
-
-void Spaceship::initialize_stats_string() {
-  m_ship_stats.setCharacterSize(20U);
-  m_ship_stats.setFillColor(sf::Color::White);
-  m_ship_stats.setPosition(5.0F, 5.0F);
-  update_ship_stats();
 }
 #endif
 

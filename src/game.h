@@ -33,7 +33,7 @@ class Game {
     GameOver
   };
 
-  const unsigned int STARTING_ASTEROIDS = 4U;
+  const unsigned int STARTING_ASTEROIDS = 10U;
   const float L_ASTEROID = 50.0F;
   const float M_ASTEROID = 25.0F;
   const float S_ASTEROID = 12.5F;
