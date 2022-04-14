@@ -22,11 +22,9 @@ class Asteroid : public GameObject {
   const float get_mass() const override;
   void update(const sf::Time dt) override;
   void deflect(const sf::Vector2f new_velocity) override;
-  void clear_deflect() override;
   void collide() override;
-
  private:
-  const float ASTEROID_SPEED = 100.0F;
+  const float ASTEROID_SPEED = 25.0F;
 
   sf::Vector2f generate_valid_asteroid_position(
       const std::vector<std::shared_ptr<GameObject>> other_objects) const;

@@ -54,15 +54,11 @@ void Asteroid::update(const sf::Time dt) {
   }
 }
 
-void Asteroid::deflect(const sf::Vector2f other_velocity) {
+void Asteroid::deflect(const sf::Vector2f new_velocity) {
   if (!m_deflected) {
     m_deflected = true;
-    set_velocity(other_velocity);
+    set_velocity(new_velocity);
   }
-}
-
-void Asteroid::clear_deflect() {
-  m_deflected = false;
 }
 
 void Asteroid::collide() {
@@ -77,8 +73,8 @@ sf::Vector2f Asteroid::generate_valid_asteroid_position(
     invalid = false;
     new_x = static_cast<float>(rand() % DISPLAY_SIZE.x);
     new_y = static_cast<float>(rand() % DISPLAY_SIZE.y);
-    if ((new_x < 50.1F || new_x > DISPLAY_SIZE.x - 50.1F) &&
-        (new_y < 50.1F || new_y > DISPLAY_SIZE.y - 50.1F)) {
+    if (new_x <= 50.0F || new_x >= DISPLAY_SIZE.x - 50.0F ||
+        new_y <= 50.0F || new_y >= DISPLAY_SIZE.y - 50.0F) {
       invalid = true;
     }
     for (auto other_object : other_objects) {

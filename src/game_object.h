@@ -23,7 +23,6 @@ class GameObject {
   virtual const float get_mass() const {};
   virtual void update(const sf::Time dt) {};
   virtual void deflect(const sf::Vector2f new_velocity) {};
-  virtual void clear_deflect() {};
   virtual void collide() {};
 
  protected:

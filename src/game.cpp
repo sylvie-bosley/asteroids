@@ -83,7 +83,7 @@ bool Game::update(const sf::Time dt) {
     for (unsigned int i = 0U; i < m_game_objects.size(); ++i) {
       m_game_objects.at(i)->update(dt);
     }
-    m_collision_manager.check_for_collisions(dt, m_game_objects);
+    m_collision_manager.check_for_collisions(m_game_objects);
   }
   if (m_player->is_destroyed()) {
     game_over();

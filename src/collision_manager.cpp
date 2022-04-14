@@ -16,7 +16,7 @@ CollisionManager::CollisionManager()
         0U, sf::FloatRect(0.0F, 0.0F, static_cast<float>(DISPLAY_SIZE.x),
         static_cast<float>(DISPLAY_SIZE.y))} {}
 
-void CollisionManager::check_for_collisions(const sf::Time dt,
+void CollisionManager::check_for_collisions(
     std::vector<std::shared_ptr<GameObject>> m_game_objects) {
   std::vector<GameObject *> other_objects;
   CollisionManager::Outcome outcome;
@@ -27,21 +27,23 @@ void CollisionManager::check_for_collisions(const sf::Time dt,
     other_objects = m_collidables.retrieve(object_one->get_bounds());
     for (auto object_two : m_game_objects) {
       if (object_one->get_object_id() != object_two->get_object_id()){
-        outcome = collision(dt, *object_one, *object_two);
+        outcome = collision_check(*object_one, *object_two);
         if (outcome == CollisionManager::Deflect) {
-          sf::Vector2f velocity_one, velocity_two;
+          sf::Vector2f velocity_one, new_velocity_one, n,
+                       velocity_two, new_velocity_two;
+          float dot_one, dot_two, optimized_p;
           velocity_one = object_one->get_velocity();
           velocity_two = object_two->get_velocity();
-          sf::Vector2f n = normalize_vector2f(object_one->get_position() -
-                                              object_two->get_position());
-          float dot_one = velocity_one.x * n.x + velocity_one.y * n.y;
-          float dot_two = velocity_two.x * n.x + velocity_two.y * n.y;
-          float optimized_p = (2.0F * (dot_one - dot_two)) /
-                              (object_one->get_mass() + object_two->get_mass());
-          sf::Vector2f new_velocity_one = velocity_one - optimized_p *
-                                          object_two->get_mass() * n;
-          sf::Vector2f new_velocity_two = velocity_two + optimized_p *
-                                          object_one->get_mass() * n;
+          n = normalize_vector2f(object_one->get_position() -
+                                 object_two->get_position());
+          dot_one = velocity_one.x * n.x + velocity_one.y * n.y;
+          dot_two = velocity_two.x * n.x + velocity_two.y * n.y;
+          optimized_p = (2.0F * (dot_one - dot_two)) /
+                        (object_one->get_mass() + object_two->get_mass());
+          new_velocity_one = velocity_one - optimized_p *
+                             object_two->get_mass() * n;
+          new_velocity_two = velocity_two + optimized_p *
+                             object_one->get_mass() * n;
           object_one->deflect(new_velocity_one);
           object_two->deflect(new_velocity_two);
         } else if (outcome == CollisionManager::Collide) {
@@ -55,9 +57,11 @@ void CollisionManager::check_for_collisions(const sf::Time dt,
   m_collidables.clear();
 }
 
-CollisionManager::Outcome CollisionManager::collision(const sf::Time dt,
+CollisionManager::Outcome CollisionManager::collision_check(
     const GameObject &object_one, const GameObject &object_two) {
-  if (object_one.get_bounds().intersects(object_two.get_bounds())) {
+  if (object_one.get_bounds().intersects(object_two.get_bounds()) ||
+      (m_collidables.get_index(object_one.get_bounds()) == -1 &&
+       m_collidables.get_index(object_two.get_bounds()) == -1)) {
     if (object_one.get_object_type() == GameObject::PlayerType) {
       return player_collision(object_one.get_vertices(),
                               object_two.get_position());
@@ -66,13 +70,8 @@ CollisionManager::Outcome CollisionManager::collision(const sf::Time dt,
                               object_one.get_position());
     } else if (object_one.get_object_type() == GameObject::AsteroidType &&
                object_two.get_object_type() == GameObject::AsteroidType) {
-      sf::Vector2f future_one = object_one.get_position() +
-                                object_one.get_velocity() *
-                                dt.asSeconds();
-      sf::Vector2f future_two = object_two.get_position() +
-                                object_two.get_velocity() *
-                                dt.asSeconds();
-      return asteroid_collision(future_one, future_two);
+      return asteroid_collision(object_one.get_position(),
+                                object_two.get_position());
     }
   }
   return CollisionManager::Miss;

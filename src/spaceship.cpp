@@ -91,7 +91,9 @@ void Spaceship::update(const sf::Time dt) {
 
 void Spaceship::collide() {
   // TODO: Trigger death animation
-  // set_destroyed(true);
+#ifndef DEBUG
+  set_destroyed(true);
+#endif
 }
 
 void Spaceship::control_ship() {

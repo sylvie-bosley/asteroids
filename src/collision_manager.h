@@ -16,7 +16,7 @@ class CollisionManager
   CollisionManager();
   ~CollisionManager() {};
 
-  void check_for_collisions(const sf::Time dt,
+  void check_for_collisions(
       std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
  private:
@@ -26,9 +26,8 @@ class CollisionManager
     Deflect = 2U
   };
 
-  CollisionManager::Outcome collision(const sf::Time dt,
-                                      const GameObject &object_one,
-                                      const GameObject &object_two);
+  CollisionManager::Outcome collision_check(const GameObject &object_one,
+                                            const GameObject &object_two);
   CollisionManager::Outcome player_collision(
       const std::vector<sf::Vector2f> player_vertices,
       const sf::Vector2f object_position);
