@@ -98,24 +98,7 @@ CollisionManager::Outcome CollisionManager::asteroid_collision(
   delta_x = asteroid_one.x - asteroid_two.x;
   delta_y = asteroid_one.y - asteroid_two.y;
   distance = sqrt(pow((delta_x), 2) + pow((delta_y), 2));
-  if (asteroid_one.x <= asteroid_two.x) {
-    wrapped_delta_x = asteroid_one.x + DISPLAY_SIZE.x - asteroid_two.x;
-  } else {
-    wrapped_delta_x = asteroid_two.x + DISPLAY_SIZE.x - asteroid_one.x;
-  }
-  if (asteroid_one.y <= asteroid_two.y) {
-    wrapped_delta_y = asteroid_one.y + DISPLAY_SIZE.y - asteroid_two.y;
-  } else {
-    wrapped_delta_y = asteroid_two.y + DISPLAY_SIZE.y - asteroid_one.y;
-  }
-  x_wrapped_distance = sqrt(pow((wrapped_delta_x), 2) + pow((delta_y), 2));
-  y_wrapped_distance = sqrt(pow((delta_x), 2) + pow((wrapped_delta_y), 2));
-  xy_wrapped_distance = sqrt(pow((wrapped_delta_x), 2) + pow((wrapped_delta_y),
-                             2));
-  if (distance <= 100.0F ||
-      x_wrapped_distance <= 100.0F ||
-      y_wrapped_distance <= 100.0F ||
-      xy_wrapped_distance <= 100.0F) {
+  if (distance <= 100.0F) {
     return CollisionManager::Deflect;
   }
   return CollisionManager::Miss;

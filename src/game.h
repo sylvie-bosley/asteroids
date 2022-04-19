@@ -33,13 +33,17 @@ class Game {
     GameOver
   };
 
-  const unsigned int STARTING_ASTEROIDS = 4U;
+  const unsigned int STARTING_ASTEROIDS = 20U;
+  const float ASTEROID_SPEED = 25.0F;
   const float L_ASTEROID = 50.0F;
   const float M_ASTEROID = 25.0F;
   const float S_ASTEROID = 12.5F;
 
-  void generate_asteroids(const unsigned int asteroid_count, const float size);
+  void check_for_wrap(GameObject &object);
+  void spawn_asteroids(const unsigned int asteroid_count, const float size);
   void process_menu_keys(const sf::Keyboard::Key key);
+  const sf::Vector2f generate_valid_asteroid_position() const;
+  const bool off_camera(const sf::Vector2f position) const;
   void start_game();
   void pause_game();
   void resume_game();

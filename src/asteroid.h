@@ -13,7 +13,7 @@ class Asteroid : public GameObject {
  public:
   Asteroid() {};
   explicit Asteroid(const float size, const unsigned int id,
-      const std::vector<std::shared_ptr<GameObject>> other_objects);
+                    const sf::Vector2f position, const sf::Vector2f velocity);
   ~Asteroid() {};
 
   const sf::Drawable *get_sprite() const override;
@@ -23,14 +23,11 @@ class Asteroid : public GameObject {
   void update(const sf::Time dt) override;
   void deflect(const sf::Vector2f new_velocity) override;
   void collide() override;
+  std::shared_ptr<GameObject> spawn_wrapped_copy(const unsigned int id,
+      const sf::Vector2f position) const override;
+
  private:
-  const float ASTEROID_SPEED = 25.0F;
-
-  sf::Vector2f generate_valid_asteroid_position(
-      const std::vector<std::shared_ptr<GameObject>> other_objects) const;
-
   sf::CircleShape m_sprite;
-  float m_mass;
   bool m_deflected;
 };
 
