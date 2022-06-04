@@ -56,7 +56,7 @@ void Asteroid::collide() {
   set_destroyed(true);
 }
 
-std::shared_ptr<GameObject> Asteroid::spawn_wrapped_copy(const unsigned int id,
+std::shared_ptr<GameObject> Asteroid::spawn_copy(const unsigned int id,
     const sf::Vector2f position) const {
   return std::make_shared<Asteroid>(get_mass(), id, position, get_velocity());
 }

@@ -81,11 +81,9 @@ void Game::process_input() {
 
 bool Game::update(const sf::Time dt) {
   if (m_game_state == InGame) {
-    for (std::shared_ptr<GameObject> object : m_game_objects) {
-      object->update(dt);
-    }
     int i = 0;
     while (i < m_game_objects.size()) {
+      m_game_objects.at(i)->update(dt);
       if (m_game_objects.at(i)->get_object_type() == GameObject::AsteroidType) {
         if (!m_game_objects.at(i)->has_wrapped()) {
           check_for_wrap(*m_game_objects.at(i));
@@ -97,9 +95,10 @@ bool Game::update(const sf::Time dt) {
           i--;
         }
       }
+      m_collision_manager.check_for_collisions(*m_game_objects.at(i),
+                                               m_game_objects);
       i++;
     }
-    m_collision_manager.check_for_collisions(m_game_objects);
   }
   if (m_player->is_destroyed()) {
     game_over();
@@ -130,9 +129,6 @@ void Game::render() {
 }
 
 void Game::check_for_wrap(GameObject &object) {
-  if (object.has_wrapped()) {
-    return;
-  }
   sf::Vector2f position = object.get_position();
   sf::Vector2f velocity = object.get_velocity();
   float wrapped_x = object.get_position().x;
@@ -155,9 +151,10 @@ void Game::check_for_wrap(GameObject &object) {
     wrapped_y = (position.y - static_cast<float>(DISPLAY_SIZE.y));
   }
   if (wrap_left || wrap_right || wrap_top || wrap_bottom) {
-    m_game_objects.push_back(object.spawn_wrapped_copy(m_next_object_id,
+    m_game_objects.push_back(object.spawn_copy(m_next_object_id,
         sf::Vector2f{wrapped_x, wrapped_y}));
     m_next_object_id++;
+    m_game_objects.back()->has_wrapped();
   }
   object.set_wrapped(wrap_left || wrap_right || wrap_top || wrap_bottom);
 }

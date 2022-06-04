@@ -23,7 +23,7 @@ class Asteroid : public GameObject {
   void update(const sf::Time dt) override;
   void deflect(const sf::Vector2f new_velocity) override;
   void collide() override;
-  std::shared_ptr<GameObject> spawn_wrapped_copy(const unsigned int id,
+  std::shared_ptr<GameObject> spawn_copy(const unsigned int id,
       const sf::Vector2f position) const override;
 
  private:

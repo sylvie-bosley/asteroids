@@ -16,48 +16,45 @@ CollisionManager::CollisionManager()
         0U, sf::FloatRect(0.0F, 0.0F, static_cast<float>(DISPLAY_SIZE.x),
         static_cast<float>(DISPLAY_SIZE.y))} {}
 
-void CollisionManager::check_for_collisions(
+void CollisionManager::check_for_collisions(GameObject &object_one,
     std::vector<std::shared_ptr<GameObject>> m_game_objects) {
   std::vector<GameObject *> other_objects;
   CollisionManager::Outcome outcome;
   for (auto object : m_game_objects) {
     m_collidables.insert(*object);
   }
-  for (auto object_one : m_game_objects) {
-    other_objects = m_collidables.retrieve(object_one->get_bounds());
-    for (auto object_two : m_game_objects) {
-      if (object_one->get_object_id() != object_two->get_object_id()){
-        outcome = collision_check(*object_one, *object_two);
-        if (outcome == CollisionManager::Deflect) {
-          sf::Vector2f velocity_one, new_velocity_one, n,
-                       velocity_two, new_velocity_two;
-          float dot_one, dot_two, optimized_p;
-          velocity_one = object_one->get_velocity();
-          velocity_two = object_two->get_velocity();
-          n = normalize_vector2f(object_one->get_position() -
-                                 object_two->get_position());
-          dot_one = velocity_one.x * n.x + velocity_one.y * n.y;
-          dot_two = velocity_two.x * n.x + velocity_two.y * n.y;
-          optimized_p = (2.0F * (dot_one - dot_two)) /
-                        (object_one->get_mass() + object_two->get_mass());
-          new_velocity_one = velocity_one - optimized_p *
-                             object_two->get_mass() * n;
-          new_velocity_two = velocity_two + optimized_p *
-                             object_one->get_mass() * n;
-          object_one->deflect(new_velocity_one);
-          object_two->deflect(new_velocity_two);
-        } else if (outcome == CollisionManager::Collide) {
-          object_one->collide();
-          object_two->collide();
-        }
+  other_objects = m_collidables.retrieve(object_one.get_bounds());
+  for (auto object_two : other_objects) {
+    if (object_one.get_object_id() != object_two->get_object_id()){
+      outcome = collision_outcome(object_one, *object_two);
+      if (outcome == CollisionManager::Deflect) {
+        sf::Vector2f velocity_one, new_velocity_one, n,
+                      velocity_two, new_velocity_two;
+        float dot_one, dot_two, optimized_p;
+        velocity_one = object_one.get_velocity();
+        velocity_two = object_two->get_velocity();
+        n = normalize_vector2f(object_one.get_position() -
+                                object_two->get_position());
+        dot_one = velocity_one.x * n.x + velocity_one.y * n.y;
+        dot_two = velocity_two.x * n.x + velocity_two.y * n.y;
+        optimized_p = (2.0F * (dot_one - dot_two)) /
+                      (object_one.get_mass() + object_two->get_mass());
+        new_velocity_one = velocity_one - optimized_p *
+                            object_two->get_mass() * n;
+        new_velocity_two = velocity_two + optimized_p *
+                            object_one.get_mass() * n;
+        object_one.deflect(new_velocity_one);
+        object_two->deflect(new_velocity_two);
+      } else if (outcome == CollisionManager::Collide) {
+        object_one.collide();
+        object_two->collide();
       }
     }
-    other_objects.clear();
   }
   m_collidables.clear();
 }
 
-CollisionManager::Outcome CollisionManager::collision_check(
+CollisionManager::Outcome CollisionManager::collision_outcome(
     const GameObject &object_one, const GameObject &object_two) {
   if (object_one.get_bounds().intersects(object_two.get_bounds()) ||
       (m_collidables.get_index(object_one.get_bounds()) == -1 &&

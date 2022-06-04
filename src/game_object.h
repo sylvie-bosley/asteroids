@@ -29,7 +29,7 @@ class GameObject {
   virtual void update(const sf::Time dt) {};
   virtual void deflect(const sf::Vector2f new_velocity) {};
   virtual void collide() {};
-  virtual std::shared_ptr<GameObject> spawn_wrapped_copy(const unsigned int id,
+  virtual std::shared_ptr<GameObject> spawn_copy(const unsigned int id,
       const sf::Vector2f position) const {};
 
  protected:
