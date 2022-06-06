@@ -24,7 +24,9 @@ class Spaceship : public GameObject {
   const sf::FloatRect get_bounds() const override;
   const sf::Vector2f get_position() const override;
   const std::vector<sf::Vector2f> get_vertices() const override;
-  void update(const sf::Time dt) override;
+  const float get_radius() const override;
+  void update(const float dt) override;
+  void move_to(sf::Vector2f new_position) override;
   void collide() override;
   void control_ship();
   void reset_ship(const sf::Vector2f new_position, const float new_rotation,
@@ -34,10 +36,13 @@ class Spaceship : public GameObject {
   const sf::Text get_ship_stats();
 #endif
 
+ protected:
+  void set_radius(const float radius) override;
+
  private:
   const unsigned int ROTATION_SPEED = 180U;
   const float MAX_SPEED = 300.0F;
-  const float ACCELERATION = 0.1F;
+  const float ACCELERATION = 1.0F;
 
   void engage_thrusters(const float direction);
   void fire_weapon();
@@ -47,6 +52,7 @@ class Spaceship : public GameObject {
   sf::SoundBuffer m_thruster_sound_buffer;
   sf::Sound m_gun_sound;
   float m_angular_velocity;
+  float m_radius;
 
 #ifdef DEBUG
   void initialize_stats_string();

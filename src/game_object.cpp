@@ -6,6 +6,10 @@ const bool GameObject::operator ==(const GameObject other) const {
   return other.get_object_id() == get_object_id();
 }
 
+const bool GameObject::operator !=(const GameObject other) const {
+  return other.get_object_id() != get_object_id();
+}
+
 const unsigned int GameObject::get_object_id() const {
   return m_object_id;
 }
@@ -22,10 +26,6 @@ const bool GameObject::is_destroyed() const{
   return m_destroyed;
 }
 
-const bool GameObject::has_wrapped() const {
-  return m_wrapped;
-}
-
 void GameObject::set_object_id(const unsigned int id) {
   m_object_id = id;
 }
@@ -40,10 +40,6 @@ void GameObject::set_velocity(const sf::Vector2f velocity) {
 
 void GameObject::set_destroyed(const bool state) {
   m_destroyed = state;
-}
-
-void GameObject::set_wrapped(const bool state) {
-  m_wrapped = state;
 }
 
 }

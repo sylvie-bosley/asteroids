@@ -20,7 +20,7 @@ int main() {
   do {
     dt = frame_clock.restart();
     game.process_input();
-    if (!game.update(dt)) {
+    if (!game.update(dt.asSeconds())) {
       // TODO: Error handling
       return 1;
     }

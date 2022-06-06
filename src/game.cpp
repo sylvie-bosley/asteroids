@@ -8,17 +8,22 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "asteroid.h"
+#include "display_manager.h"
 
 namespace ag {
 
 Game::Game()
-    : m_game_window{sf::VideoMode(DISPLAY_SIZE.x, DISPLAY_SIZE.y), "Asteroids"},
-      m_next_object_id{1U}, m_difficulty{0U}, m_running{true},
+    : m_game_window{sf::VideoMode(
+                    static_cast<unsigned int>(m_display_manager.view_size().x),
+                    static_cast<unsigned int>(m_display_manager.view_size().y)),
+                    "Asteroids"},
+      m_difficulty{0U}, m_running{true},
       m_game_state{TitleScreen} {
-  m_player = std::make_shared<Spaceship>(
-      static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0U);
+  m_player = std::make_shared<Spaceship>(m_display_manager.view_size() / 2.0F,
+                                         0U);
   m_game_objects.push_back(m_player);
-  spawn_asteroids(STARTING_ASTEROIDS, L_ASTEROID);
+  m_next_object_id++;
+  spawn_asteroids(STARTING_ASTEROIDS);
 }
 
 bool Game::load_resources(const std::string title_bgm,
@@ -29,6 +34,7 @@ bool Game::load_resources(const std::string title_bgm,
   bool loaded = true;
 #ifdef DEBUG
   if (!m_player->load_resources(ship_gun_sfx, game_font) ||
+      !m_collision_manager.load_resources(ship_gun_sfx) ||
 #else
   if (!m_player->load_resources(ship_gun_sfx) ||
 #endif
@@ -59,7 +65,7 @@ void Game::process_input() {
         break;
       case sf::Event::LostFocus:
         if (m_game_state == InGame) {
-          pause_game();
+          // pause_game();
         }
         break;
       case sf::Event::Resized:
@@ -79,26 +85,36 @@ void Game::process_input() {
   }
 }
 
-bool Game::update(const sf::Time dt) {
+bool Game::update(const float dt) {
   if (m_game_state == InGame) {
-    int i = 0;
-    while (i < m_game_objects.size()) {
-      m_game_objects.at(i)->update(dt);
-      if (m_game_objects.at(i)->get_object_type() == GameObject::AsteroidType) {
-        if (!m_game_objects.at(i)->has_wrapped()) {
-          check_for_wrap(*m_game_objects.at(i));
-        } else if (off_camera(m_game_objects.at(i)->get_position())) {
-          m_game_objects.erase(remove(m_game_objects.begin(),
-                                      m_game_objects.end(),
-                                      m_game_objects.at(i)),
-                               m_game_objects.end());
-          i--;
-        }
+    sf::Vector2f wrapped_position;
+    GameObject *collider;
+    for (auto object : m_game_objects) {
+      object->update(dt);
+      m_collision_manager.collision_check(*object, m_game_objects);
+      if (m_display_manager.off_camera(object->get_position(),
+                                       object->get_radius())){
+        m_display_manager.wrap_object(*object);
       }
-      m_collision_manager.check_for_collisions(*m_game_objects.at(i),
-                                               m_game_objects);
-      i++;
     }
+    std::vector<std::shared_ptr<GameObject>> new_children;
+    for (auto object : m_game_objects) {
+      if (object->get_object_type() == GameObject::AsteroidType &&
+          object->is_destroyed() && object->get_radius() > S_ASTEROID) {
+        new_children.push_back(object->spawn_child(*object, 90.0F,
+                                                   m_next_object_id));
+        m_next_object_id++;
+        new_children.push_back(object->spawn_child(*object, -90.0F,
+                                                   m_next_object_id));
+        m_next_object_id++;
+      }
+    }
+    m_game_objects.erase(std::remove_copy_if(m_game_objects.begin(),
+      m_game_objects.end(), m_game_objects.begin(),
+      [](std::shared_ptr<GameObject> object) {return object->is_destroyed();}),
+      m_game_objects.end());
+    m_game_objects.insert(m_game_objects.end(), new_children.begin(),
+                          new_children.end());
   }
   if (m_player->is_destroyed()) {
     game_over();
@@ -114,11 +130,11 @@ void Game::render() {
     sf::Vector2f new_origin{game_over_string.getLocalBounds().width / 2.0F,
         game_over_string.getLocalBounds().height};
     game_over_string.setOrigin(new_origin);
-    game_over_string.setPosition(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U));
+    game_over_string.setPosition(m_display_manager.view_size() / 2.0F);
     m_game_window.draw(game_over_string);
   } else {
-    for (unsigned int i = 0U; i < m_game_objects.size(); ++i) {
-      m_game_window.draw(*m_game_objects.at(i)->get_sprite());
+    for (auto object : m_game_objects) {
+      m_game_window.draw(*object->get_sprite());
     }
 
 #ifdef DEBUG
@@ -128,50 +144,11 @@ void Game::render() {
   m_game_window.display();
 }
 
-void Game::check_for_wrap(GameObject &object) {
-  sf::Vector2f position = object.get_position();
-  sf::Vector2f velocity = object.get_velocity();
-  float wrapped_x = object.get_position().x;
-  float wrapped_y = object.get_position().y;
-  bool wrap_left = position.x <= 50.0F && velocity.x <= 0;
-  bool wrap_right = position.x >= static_cast<float>(DISPLAY_SIZE.x - 50.0F) &&
-                    velocity.x >= 0;
-  bool wrap_top = position.y <= 50.0F && velocity.y <= 0;
-  bool wrap_bottom = position.y >= static_cast<float>(DISPLAY_SIZE.y - 50.0F) &&
-                     velocity.y >= 0;
-  if (wrap_left) {
-    wrapped_x = (position.x + static_cast<float>(DISPLAY_SIZE.x));
-  } else if (wrap_right) {
-    wrapped_x = (position.x - static_cast<float>(DISPLAY_SIZE.x));
-  }
-
-  if (wrap_top) {
-    wrapped_y = (position.y + static_cast<float>(DISPLAY_SIZE.y));
-  } else if (wrap_bottom) {
-    wrapped_y = (position.y - static_cast<float>(DISPLAY_SIZE.y));
-  }
-  if (wrap_left || wrap_right || wrap_top || wrap_bottom) {
-    m_game_objects.push_back(object.spawn_copy(m_next_object_id,
-        sf::Vector2f{wrapped_x, wrapped_y}));
-    m_next_object_id++;
-    m_game_objects.back()->has_wrapped();
-  }
-  object.set_wrapped(wrap_left || wrap_right || wrap_top || wrap_bottom);
-}
-
-void Game::spawn_asteroids(const unsigned int asteroid_count,
-                              const float size) {
-  float direction, r_sin, r_cos;
-  sf::Vector2f heading;
+void Game::spawn_asteroids(const unsigned int asteroid_count) {
   std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    direction = static_cast<float>(rand() % 360U);
-    r_sin = static_cast<float>(std::sin(direction * (M_PI / 180.0F)));
-    r_cos = static_cast<float>(std::cos(direction * (M_PI / 180.0F)));
-    heading.x = r_sin;
-    heading.y = -r_cos;
-    new_asteroid = std::make_shared<Asteroid>(size, m_next_object_id,
-        generate_valid_asteroid_position(), (heading * ASTEROID_SPEED));
+    new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id,
+        generate_valid_asteroid_position(), static_cast<float>(rand() % 360U));
     m_game_objects.push_back(new_asteroid);
     m_next_object_id++;
   }
@@ -211,10 +188,10 @@ const sf::Vector2f Game::generate_valid_asteroid_position() const {
   bool invalid;
   do {
     invalid = false;
-    new_x = static_cast<float>(rand() % DISPLAY_SIZE.x);
-    new_y = static_cast<float>(rand() % DISPLAY_SIZE.y);
-    if (new_x <= 50.0F || new_x >= DISPLAY_SIZE.x - 50.0F ||
-        new_y <= 50.0F || new_y >= DISPLAY_SIZE.y - 50.0F) {
+    new_x = rand() % static_cast<int>(m_display_manager.view_size().x);
+    new_y = rand() % static_cast<int>(m_display_manager.view_size().y);
+    if (new_x <= 50.0F || new_x >= m_display_manager.view_size().x - 50.0F ||
+        new_y <= 50.0F || new_y >= m_display_manager.view_size().y - 50.0F) {
       invalid = true;
     }
     for (auto object : m_game_objects) {
@@ -222,7 +199,7 @@ const sf::Vector2f Game::generate_valid_asteroid_position() const {
       old_y = object->get_position().y;
       distance = sqrt(pow((old_x - new_x), 2) + pow((old_y - new_y), 2));
       if (object->get_object_type() == GameObject::PlayerType &&
-          distance < static_cast<float>(DISPLAY_SIZE.y) / 6.0F) {
+          distance < m_display_manager.view_size().y / 6.0F) {
           invalid = true;
       } else if (object->get_object_type() == GameObject::AsteroidType &&
                  distance < 110.0F) {
@@ -231,11 +208,6 @@ const sf::Vector2f Game::generate_valid_asteroid_position() const {
     }
   } while (invalid);
   return sf::Vector2f{new_x, new_y};
-}
-
-const bool Game::off_camera(const sf::Vector2f position) const {
-  return position.x < -50.0F || position.x > DISPLAY_SIZE.x + 50.0F ||
-         position.y < -50.0F || position.y > DISPLAY_SIZE.y + 50.0F;
 }
 
 void Game::start_game() {
@@ -265,13 +237,13 @@ void Game::reset_game() {
   m_game_state = TitleScreen;
   m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
-  m_player->reset_ship(static_cast<sf::Vector2f>(DISPLAY_SIZE / 2U), 0.0F,
+  m_player->reset_ship(m_display_manager.view_size() / 2.0F, 0.0F,
                          sf::Vector2f{0.0F, 0.0F});
   while (m_game_objects.size() > 1U) {
     m_game_objects.pop_back();
   }
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
-  spawn_asteroids(STARTING_ASTEROIDS, L_ASTEROID);
+  spawn_asteroids(STARTING_ASTEROIDS);
 }
 
 void Game::close_game() {

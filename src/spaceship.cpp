@@ -15,6 +15,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
+  set_radius(10.0F);
   set_destroyed(false);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
@@ -73,14 +74,14 @@ const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
   return vertices;
 }
 
-void Spaceship::update(const sf::Time dt) {
-  m_sprite.move(get_velocity() * dt.asSeconds());
-  sf::Vector2f wrapped_position = screen_wrap(m_sprite.getPosition());
-  if (wrapped_position != m_sprite.getPosition()) {
-    m_sprite.setPosition(wrapped_position);
-  }
+const float Spaceship::get_radius() const {
+  return m_radius;
+}
+
+void Spaceship::update(const float dt) {
+  m_sprite.move(get_velocity() * dt);
   if (m_angular_velocity != 0.0F) {
-    m_sprite.rotate(-(m_angular_velocity * dt.asSeconds()));
+    m_sprite.rotate(-(m_angular_velocity * dt));
     m_angular_velocity = 0.0F;
   }
 
@@ -89,8 +90,11 @@ void Spaceship::update(const sf::Time dt) {
 #endif
 }
 
+void Spaceship::move_to(sf::Vector2f position) {
+  m_sprite.setPosition(position);
+}
+
 void Spaceship::collide() {
-  // TODO: Trigger death animation
 #ifndef DEBUG
   set_destroyed(true);
 #endif
@@ -125,6 +129,10 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
 #ifdef DEBUG
   update_ship_stats();
 #endif
+}
+
+void Spaceship::set_radius(const float radius) {
+  m_radius = radius;
 }
 
 void Spaceship::engage_thrusters(const float direction) {

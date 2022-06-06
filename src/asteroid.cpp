@@ -10,13 +10,17 @@
 namespace ag {
 
 Asteroid::Asteroid(const float size, const unsigned int id,
-                   const sf::Vector2f position, const sf::Vector2f velocity)
+                   const sf::Vector2f position, const float rotation)
     : m_sprite{size} {
   set_object_id(id);
   set_object_type(AsteroidType);
-  set_velocity(velocity);
+  m_sprite.setRotation(rotation);
+  float r_sin = static_cast<float>(std::sin(rotation * (M_PI / 180.0F)));
+  float r_cos = static_cast<float>(std::cos(rotation * (M_PI / 180.0F)));
+  sf::Vector2f heading{r_sin, -r_cos};
+  set_velocity(heading * ASTEROID_SPEED);
   set_destroyed(false);
-  m_sprite.setOrigin(sf::Vector2f{50.0F, 50.0F});
+  m_sprite.setOrigin(sf::Vector2f{size, size});
   m_sprite.setPosition(position);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
@@ -34,31 +38,41 @@ const sf::Vector2f Asteroid::get_position() const {
   return m_sprite.getPosition();
 }
 
-const float Asteroid::get_mass() const {
+const float Asteroid::get_radius() const {
   return m_sprite.getRadius();
 }
 
-void Asteroid::update(const sf::Time dt) {
-  m_sprite.move(get_velocity() * dt.asSeconds());
-  if (m_deflected) {
-    m_deflected = false;
-  }
+const float Asteroid::get_rotation() const {
+  return m_sprite.getRotation();
 }
 
-void Asteroid::deflect(const sf::Vector2f new_velocity) {
-  if (!m_deflected) {
-    m_deflected = true;
-    set_velocity(new_velocity);
-  }
+void Asteroid::move_to(sf::Vector2f position) {
+  m_sprite.setPosition(position);
 }
 
 void Asteroid::collide() {
   set_destroyed(true);
 }
 
-std::shared_ptr<GameObject> Asteroid::spawn_copy(const unsigned int id,
-    const sf::Vector2f position) const {
-  return std::make_shared<Asteroid>(get_mass(), id, position, get_velocity());
+void Asteroid::update(const float dt) {
+  float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
+                                            (M_PI / 180.0F)));
+  float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
+                                            (M_PI / 180.0F)));
+  sf::Vector2f heading{r_sin, -r_cos};
+  set_velocity(heading * ASTEROID_SPEED);
+  m_sprite.move(get_velocity() * dt);
+}
+
+std::shared_ptr<GameObject> Asteroid::spawn_child(const GameObject &parent,
+                                                  const float direction,
+                                                  const unsigned int id) {
+  std::shared_ptr<Asteroid> new_asteroid;
+  new_asteroid = std::make_shared<Asteroid>(parent.get_radius() / 2.0F, id,
+                                            parent.get_position(),
+                                            parent.get_rotation() + direction);
+  new_asteroid->update(new_asteroid->get_radius() / ASTEROID_SPEED);
+  return new_asteroid;
 }
 
 }

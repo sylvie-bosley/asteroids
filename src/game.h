@@ -9,6 +9,7 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "collision_manager.h"
+#include "display_manager.h"
 
 namespace ag {
 
@@ -22,7 +23,7 @@ class Game {
                       const std::string game_font);
   bool is_running() const;
   void process_input();
-  bool update(const sf::Time dt);
+  bool update(const float dt);
   void render();
 
  private:
@@ -33,14 +34,12 @@ class Game {
     GameOver
   };
 
-  const unsigned int STARTING_ASTEROIDS = 20U;
-  const float ASTEROID_SPEED = 25.0F;
+  const unsigned int STARTING_ASTEROIDS = 10U;
   const float L_ASTEROID = 50.0F;
   const float M_ASTEROID = 25.0F;
   const float S_ASTEROID = 12.5F;
 
-  void check_for_wrap(GameObject &object);
-  void spawn_asteroids(const unsigned int asteroid_count, const float size);
+  void spawn_asteroids(const unsigned int asteroid_count);
   void process_menu_keys(const sf::Keyboard::Key key);
   const sf::Vector2f generate_valid_asteroid_position() const;
   const bool off_camera(const sf::Vector2f position) const;
@@ -51,11 +50,12 @@ class Game {
   void reset_game();
   void close_game();
 
+  CollisionManager m_collision_manager;
+  DisplayManager m_display_manager;
   sf::RenderWindow m_game_window;
   std::vector<std::shared_ptr<GameObject>> m_game_objects;
   std::shared_ptr<Spaceship> m_player;
   unsigned int m_next_object_id = 0U;
-  CollisionManager m_collision_manager;
   sf::Music m_title_bgm;
   sf::Music m_game_bgm;
   sf::Music m_end_bgm;

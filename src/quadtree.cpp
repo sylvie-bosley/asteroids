@@ -16,10 +16,8 @@ QuadTree::QuadTree(const unsigned int level, const sf::FloatRect world_area) {
 
 void QuadTree::clear() {
   m_collidables.clear();
-  for (unsigned int i = 0U; i < m_nodes.size(); i++) {
-    if (!m_nodes.empty()) {
-      m_nodes.at(i).clear();
-    }
+  for (auto&& node : m_nodes) {
+    node.clear();
   }
 }
 
@@ -56,8 +54,15 @@ std::vector<GameObject *> QuadTree::retrieve(sf::FloatRect object_bounds) {
   if (index != -1 && !m_nodes.empty()) {
     other_objects = m_nodes.at(index).retrieve(object_bounds);
   }
-  for (unsigned int i = 0U; i < m_collidables.size(); i++) {
-    other_objects.push_back(m_collidables.at(i));
+  // if (index == -1 && !m_nodes.empty()) {
+  //   std::vector<GameObject *> objects;
+  //   for (auto&& node : m_nodes) {
+  //     objects = node.retrieve(object_bounds);
+  //     other_objects.insert(other_objects.end(), objects.begin(), objects.end());
+  //   }
+  // }
+  for (auto object : m_collidables) {
+    other_objects.push_back(object);
   }
   return other_objects;
 }

@@ -3,38 +3,38 @@
 
 #include <memory>
 
-#include <SFML/System.hpp>
+#include <SFML/Audio.hpp>
 
 #include "game_object.h"
 #include "quadtree.h"
 
 namespace ag {
 
-class CollisionManager
-{
+class CollisionManager {
  public:
-  CollisionManager();
+  CollisionManager() {};
+  explicit CollisionManager(const sf::Vector2f display_size);
   ~CollisionManager() {};
 
-  void check_for_collisions(GameObject &object_one,
+  void collision_check(GameObject &object_one,
       std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
- private:
-  enum Outcome {
-    Miss = 0U,
-    Collide = 1U,
-    Deflect = 2U
-  };
+#ifdef DEBUG
+  bool load_resources(const std::string collision_sfx);
+#endif
 
-  CollisionManager::Outcome collision_outcome(const GameObject &object_one,
-                                              const GameObject &object_two);
-  CollisionManager::Outcome player_collision(
-      const std::vector<sf::Vector2f> player_vertices,
-      const sf::Vector2f object_position);
-  CollisionManager::Outcome asteroid_collision(const sf::Vector2f asteroid_one,
-                                               const sf::Vector2f asteroid_two);
+ private:
+  bool player_collision_checks(GameObject &player, GameObject &collider);
+  bool asteroid_collision_checks(GameObject &asteroid, GameObject &collider);
+  bool player_asteroid(const std::vector<sf::Vector2f> player_vertices,
+                       GameObject &asteroid);
+  bool asteroid_asteroid(GameObject &asteroid_one, GameObject &asteroid_two);
 
   QuadTree m_collidables;
+#ifdef DEBUG
+  sf::SoundBuffer m_collision_sfx_buffer;
+  sf::Sound m_collision_sfx;
+#endif
 };
 
 }
