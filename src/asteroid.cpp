@@ -9,8 +9,8 @@
 
 namespace ag {
 
-Asteroid::Asteroid(const float size, const unsigned int id,
-                   const sf::Vector2f position, const float rotation)
+Asteroid::Asteroid(float size, unsigned int id, sf::Vector2f position,
+                   float rotation)
     : m_sprite{size} {
   set_object_id(id);
   set_object_type(AsteroidType);
@@ -30,19 +30,19 @@ const sf::Drawable *Asteroid::get_sprite() const {
   return &m_sprite;
 }
 
-const sf::FloatRect Asteroid::get_bounds() const {
+sf::FloatRect Asteroid::get_bounds() const {
   return m_sprite.getGlobalBounds();
 }
 
-const sf::Vector2f Asteroid::get_position() const {
+sf::Vector2f Asteroid::get_position() const {
   return m_sprite.getPosition();
 }
 
-const float Asteroid::get_radius() const {
+float Asteroid::get_radius() const {
   return m_sprite.getRadius();
 }
 
-const float Asteroid::get_rotation() const {
+float Asteroid::get_rotation() const {
   return m_sprite.getRotation();
 }
 
@@ -54,7 +54,7 @@ void Asteroid::collide() {
   set_destroyed(true);
 }
 
-void Asteroid::update(const float dt) {
+void Asteroid::update(float dt) {
   float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
   float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
@@ -65,8 +65,8 @@ void Asteroid::update(const float dt) {
 }
 
 std::shared_ptr<GameObject> Asteroid::spawn_child(const GameObject &parent,
-                                                  const float direction,
-                                                  const unsigned int id) {
+                                                  float direction,
+                                                  unsigned int id) {
   std::shared_ptr<Asteroid> new_asteroid;
   new_asteroid = std::make_shared<Asteroid>(parent.get_radius() / 2.0F, id,
                                             parent.get_position(),

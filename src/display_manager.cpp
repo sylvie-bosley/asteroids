@@ -4,7 +4,7 @@
 
 namespace ag{
 
-const sf::Vector2f DisplayManager::view_size() const {
+sf::Vector2f DisplayManager::view_size() const {
   return DISPLAY_SIZE;
 }
 
@@ -28,8 +28,7 @@ void DisplayManager::wrap_object(GameObject &object) {
   object.move_to(sf::Vector2f{wrapped_x, wrapped_y});
 }
 
-const bool DisplayManager::off_camera(const sf::Vector2f position,
-                                      const float radius) const {
+bool DisplayManager::off_camera(sf::Vector2f position, float radius) const {
   return position.x < -radius ||
          position.y < -radius ||
          position.x > DISPLAY_SIZE.x + radius ||

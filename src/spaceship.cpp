@@ -31,8 +31,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
 }
 
 #ifdef DEBUG
-bool Spaceship::load_resources(const std::string gun_sfx,
-                               const std::string game_font) {
+bool Spaceship::load_resources(std::string gun_sfx, std::string game_font) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
       !m_stats_font.loadFromFile(game_font)) {
@@ -43,7 +42,7 @@ bool Spaceship::load_resources(const std::string gun_sfx,
   return loaded;
 }
 #else
-bool Spaceship::load_resources(const std::string gun_sfx) {
+bool Spaceship::load_resources(std::string gun_sfx) {
   bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx)) {
     loaded - false;
@@ -57,15 +56,15 @@ const sf::Drawable *Spaceship::get_sprite() const {
   return &m_sprite;
 }
 
-const sf::FloatRect Spaceship::get_bounds() const {
+sf::FloatRect Spaceship::get_bounds() const {
   return m_sprite.getGlobalBounds();
 }
 
-const sf::Vector2f Spaceship::get_position() const {
+sf::Vector2f Spaceship::get_position() const {
   return m_sprite.getPosition();
 }
 
-const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
+std::vector<sf::Vector2f> Spaceship::get_vertices() const {
   std::vector<sf::Vector2f> vertices;
   for (unsigned int i = 0U; i < m_sprite.getPointCount(); i++) {
       vertices.push_back(
@@ -74,11 +73,11 @@ const std::vector<sf::Vector2f> Spaceship::get_vertices() const {
   return vertices;
 }
 
-const float Spaceship::get_radius() const {
+float Spaceship::get_radius() const {
   return m_radius;
 }
 
-void Spaceship::update(const float dt) {
+void Spaceship::update(float dt) {
   m_sprite.move(get_velocity() * dt);
   if (m_angular_velocity != 0.0F) {
     m_sprite.rotate(-(m_angular_velocity * dt));
@@ -118,9 +117,8 @@ void Spaceship::control_ship() {
   }
 }
 
-void Spaceship::reset_ship(const sf::Vector2f new_position,
-                           const float new_rotation,
-                           const sf::Vector2f new_velocity) {
+void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
+                           sf::Vector2f new_velocity) {
   m_sprite.setPosition(new_position);
   m_sprite.setRotation(new_rotation);
   set_velocity(new_velocity);
@@ -131,11 +129,11 @@ void Spaceship::reset_ship(const sf::Vector2f new_position,
 #endif
 }
 
-void Spaceship::set_radius(const float radius) {
+void Spaceship::set_radius(float radius) {
   m_radius = radius;
 }
 
-void Spaceship::engage_thrusters(const float direction) {
+void Spaceship::engage_thrusters(float direction) {
   float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
                                             (M_PI / 180.0F)));
   float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
@@ -155,7 +153,7 @@ void Spaceship::fire_weapon() {
 }
 
 #ifdef DEBUG
-const sf::Text Spaceship::get_ship_stats() {
+sf::Text Spaceship::get_ship_stats() {
   return m_ship_stats;
 }
 

@@ -16,7 +16,7 @@ CollisionManager::CollisionManager(sf::Vector2f display_size)
 {}
 
 #ifdef DEBUG
-bool CollisionManager::load_resources(const std::string collision_sfx) {
+bool CollisionManager::load_resources(std::string collision_sfx) {
   bool loaded = true;
   if (!m_collision_sfx_buffer.loadFromFile(collision_sfx)) {
     loaded - false;
@@ -65,11 +65,13 @@ void CollisionManager::collision_check(GameObject &object_one,
   m_collidables.clear();
 }
 
-bool CollisionManager::player_collision_checks(GameObject &player,
-                                               GameObject &collider) {
+bool CollisionManager::player_collision_checks(const GameObject &player,
+                                               const GameObject &collider)
+    const {
   switch (collider.get_object_type()) {
   case GameObject::AsteroidType:
-    return player_asteroid(player.get_vertices(), collider);
+    return player_asteroid(player.get_vertices(), collider.get_position(),
+                           collider.get_radius());
     break;
   case GameObject::BulletType:
     // TODO: Player-Bullet collision
@@ -82,11 +84,13 @@ bool CollisionManager::player_collision_checks(GameObject &player,
   }
 }
 
-bool CollisionManager::asteroid_collision_checks(GameObject &asteroid,
-                                                 GameObject &collider) {
+bool CollisionManager::asteroid_collision_checks(const GameObject &asteroid,
+                                                 const GameObject &collider)
+      const {
   switch (collider.get_object_type()) {
   case GameObject::AsteroidType:
-    return asteroid_asteroid(asteroid, collider);
+    return asteroid_asteroid(asteroid.get_position(), asteroid.get_radius(),
+                             collider.get_position(), collider.get_radius());
   case GameObject::BulletType:
     // TODO: Asteroid-Bullet collision
   case GameObject::SaucerType:
@@ -96,33 +100,30 @@ bool CollisionManager::asteroid_collision_checks(GameObject &asteroid,
   }
 }
 
-bool CollisionManager::player_asteroid(
-    const std::vector<sf::Vector2f> player_vertices, GameObject &asteroid) {
+bool CollisionManager::player_asteroid(std::vector<sf::Vector2f> player_vertices,
+                                       sf::Vector2f asteroid_position,
+                                       float asteroid_radius)
+    const {
   float distance;
   for (auto vertex : player_vertices) {
-    distance = sqrt(pow((vertex.x - asteroid.get_position().x), 2) +
-                    pow((vertex.y - asteroid.get_position().y), 2));
-    if (distance <= asteroid.get_radius()) {
+    distance = sqrt(pow((vertex.x - asteroid_position.x), 2) +
+                    pow((vertex.y - asteroid_position.y), 2));
+    if (distance <= asteroid_radius) {
       return true;
     }
   }
   return false;
 }
 
-bool CollisionManager::asteroid_asteroid(GameObject &asteroid_one,
-                                         GameObject &asteroid_two) {
-  float delta_x, delta_y, wrapped_delta_x, wrapped_delta_y;
-  float distance, x_wrapped_distance, y_wrapped_distance, xy_wrapped_distance;
-#ifdef DEBUG
-  sf::Vector2f debug_pos_one = asteroid_one.get_position();
-  sf::Vector2f debug_pos_two = asteroid_two.get_position();
-  float debug_rad_one = asteroid_one.get_radius();
-  float debug_rad_two = asteroid_two.get_radius();
-#endif
-  delta_x = asteroid_one.get_position().x - asteroid_two.get_position().x;
-  delta_y = asteroid_one.get_position().y - asteroid_two.get_position().y;
+bool CollisionManager::asteroid_asteroid(sf::Vector2f asteroid_one_position,
+                                         float asteroid_one_radius,
+                                         sf::Vector2f asteroid_two_position,
+                                         float asteroid_two_radius) const {
+  float delta_x, delta_y, distance;
+  delta_x = asteroid_one_position.x - asteroid_two_position.x;
+  delta_y = asteroid_one_position.y - asteroid_two_position.y;
   distance = sqrt(pow((delta_x), 2) + pow((delta_y), 2));
-  if (distance <= asteroid_one.get_radius() + asteroid_two.get_radius()) {
+  if (distance <= asteroid_one_radius + asteroid_two_radius) {
     return true;
   }
   return false;

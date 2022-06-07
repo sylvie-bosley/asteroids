@@ -13,6 +13,8 @@ class Bullet : public GameObject {
  private:
 
 
+  float m_ttl;
+  sf::CircleShape m_sprite;
 };
 
 }

@@ -12,9 +12,9 @@ class DisplayManager {
   DisplayManager() {};
   ~DisplayManager() {};
 
-  const sf::Vector2f view_size() const;
+  sf::Vector2f view_size() const;
   void wrap_object(GameObject &object);
-  const bool off_camera(const sf::Vector2f position, const float radius) const;
+  bool off_camera(sf::Vector2f position, float radius) const;
 
  private:
   const sf::Vector2f DISPLAY_SIZE{1280.0F, 720.0F};

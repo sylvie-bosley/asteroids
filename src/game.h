@@ -18,12 +18,12 @@ class Game {
   Game();
   ~Game() {};
 
-  bool load_resources(const std::string title_bgm, const std::string game_bgm,
-                      const std::string end_bgm, const std::string ship_gun_sfx,
-                      const std::string game_font);
+  bool load_resources(std::string title_bgm, std::string game_bgm,
+                      std::string end_bgm, std::string ship_gun_sfx,
+                      std::string game_font);
   bool is_running() const;
   void process_input();
-  bool update(const float dt);
+  bool update(float dt);
   void render();
 
  private:
@@ -34,21 +34,25 @@ class Game {
     GameOver
   };
 
-  const unsigned int STARTING_ASTEROIDS = 10U;
-  const float L_ASTEROID = 50.0F;
-  const float M_ASTEROID = 25.0F;
-  const float S_ASTEROID = 12.5F;
+  unsigned int STARTING_ASTEROIDS = 10U;
+  float L_ASTEROID = 50.0F;
+  float M_ASTEROID = 25.0F;
+  float S_ASTEROID = 12.5F;
 
-  void spawn_asteroids(const unsigned int asteroid_count);
-  void process_menu_keys(const sf::Keyboard::Key key);
-  const sf::Vector2f generate_valid_asteroid_position() const;
-  const bool off_camera(const sf::Vector2f position) const;
+  void spawn_asteroids(unsigned int asteroid_count);
+  void process_menu_keys(sf::Keyboard::Key key);
+  sf::Vector2f generate_valid_asteroid_position() const;
+  bool off_camera(sf::Vector2f position) const;
   void start_game();
   void pause_game();
   void resume_game();
   void game_over();
   void reset_game();
   void close_game();
+  void update_game_objects(float dt);
+  void spawn_child_asteroids(float dt);
+  void delete_destroyed_objects(float dt);
+  sf::Text game_over_string() const;
 
   CollisionManager m_collision_manager;
   DisplayManager m_display_manager;

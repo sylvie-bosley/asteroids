@@ -13,22 +13,28 @@ namespace ag {
 class CollisionManager {
  public:
   CollisionManager() {};
-  explicit CollisionManager(const sf::Vector2f display_size);
+  explicit CollisionManager(sf::Vector2f display_size);
   ~CollisionManager() {};
 
   void collision_check(GameObject &object_one,
       std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
 #ifdef DEBUG
-  bool load_resources(const std::string collision_sfx);
+  bool load_resources(std::string collision_sfx);
 #endif
 
  private:
-  bool player_collision_checks(GameObject &player, GameObject &collider);
-  bool asteroid_collision_checks(GameObject &asteroid, GameObject &collider);
-  bool player_asteroid(const std::vector<sf::Vector2f> player_vertices,
-                       GameObject &asteroid);
-  bool asteroid_asteroid(GameObject &asteroid_one, GameObject &asteroid_two);
+  bool player_collision_checks(const GameObject &player,
+                               const GameObject &collider) const;
+  bool asteroid_collision_checks(const GameObject &asteroid,
+                                 const GameObject &collider) const;
+  bool player_asteroid(std::vector<sf::Vector2f> player_vertices,
+                       sf::Vector2f asteroid_position,
+                       float asteroid_radius) const;
+  bool asteroid_asteroid(sf::Vector2f asteroid_one_position,
+                         float asteroid_one_radius,
+                         sf::Vector2f asteroid_two_position,
+                         float asteroid_two_radius) const;
 
   QuadTree m_collidables;
 #ifdef DEBUG

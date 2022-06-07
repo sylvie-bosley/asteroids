@@ -26,11 +26,9 @@ Game::Game()
   spawn_asteroids(STARTING_ASTEROIDS);
 }
 
-bool Game::load_resources(const std::string title_bgm,
-                          const std::string game_bgm,
-                          const std::string end_bgm,
-                          const std::string ship_gun_sfx,
-                          const std::string game_font) {
+bool Game::load_resources(std::string title_bgm, std::string game_bgm,
+                          std::string end_bgm, std::string ship_gun_sfx,
+                          std::string game_font) {
   bool loaded = true;
 #ifdef DEBUG
   if (!m_player->load_resources(ship_gun_sfx, game_font) ||
@@ -65,7 +63,7 @@ void Game::process_input() {
         break;
       case sf::Event::LostFocus:
         if (m_game_state == InGame) {
-          // pause_game();
+          pause_game();
         }
         break;
       case sf::Event::Resized:
@@ -85,36 +83,11 @@ void Game::process_input() {
   }
 }
 
-bool Game::update(const float dt) {
+bool Game::update(float dt) {
   if (m_game_state == InGame) {
-    sf::Vector2f wrapped_position;
-    GameObject *collider;
-    for (auto object : m_game_objects) {
-      object->update(dt);
-      m_collision_manager.collision_check(*object, m_game_objects);
-      if (m_display_manager.off_camera(object->get_position(),
-                                       object->get_radius())){
-        m_display_manager.wrap_object(*object);
-      }
-    }
-    std::vector<std::shared_ptr<GameObject>> new_children;
-    for (auto object : m_game_objects) {
-      if (object->get_object_type() == GameObject::AsteroidType &&
-          object->is_destroyed() && object->get_radius() > S_ASTEROID) {
-        new_children.push_back(object->spawn_child(*object, 90.0F,
-                                                   m_next_object_id));
-        m_next_object_id++;
-        new_children.push_back(object->spawn_child(*object, -90.0F,
-                                                   m_next_object_id));
-        m_next_object_id++;
-      }
-    }
-    m_game_objects.erase(std::remove_copy_if(m_game_objects.begin(),
-      m_game_objects.end(), m_game_objects.begin(),
-      [](std::shared_ptr<GameObject> object) {return object->is_destroyed();}),
-      m_game_objects.end());
-    m_game_objects.insert(m_game_objects.end(), new_children.begin(),
-                          new_children.end());
+    update_game_objects(dt);
+    spawn_child_asteroids(dt);
+    delete_destroyed_objects(dt);
   }
   if (m_player->is_destroyed()) {
     game_over();
@@ -125,13 +98,7 @@ bool Game::update(const float dt) {
 void Game::render() {
   m_game_window.clear(sf::Color::Black);
   if (m_game_state == GameOver) {
-    sf::Text game_over_string{"GAME OVER", m_game_font, 100U};
-    game_over_string.setFillColor(sf::Color::White);
-    sf::Vector2f new_origin{game_over_string.getLocalBounds().width / 2.0F,
-        game_over_string.getLocalBounds().height};
-    game_over_string.setOrigin(new_origin);
-    game_over_string.setPosition(m_display_manager.view_size() / 2.0F);
-    m_game_window.draw(game_over_string);
+    m_game_window.draw(game_over_string());
   } else {
     for (auto object : m_game_objects) {
       m_game_window.draw(*object->get_sprite());
@@ -144,7 +111,7 @@ void Game::render() {
   m_game_window.display();
 }
 
-void Game::spawn_asteroids(const unsigned int asteroid_count) {
+void Game::spawn_asteroids(unsigned int asteroid_count) {
   std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
     new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id,
@@ -154,7 +121,7 @@ void Game::spawn_asteroids(const unsigned int asteroid_count) {
   }
 }
 
-void Game::process_menu_keys(const sf::Keyboard::Key key) {
+void Game::process_menu_keys(sf::Keyboard::Key key) {
   switch (m_game_state) {
     case TitleScreen:
       if (key == sf::Keyboard::Key::Enter) {
@@ -183,7 +150,7 @@ void Game::process_menu_keys(const sf::Keyboard::Key key) {
   }
 }
 
-const sf::Vector2f Game::generate_valid_asteroid_position() const {
+sf::Vector2f Game::generate_valid_asteroid_position() const {
   float old_x, old_y, new_x, new_y, distance;
   bool invalid;
   do {
@@ -249,6 +216,53 @@ void Game::reset_game() {
 void Game::close_game() {
   m_running = false;
   m_game_window.close();
+}
+
+void Game::update_game_objects(float dt) {
+  for (auto object : m_game_objects) {
+    object->update(dt);
+    m_collision_manager.collision_check(*object, m_game_objects);
+    if (m_display_manager.off_camera(object->get_position(),
+                                      object->get_radius())){
+      m_display_manager.wrap_object(*object);
+    }
+  }
+}
+
+void Game::spawn_child_asteroids(float dt) {
+  std::vector<std::shared_ptr<GameObject>> new_children;
+  for (auto object : m_game_objects) {
+    if (object->get_object_type() == GameObject::AsteroidType &&
+        object->is_destroyed() && object->get_radius() > S_ASTEROID) {
+      new_children.push_back(object->spawn_child(*object, 90.0F,
+                                                  m_next_object_id));
+      m_next_object_id++;
+      new_children.push_back(object->spawn_child(*object, -90.0F,
+                                                  m_next_object_id));
+      m_next_object_id++;
+    }
+  }
+  m_game_objects.insert(m_game_objects.end(), new_children.begin(),
+                        new_children.end());
+}
+
+void Game::delete_destroyed_objects(float dt) {
+  m_game_objects.erase(std::remove_copy_if(m_game_objects.begin(),
+                                           m_game_objects.end(),
+                                           m_game_objects.begin(),
+                                           [](std::shared_ptr<GameObject> obj)
+                                           { return obj->is_destroyed(); }),
+                       m_game_objects.end());
+}
+
+sf::Text Game::game_over_string() const {
+  sf::Text string{"GAME OVER", m_game_font, 100U};
+  string.setFillColor(sf::Color::White);
+  sf::Vector2f new_origin{string.getLocalBounds().width / 2.0F,
+      string.getLocalBounds().height};
+  string.setOrigin(new_origin);
+  string.setPosition(m_display_manager.view_size() / 2.0F);
+  return string;
 }
 
 }
