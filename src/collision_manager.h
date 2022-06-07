@@ -16,8 +16,8 @@ class CollisionManager {
   explicit CollisionManager(sf::Vector2f display_size);
   ~CollisionManager() {};
 
-  void collision_check(GameObject &object_one,
-      std::vector<std::shared_ptr<GameObject>> m_game_objects);
+  bool collision_check(const GameObject &object,
+    const std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
 #ifdef DEBUG
   bool load_resources(std::string collision_sfx);

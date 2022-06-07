@@ -26,23 +26,22 @@ bool CollisionManager::load_resources(std::string collision_sfx) {
 }
 #endif
 
-void CollisionManager::collision_check(GameObject &object_one,
-    std::vector<std::shared_ptr<GameObject>> m_game_objects) {
-  std::vector<GameObject *> other_objects;
-  for (auto object : m_game_objects) {
-    m_collidables.insert(*object);
+bool CollisionManager::collision_check(const GameObject &object,
+    const std::vector<std::shared_ptr<GameObject>> m_game_objects) {
+  std::vector<const GameObject *> other_objects;
+  for (auto other_object : m_game_objects) {
+    m_collidables.insert(*other_object);
   }
-  other_objects = m_collidables.retrieve(object_one.get_bounds());
+  other_objects = m_collidables.retrieve(object.get_bounds());
   bool collision = false;
-  for (auto object_two : other_objects) {
-    if (object_one != *object_two &&
-        object_one.get_bounds().intersects(object_two->get_bounds())) {
-      switch (object_one.get_object_type()) {
+  for (auto collider : other_objects) {
+    if (object != *collider) {
+      switch (object.get_object_type()) {
       case GameObject::PlayerType:
-        collision = player_collision_checks(object_one, *object_two);
+        collision = player_collision_checks(object, *collider);
         break;
       case GameObject::AsteroidType:
-        collision = asteroid_collision_checks(object_one, *object_two);
+        collision = asteroid_collision_checks(object, *collider);
         break;
       case GameObject::BulletType:
         // TODO: Bullet collision checks
@@ -57,12 +56,12 @@ void CollisionManager::collision_check(GameObject &object_one,
         m_collision_sfx.play();
       }
 #endif
-      object_one.collide();
-      object_two->collide();
       break;
+
     }
   }
   m_collidables.clear();
+  return collision;
 }
 
 bool CollisionManager::player_collision_checks(const GameObject &player,
@@ -72,15 +71,12 @@ bool CollisionManager::player_collision_checks(const GameObject &player,
   case GameObject::AsteroidType:
     return player_asteroid(player.get_vertices(), collider.get_position(),
                            collider.get_radius());
-    break;
   case GameObject::BulletType:
     // TODO: Player-Bullet collision
-    break;
   case GameObject::SaucerType:
     // TODO: Player-Saucer collision
-    break;
   default:
-    break;
+    return false;
   }
 }
 
@@ -88,6 +84,9 @@ bool CollisionManager::asteroid_collision_checks(const GameObject &asteroid,
                                                  const GameObject &collider)
       const {
   switch (collider.get_object_type()) {
+  case GameObject::PlayerType:
+    return player_asteroid(collider.get_vertices(), asteroid.get_position(),
+                           asteroid.get_radius());
   case GameObject::AsteroidType:
     return asteroid_asteroid(asteroid.get_position(), asteroid.get_radius(),
                              collider.get_position(), collider.get_radius());
@@ -123,10 +122,7 @@ bool CollisionManager::asteroid_asteroid(sf::Vector2f asteroid_one_position,
   delta_x = asteroid_one_position.x - asteroid_two_position.x;
   delta_y = asteroid_one_position.y - asteroid_two_position.y;
   distance = sqrt(pow((delta_x), 2) + pow((delta_y), 2));
-  if (distance <= asteroid_one_radius + asteroid_two_radius) {
-    return true;
-  }
-  return false;
+  return distance <= asteroid_one_radius + asteroid_two_radius;
 }
 
 }

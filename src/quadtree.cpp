@@ -21,7 +21,7 @@ void QuadTree::clear() {
   }
 }
 
-void QuadTree::insert(GameObject &object) {
+void QuadTree::insert(const GameObject &object) {
   if (!m_nodes.empty()) {
     int index = get_index(object.get_bounds());
     if (index != -1) {
@@ -48,18 +48,12 @@ void QuadTree::insert(GameObject &object) {
   }
 }
 
-std::vector<GameObject *> QuadTree::retrieve(sf::FloatRect object_bounds) {
-  std::vector<GameObject *> other_objects;
+std::vector<const GameObject *> QuadTree::retrieve(sf::FloatRect object_bounds)
+    const {
+  std::vector<const GameObject *> other_objects;
   int index = get_index(object_bounds);
   if (index != -1 && !m_nodes.empty()) {
     other_objects = m_nodes.at(index).retrieve(object_bounds);
-  }
-  if (index == -1 && !m_nodes.empty()) {
-    std::vector<GameObject *> objects;
-    for (auto&& node : m_nodes) {
-      objects = node.retrieve(object_bounds);
-      other_objects.insert(other_objects.end(), objects.begin(), objects.end());
-    }
   }
   for (auto object : m_collidables) {
     other_objects.push_back(object);
@@ -87,7 +81,7 @@ void QuadTree::split() {
                                            sub_height}));
 }
 
-int QuadTree::get_index(sf::FloatRect bound_box) {
+int QuadTree::get_index(sf::FloatRect bound_box) const {
   int index = -1;
   float vertical_midpoint = m_bounds.left + (m_bounds.width / 2.0F);
   float horizontal_midpoint = m_bounds.top + (m_bounds.height / 2.0F);
