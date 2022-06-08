@@ -6,6 +6,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "game_object.h"
+#include "display_manager.h"
 
 namespace ag {
 

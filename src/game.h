@@ -41,7 +41,6 @@ class Game {
 
   void spawn_asteroids(unsigned int asteroid_count);
   void process_menu_keys(sf::Keyboard::Key key);
-  sf::Vector2f generate_valid_asteroid_position() const;
   bool off_camera(sf::Vector2f position) const;
   void start_game();
   void pause_game();

@@ -115,7 +115,8 @@ void Game::spawn_asteroids(unsigned int asteroid_count) {
   std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
     new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id,
-        generate_valid_asteroid_position(), static_cast<float>(rand() % 360U));
+        m_display_manager.valid_asteroid_position(m_game_objects),
+        static_cast<float>(rand() % 360U));
     m_game_objects.push_back(new_asteroid);
     m_next_object_id++;
   }
@@ -150,33 +151,6 @@ void Game::process_menu_keys(sf::Keyboard::Key key) {
   }
 }
 
-sf::Vector2f Game::generate_valid_asteroid_position() const {
-  float old_x, old_y, new_x, new_y, distance;
-  bool invalid;
-  do {
-    invalid = false;
-    new_x = rand() % static_cast<int>(m_display_manager.view_size().x);
-    new_y = rand() % static_cast<int>(m_display_manager.view_size().y);
-    if (new_x <= 50.0F || new_x >= m_display_manager.view_size().x - 50.0F ||
-        new_y <= 50.0F || new_y >= m_display_manager.view_size().y - 50.0F) {
-      invalid = true;
-    }
-    for (auto object : m_game_objects) {
-      old_x = object->get_position().x;
-      old_y = object->get_position().y;
-      distance = sqrt(pow((old_x - new_x), 2) + pow((old_y - new_y), 2));
-      if (object->get_object_type() == GameObject::PlayerType &&
-          distance < m_display_manager.view_size().y / 6.0F) {
-          invalid = true;
-      } else if (object->get_object_type() == GameObject::AsteroidType &&
-                 distance < 110.0F) {
-          invalid = true;
-      }
-    }
-  } while (invalid);
-  return sf::Vector2f{new_x, new_y};
-}
-
 void Game::start_game() {
   m_game_state = InGame;
   m_title_bgm.stop();
@@ -206,9 +180,7 @@ void Game::reset_game() {
   m_game_bgm.setVolume(100.0F);
   m_player->reset_ship(m_display_manager.view_size() / 2.0F, 0.0F,
                          sf::Vector2f{0.0F, 0.0F});
-  while (m_game_objects.size() > 1U) {
-    m_game_objects.pop_back();
-  }
+  m_game_objects.erase(m_game_objects.begin() + 1, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
   spawn_asteroids(STARTING_ASTEROIDS);
 }
