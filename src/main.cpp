@@ -1,3 +1,5 @@
+#include <string>
+
 #include <SFML/System.hpp>
 
 #include "game.h"

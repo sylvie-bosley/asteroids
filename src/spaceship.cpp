@@ -153,8 +153,8 @@ void Spaceship::fire_weapon() {
 }
 
 #ifdef DEBUG
-sf::Text Spaceship::get_ship_stats() {
-  return m_ship_stats;
+const sf::Text *Spaceship::get_ship_stats() {
+  return &m_ship_stats;
 }
 
 void Spaceship::initialize_stats_string() {

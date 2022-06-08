@@ -9,10 +9,15 @@ namespace ag {
 
 class DisplayManager {
  public:
-  DisplayManager() {};
-  ~DisplayManager() {};
+  DisplayManager();
+  ~DisplayManager();
 
-  sf::Vector2f view_size() const;
+  sf::Vector2f player_spawn() const;
+  sf::Vector2f screen_center() const;
+  bool poll_event(sf::Event &event);
+  void clear_screen();
+  void draw(const sf::Drawable *object);
+  void render();
   void wrap_object(GameObject &object);
   bool off_camera(sf::Vector2f position, float radius) const;
   sf::Vector2f valid_asteroid_position(
@@ -20,6 +25,8 @@ class DisplayManager {
 
  private:
   const sf::Vector2f DISPLAY_SIZE{1280.0F, 720.0F};
+
+  sf::RenderWindow m_game_window;
 };
 
 }

@@ -33,7 +33,7 @@ class Spaceship : public GameObject {
                   sf::Vector2f new_velocity);
 
 #ifdef DEBUG
-  sf::Text get_ship_stats();
+  const sf::Text *get_ship_stats();
 #endif
 
  protected:

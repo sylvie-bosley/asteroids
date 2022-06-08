@@ -6,8 +6,37 @@
 
 namespace ag{
 
-sf::Vector2f DisplayManager::view_size() const {
-  return DISPLAY_SIZE;
+DisplayManager::DisplayManager ()
+  : m_game_window{sf::VideoMode(static_cast<unsigned int>(DISPLAY_SIZE.x),
+                                static_cast<unsigned int>(DISPLAY_SIZE.y)),
+                  "Asteroids"} {}
+
+DisplayManager::~DisplayManager() {
+  m_game_window.close();
+}
+
+sf::Vector2f DisplayManager::player_spawn() const {
+  return DISPLAY_SIZE / 2.0F;
+}
+
+sf::Vector2f DisplayManager::screen_center() const {
+  return DISPLAY_SIZE / 2.0F;
+}
+
+bool DisplayManager::poll_event(sf::Event &event) {
+  return m_game_window.pollEvent(event);
+}
+
+void DisplayManager::clear_screen() {
+  m_game_window.clear(sf::Color::Black);
+}
+
+void DisplayManager::draw(const sf::Drawable *object) {
+  m_game_window.draw(*object);
+}
+
+void DisplayManager::render() {
+  m_game_window.display();
 }
 
 void DisplayManager::wrap_object(GameObject &object) {
@@ -43,10 +72,10 @@ sf::Vector2f DisplayManager::valid_asteroid_position(
   bool invalid;
   do {
     invalid = false;
-    new_x = rand() % static_cast<int>(view_size().x);
-    new_y = rand() % static_cast<int>(view_size().y);
-    if (new_x <= 50.0F || new_x >= view_size().x - 50.0F ||
-        new_y <= 50.0F || new_y >= view_size().y - 50.0F) {
+    new_x = rand() % static_cast<int>(DISPLAY_SIZE.x);
+    new_y = rand() % static_cast<int>(DISPLAY_SIZE.y);
+    if (new_x <= 50.0F || new_x >= DISPLAY_SIZE.x - 50.0F ||
+        new_y <= 50.0F || new_y >= DISPLAY_SIZE.y - 50.0F) {
       invalid = true;
     }
     for (auto object : game_objects) {
@@ -54,7 +83,7 @@ sf::Vector2f DisplayManager::valid_asteroid_position(
       old_y = object->get_position().y;
       distance = sqrt(pow((old_x - new_x), 2) + pow((old_y - new_y), 2));
       if (object->get_object_type() == GameObject::PlayerType &&
-          distance < view_size().y / 6.0F) {
+          distance < DISPLAY_SIZE.y / 6.0F) {
           invalid = true;
       } else if (object->get_object_type() == GameObject::AsteroidType &&
                  distance < 110.0F) {
