@@ -21,7 +21,7 @@ int main() {
   sf::Time dt;
   do {
     dt = frame_clock.restart();
-    game.process_input();
+    game.process_input(dt.asSeconds());
     if (!game.update(dt.asSeconds())) {
       // TODO: Error handling
       return 1;

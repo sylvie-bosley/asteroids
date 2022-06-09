@@ -9,6 +9,7 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "asteroid.h"
+#include "bullet.h"
 #include "collision_manager.h"
 #include "display_manager.h"
 #include "state_manager.h"
@@ -43,7 +44,7 @@ bool Game::is_running() const {
   return m_game_state.is_running();
 }
 
-void Game::process_input() {
+void Game::process_input(float dt) {
   sf::Event event;
   while (m_display_manager.poll_event(event)) {
     switch (event.type) {
@@ -68,7 +69,13 @@ void Game::process_input() {
     }
   }
   if (m_game_state.in_game()) {
-    m_player->control_ship();
+    if (m_player->control_ship(dt)) {
+      m_game_objects.push_back(
+        std::make_shared<Bullet>(m_next_object_id, m_player->get_rotation(),
+                                 m_player->get_velocity(),
+                                 m_player->get_position()));
+      m_next_object_id++;
+    }
   }
 }
 
@@ -145,7 +152,7 @@ void Game::reset_game() {
   m_difficulty = 0U;
   m_game_state.reset_state();
   m_player->reset_ship(m_display_manager.player_spawn(), 0.0F,
-                         sf::Vector2f{0.0F, 0.0F});
+                       sf::Vector2f{0.0F, 0.0F});
   m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
   spawn_asteroids(STARTING_ASTEROIDS);

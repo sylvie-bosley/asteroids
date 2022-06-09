@@ -23,12 +23,12 @@ class Game {
                       std::string end_bgm, std::string ship_gun_sfx,
                       std::string game_font);
   bool is_running() const;
-  void process_input();
+  void process_input(float dt);
   bool update(float dt);
   void render();
 
  private:
-  unsigned int STARTING_ASTEROIDS = 10U;
+  unsigned int STARTING_ASTEROIDS = 3U;
   float L_ASTEROID = 50.0F;
   float M_ASTEROID = 25.0F;
   float S_ASTEROID = 12.5F;

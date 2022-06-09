@@ -30,7 +30,7 @@ class Asteroid : public GameObject {
                                           unsigned int id) override;
 
  private:
-  const float ASTEROID_SPEED = 50.0F;
+  const float ASTEROID_SPEED = 25.0F;
 
   sf::CircleShape m_sprite;
 };

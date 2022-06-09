@@ -11,7 +11,7 @@
 namespace ag {
 
 Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
-    : m_sprite{3U} {
+    : m_sprite{3U}, m_gun_cd{GUN_COOLDOWN} {
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
@@ -77,6 +77,10 @@ float Spaceship::get_radius() const {
   return m_radius;
 }
 
+float Spaceship::get_rotation() const {
+  return m_sprite.getRotation();
+}
+
 void Spaceship::update(float dt) {
   m_sprite.move(get_velocity() * dt);
   if (m_angular_velocity != 0.0F) {
@@ -99,9 +103,13 @@ void Spaceship::collide() {
 #endif
 }
 
-void Spaceship::control_ship() {
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+bool Spaceship::control_ship(float dt) {
+  bool fired_weapon = false;
+  m_gun_cd += dt;
+  if (m_gun_cd >= GUN_COOLDOWN && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
     fire_weapon();
+    fired_weapon = true;
+    m_gun_cd = 0.0F;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
     engage_thrusters(1.0F);
@@ -115,6 +123,7 @@ void Spaceship::control_ship() {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
     m_angular_velocity = -1.0F * ROTATION_SPEED;
   }
+  return fired_weapon;
 }
 
 void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
