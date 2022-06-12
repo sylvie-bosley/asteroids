@@ -15,10 +15,6 @@ DisplayManager::~DisplayManager() {
   m_game_window.close();
 }
 
-sf::Vector2f DisplayManager::player_spawn() const {
-  return DISPLAY_SIZE / 2.0F;
-}
-
 sf::Vector2f DisplayManager::screen_center() const {
   return DISPLAY_SIZE / 2.0F;
 }

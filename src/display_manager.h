@@ -12,7 +12,6 @@ class DisplayManager {
   DisplayManager();
   ~DisplayManager();
 
-  sf::Vector2f player_spawn() const;
   sf::Vector2f screen_center() const;
   bool poll_event(sf::Event &event);
   void clear_screen();

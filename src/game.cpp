@@ -16,7 +16,7 @@
 namespace ag {
 
 Game::Game() : m_difficulty{0U}, m_next_object_id{0U} {
-  m_player = std::make_shared<Spaceship>(m_display_manager.player_spawn(),
+  m_player = std::make_shared<Spaceship>(m_display_manager.screen_center(),
                                          m_next_object_id++);
   m_game_objects.push_back(m_player);
   spawn_asteroids(STARTING_ASTEROIDS);
@@ -146,7 +146,7 @@ void Game::process_menu_keys(sf::Keyboard::Key key) {
 void Game::reset_game() {
   m_difficulty = 0U;
   m_game_state.reset_state();
-  m_player->reset_ship(m_display_manager.player_spawn(), 0.0F,
+  m_player->reset_ship(m_display_manager.screen_center(), 0.0F,
                        sf::Vector2f{0.0F, 0.0F});
   m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
