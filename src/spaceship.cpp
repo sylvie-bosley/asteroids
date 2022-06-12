@@ -12,20 +12,20 @@
 namespace ag {
 
 Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
-    : m_sprite{3U}, m_shooting{false}, m_gun_cd{GUN_COOLDOWN} {
+    : m_sprite{3U}, m_radius{10.0F}, m_thrust{0.0F}, m_angular_velocity{0.0F},
+      m_gun_cd{0.0F}, m_shooting{false} {
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
-  set_radius(10.0F);
   set_destroyed(false);
   m_sprite.setPointCount(3);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
   m_sprite.setOrigin(sf::Vector2f{7.5F, 10.0F});
-  m_sprite.move(starting_pos);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
+  m_sprite.move(starting_pos);
 
 #ifdef DEBUG
   initialize_stats_string();
@@ -88,9 +88,9 @@ bool Spaceship::is_shooting() const {
 }
 
 std::shared_ptr<GameObject> Spaceship::spawn_bullet(unsigned int id) {
-  m_shooting = false;
   sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
     m_sprite.getPoint(0) - sf::Vector2f{0.0F, 2.0F});
+  m_gun_sound.play();
   return std::make_shared<Bullet>(id, m_sprite.getRotation(), get_velocity(),
                                   gun_position, m_radius);
 }
@@ -105,10 +105,23 @@ void Spaceship::collide() {
 }
 
 void Spaceship::update(float dt) {
+  double r_sin = std::sin(m_sprite.getRotation() * (M_PI / 180.0F));
+  double r_cos = std::cos(m_sprite.getRotation() * (M_PI / 180.0F));
+  sf::Vector2f heading{static_cast<float>(r_sin), static_cast<float>(-r_cos)};
+  set_velocity(get_velocity() + (heading * m_thrust));
+  if (vector2f_length(get_velocity()) > MAX_SPEED) {
+    sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
+    set_velocity(normal_velocity * MAX_SPEED);
+  }
   m_sprite.move(get_velocity() * dt);
   if (m_angular_velocity != 0.0F) {
     m_sprite.rotate(-(m_angular_velocity * dt));
-    m_angular_velocity = 0.0F;
+  }
+  if (is_shooting()) {
+    m_shooting = false;
+    m_gun_cd = GUN_COOLDOWN;
+  } else if (m_gun_cd > 0.0F) {
+    m_gun_cd -= dt;
   }
 
 #ifdef DEBUG
@@ -117,23 +130,26 @@ void Spaceship::update(float dt) {
 }
 
 void Spaceship::control_ship(float dt) {
-  m_gun_cd += dt;
-  if (m_gun_cd >= GUN_COOLDOWN && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-    fire_weapon();
-    m_shooting = true;
-    m_gun_cd = 0.0F;
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+    if (m_gun_cd <= 0.0F) {
+      m_shooting = true;
+    } else {
+      // TODO: Add sound effect for still reloading
+    }
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-    engage_thrusters(1.0F);
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
-    engage_thrusters(-0.5F);
+    m_thrust = FORWARD_ACCELERATION;
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+    m_thrust = REVERSE_ACCELERATION;
+  } else {
+    m_thrust = 0.0F;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-    m_angular_velocity = 1.0F * ROTATION_SPEED;
-  }
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-    m_angular_velocity = -1.0F * ROTATION_SPEED;
+    m_angular_velocity = ROTATION_SPEED;
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    m_angular_velocity = -ROTATION_SPEED;
+  } else {
+    m_angular_velocity = 0.0F;
   }
 }
 
@@ -141,36 +157,15 @@ void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
                            sf::Vector2f new_velocity) {
   m_sprite.move(new_position.x - m_sprite.getPosition().x,
                 new_position.y - m_sprite.getPosition().y);
-  m_sprite.setRotation(new_rotation);
+  m_sprite.rotate(-(m_sprite.getRotation() - new_rotation));
+  m_gun_cd = 0.0F;
+  m_shooting = false;
   set_velocity(new_velocity);
   set_destroyed(false);
 
 #ifdef DEBUG
   update_ship_stats();
 #endif
-}
-
-void Spaceship::set_radius(float radius) {
-  m_radius = radius;
-}
-
-void Spaceship::engage_thrusters(float direction) {
-  float r_sin = static_cast<float>(std::sin(m_sprite.getRotation() *
-                                            (M_PI / 180.0F)));
-  float r_cos = static_cast<float>(std::cos(m_sprite.getRotation() *
-                                            (M_PI / 180.0F)));
-  sf::Vector2f heading{r_sin, -r_cos};
-  set_velocity(get_velocity() + (heading * ACCELERATION * direction));
-  if (vector2f_length(get_velocity()) > MAX_SPEED) {
-    sf::Vector2f normal_velocity = normalize_vector2f(get_velocity());
-    set_velocity(normal_velocity * MAX_SPEED);
-  }
-}
-
-void Spaceship::fire_weapon() {
-  if (m_gun_sound.getStatus() == sf::Sound::Stopped) {
-    m_gun_sound.play();
-  }
 }
 
 #ifdef DEBUG

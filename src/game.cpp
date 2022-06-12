@@ -74,11 +74,11 @@ void Game::process_input(float dt) {
 
 bool Game::update(float dt) {
   if (m_game_state.in_game()) {
-    update_game_objects(dt);
-    spawn_child_asteroids(dt);
     if (m_player->is_shooting()) {
       m_game_objects.push_back(m_player->spawn_bullet(m_next_object_id++));
     }
+    update_game_objects(dt);
+    spawn_child_asteroids(dt);
     delete_destroyed_objects(dt);
   }
   if (m_player->is_destroyed()) {

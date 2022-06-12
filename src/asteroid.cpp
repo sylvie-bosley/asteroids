@@ -20,10 +20,10 @@ Asteroid::Asteroid(float size, unsigned int id, sf::Vector2f position,
   set_velocity(heading * ASTEROID_SPEED);
   set_destroyed(false);
   m_sprite.setOrigin(sf::Vector2f{size, size});
-  m_sprite.move(position);
-  m_sprite.rotate(rotation);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
+  m_sprite.move(position);
+  m_sprite.rotate(rotation);
 }
 
 const sf::Drawable *Asteroid::get_sprite() const {

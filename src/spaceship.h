@@ -39,26 +39,22 @@ class Spaceship : public GameObject {
   const sf::Text *get_ship_stats();
 #endif
 
- protected:
-  void set_radius(float radius) override;
-
  private:
-  const unsigned int ROTATION_SPEED = 180U;
+  const float ROTATION_SPEED = 180.0F;
   const float MAX_SPEED = 300.0F;
-  const float ACCELERATION = 0.75F;
+  const float FORWARD_ACCELERATION = 0.75F;
+  const float REVERSE_ACCELERATION = -0.375F;
   const float GUN_COOLDOWN = 0.5F;
-
-  void engage_thrusters(float direction);
-  void fire_weapon();
 
   sf::ConvexShape m_sprite;
   sf::SoundBuffer m_gun_sound_buffer;
   sf::SoundBuffer m_thruster_sound_buffer;
   sf::Sound m_gun_sound;
-  float m_angular_velocity;
   float m_radius;
-  bool m_shooting;
+  float m_thrust;
+  float m_angular_velocity;
   float m_gun_cd;
+  bool m_shooting;
 
 #ifdef DEBUG
   void initialize_stats_string();

@@ -41,7 +41,6 @@ class GameObject {
   void set_object_type(ObjectType type);
   void set_velocity(sf::Vector2f velocity);
   void set_destroyed(bool state);
-  virtual void set_radius(float radius) {};
 
  private:
   unsigned int m_object_id;

@@ -17,9 +17,9 @@ Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
   set_velocity(ship_velocity + (heading * BULLET_SPEED));
   set_destroyed(false);
   m_sprite.setOrigin(sf::Vector2f{BULLET_SIZE, 0.0F});
+  m_sprite.setFillColor(sf::Color::White);
   m_sprite.move(spawn_position);
   m_sprite.rotate(rotation);
-  m_sprite.setFillColor(sf::Color::White);
 }
 
 const sf::Drawable *Bullet::get_sprite() const {
