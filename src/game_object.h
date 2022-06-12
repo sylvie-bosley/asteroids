@@ -28,11 +28,12 @@ class GameObject {
   virtual std::vector<sf::Vector2f> get_vertices() const {};
   virtual float get_radius() const {};
   virtual float get_rotation() const {};
+  virtual bool is_shooting() const {};
+  virtual std::shared_ptr<GameObject> spawn_bullet(unsigned int id) {};
   virtual void move_to(sf::Vector2f new_position) {};
   virtual void collide() {};
   virtual void update(float dt) {};
-  virtual std::shared_ptr<GameObject> spawn_child(const GameObject &parent,
-                                                  float direction,
+  virtual std::shared_ptr<GameObject> spawn_child(float direction,
                                                   unsigned int id) {};
 
  protected:

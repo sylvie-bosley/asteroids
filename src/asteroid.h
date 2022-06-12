@@ -25,8 +25,7 @@ class Asteroid : public GameObject {
   void move_to(sf::Vector2f new_position) override;
   void collide() override;
   void update(float dt) override;
-  std::shared_ptr<GameObject> spawn_child(const GameObject &parent,
-                                          float direction,
+  std::shared_ptr<GameObject> spawn_child(float direction,
                                           unsigned int id) override;
 
  private:

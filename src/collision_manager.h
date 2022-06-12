@@ -26,15 +26,13 @@ class CollisionManager {
  private:
   bool player_collision_checks(const GameObject &player,
                                const GameObject &collider) const;
-  bool asteroid_collision_checks(const GameObject &asteroid,
-                                 const GameObject &collider) const;
-  bool player_asteroid(std::vector<sf::Vector2f> player_vertices,
-                       sf::Vector2f asteroid_position,
-                       float asteroid_radius) const;
-  bool asteroid_asteroid(sf::Vector2f asteroid_one_position,
-                         float asteroid_one_radius,
-                         sf::Vector2f asteroid_two_position,
-                         float asteroid_two_radius) const;
+  bool circle_collision_checks(const GameObject &circle,
+                               const GameObject &collider) const;
+  bool player_circle(std::vector<sf::Vector2f> player_vertices,
+                     sf::Vector2f circle_position, float circle_radius) const;
+  bool circle_circle(sf::Vector2f circle_one_position, float circle_one_radius,
+                     sf::Vector2f circle_two_position,
+                     float circle_two_radius) const;
 
   QuadTree m_collidables;
 #ifdef DEBUG

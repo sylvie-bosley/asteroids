@@ -7,7 +7,7 @@
 namespace ag {
 
 Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
-               sf::Vector2f ship_position)
+               sf::Vector2f spawn_position, float ship_radius)
     : m_sprite{BULLET_SIZE}, m_ttl{BULLET_LIFETIME} {
   set_object_id(id);
   set_object_type(BulletType);
@@ -16,10 +16,9 @@ Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
   sf::Vector2f heading{r_sin, -r_cos};
   set_velocity(ship_velocity + (heading * BULLET_SPEED));
   set_destroyed(false);
-  m_sprite.setOrigin(sf::Vector2f{BULLET_SIZE, BULLET_SIZE});
-  m_sprite.setPosition(ship_position);
+  m_sprite.setOrigin(sf::Vector2f{BULLET_SIZE, 0.0F});
+  m_sprite.move(spawn_position);
   m_sprite.rotate(rotation);
-  m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::White);
 }
 
@@ -43,8 +42,9 @@ float Bullet::get_rotation() const {
   return m_sprite.getRotation();
 }
 
-void Bullet::move_to(sf::Vector2f position) {
-  m_sprite.setPosition(position);
+void Bullet::move_to(sf::Vector2f new_position) {
+  m_sprite.move(new_position.x - m_sprite.getPosition().x,
+                new_position.y - m_sprite.getPosition().y);
 }
 
 void Bullet::collide() {

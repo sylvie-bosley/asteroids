@@ -6,22 +6,24 @@
 #include <SFML/Audio.hpp>
 
 #include "game_object.h"
+#include "bullet.h"
 #include "helpers.h"
 
 namespace ag {
 
 Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
-    : m_sprite{3U}, m_gun_cd{GUN_COOLDOWN} {
+    : m_sprite{3U}, m_shooting{false}, m_gun_cd{GUN_COOLDOWN} {
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
   set_radius(10.0F);
   set_destroyed(false);
+  m_sprite.setPointCount(3);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
   m_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
   m_sprite.setOrigin(sf::Vector2f{7.5F, 10.0F});
-  m_sprite.setPosition(starting_pos);
+  m_sprite.move(starting_pos);
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
 
@@ -81,6 +83,27 @@ float Spaceship::get_rotation() const {
   return m_sprite.getRotation();
 }
 
+bool Spaceship::is_shooting() const {
+  return m_shooting;
+}
+
+std::shared_ptr<GameObject> Spaceship::spawn_bullet(unsigned int id) {
+  m_shooting = false;
+  sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
+    m_sprite.getPoint(0) - sf::Vector2f{0.0F, 2.0F});
+  return std::make_shared<Bullet>(id, m_sprite.getRotation(), get_velocity(),
+                                  gun_position, m_radius);
+}
+
+void Spaceship::move_to(sf::Vector2f new_position) {
+  m_sprite.move(new_position.x - m_sprite.getPosition().x,
+                new_position.y - m_sprite.getPosition().y);
+}
+
+void Spaceship::collide() {
+  set_destroyed(true);
+}
+
 void Spaceship::update(float dt) {
   m_sprite.move(get_velocity() * dt);
   if (m_angular_velocity != 0.0F) {
@@ -93,22 +116,11 @@ void Spaceship::update(float dt) {
 #endif
 }
 
-void Spaceship::move_to(sf::Vector2f position) {
-  m_sprite.setPosition(position);
-}
-
-void Spaceship::collide() {
-#ifndef DEBUG
-  set_destroyed(true);
-#endif
-}
-
-bool Spaceship::control_ship(float dt) {
-  bool fired_weapon = false;
+void Spaceship::control_ship(float dt) {
   m_gun_cd += dt;
   if (m_gun_cd >= GUN_COOLDOWN && sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
     fire_weapon();
-    fired_weapon = true;
+    m_shooting = true;
     m_gun_cd = 0.0F;
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
@@ -123,12 +135,12 @@ bool Spaceship::control_ship(float dt) {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
     m_angular_velocity = -1.0F * ROTATION_SPEED;
   }
-  return fired_weapon;
 }
 
 void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
                            sf::Vector2f new_velocity) {
-  m_sprite.setPosition(new_position);
+  m_sprite.move(new_position.x - m_sprite.getPosition().x,
+                new_position.y - m_sprite.getPosition().y);
   m_sprite.setRotation(new_rotation);
   set_velocity(new_velocity);
   set_destroyed(false);
@@ -169,7 +181,7 @@ const sf::Text *Spaceship::get_ship_stats() {
 void Spaceship::initialize_stats_string() {
   m_ship_stats.setCharacterSize(20U);
   m_ship_stats.setFillColor(sf::Color::White);
-  m_ship_stats.setPosition(5.0F, 5.0F);
+  m_ship_stats.move(5.0F, 5.0F);
   update_ship_stats();
 }
 

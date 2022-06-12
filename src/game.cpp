@@ -9,17 +9,16 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "asteroid.h"
-#include "bullet.h"
 #include "collision_manager.h"
 #include "display_manager.h"
 #include "state_manager.h"
 
 namespace ag {
 
-Game::Game() : m_difficulty{0U} {
-  m_player = std::make_shared<Spaceship>(m_display_manager.player_spawn(), 0U);
+Game::Game() : m_difficulty{0U}, m_next_object_id{0U} {
+  m_player = std::make_shared<Spaceship>(m_display_manager.player_spawn(),
+                                         m_next_object_id++);
   m_game_objects.push_back(m_player);
-  m_next_object_id++;
   spawn_asteroids(STARTING_ASTEROIDS);
 }
 
@@ -69,13 +68,7 @@ void Game::process_input(float dt) {
     }
   }
   if (m_game_state.in_game()) {
-    if (m_player->control_ship(dt)) {
-      m_game_objects.push_back(
-        std::make_shared<Bullet>(m_next_object_id, m_player->get_rotation(),
-                                 m_player->get_velocity(),
-                                 m_player->get_position()));
-      m_next_object_id++;
-    }
+    m_player->control_ship(dt);
   }
 }
 
@@ -83,6 +76,9 @@ bool Game::update(float dt) {
   if (m_game_state.in_game()) {
     update_game_objects(dt);
     spawn_child_asteroids(dt);
+    if (m_player->is_shooting()) {
+      m_game_objects.push_back(m_player->spawn_bullet(m_next_object_id++));
+    }
     delete_destroyed_objects(dt);
   }
   if (m_player->is_destroyed()) {
@@ -111,11 +107,10 @@ void Game::render() {
 void Game::spawn_asteroids(unsigned int asteroid_count) {
   std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id,
+    new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id++,
         m_display_manager.valid_asteroid_position(m_game_objects),
         static_cast<float>(rand() % 360U));
     m_game_objects.push_back(new_asteroid);
-    m_next_object_id++;
   }
 }
 
@@ -178,12 +173,8 @@ void Game::spawn_child_asteroids(float dt) {
   for (auto object : m_game_objects) {
     if (object->get_object_type() == GameObject::AsteroidType &&
         object->is_destroyed() && object->get_radius() > S_ASTEROID) {
-      new_children.push_back(object->spawn_child(*object, 90.0F,
-                                                  m_next_object_id));
-      m_next_object_id++;
-      new_children.push_back(object->spawn_child(*object, -90.0F,
-                                                  m_next_object_id));
-      m_next_object_id++;
+      new_children.push_back(object->spawn_child(90.0F, m_next_object_id++));
+      new_children.push_back(object->spawn_child(-90.0F, m_next_object_id++));
     }
   }
   m_game_objects.insert(m_game_objects.end(), new_children.begin(),
@@ -205,7 +196,7 @@ sf::Text Game::generate_game_over_string() const {
   sf::Vector2f new_origin{string.getLocalBounds().width / 2.0F,
       string.getLocalBounds().height};
   string.setOrigin(new_origin);
-  string.setPosition(m_display_manager.screen_center());
+  string.move(m_display_manager.screen_center());
   return string;
 }
 

@@ -46,7 +46,7 @@ class Game {
   DisplayManager m_display_manager;
   std::vector<std::shared_ptr<GameObject>> m_game_objects;
   std::shared_ptr<Spaceship> m_player;
-  unsigned int m_next_object_id = 0U;
+  unsigned int m_next_object_id;
   sf::Font m_game_font;
   unsigned int m_difficulty;
 };

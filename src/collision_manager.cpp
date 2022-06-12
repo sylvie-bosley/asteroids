@@ -34,17 +34,17 @@ bool CollisionManager::collision_check(const GameObject &object,
   }
   other_objects = m_collidables.retrieve(object.get_bounds());
   bool collision = false;
-  for (auto collider : other_objects) {
+  for (auto &&collider : other_objects) {
     if (object != *collider) {
       switch (object.get_object_type()) {
       case GameObject::PlayerType:
         collision = player_collision_checks(object, *collider);
         break;
       case GameObject::AsteroidType:
-        collision = asteroid_collision_checks(object, *collider);
+        collision = circle_collision_checks(object, *collider);
         break;
       case GameObject::BulletType:
-        // TODO: Bullet collision checks
+        collision = circle_collision_checks(object, *collider);
         break;
       default:
         break;
@@ -69,10 +69,11 @@ bool CollisionManager::player_collision_checks(const GameObject &player,
     const {
   switch (collider.get_object_type()) {
   case GameObject::AsteroidType:
-    return player_asteroid(player.get_vertices(), collider.get_position(),
-                           collider.get_radius());
+    return player_circle(player.get_vertices(), collider.get_position(),
+                         collider.get_radius());
   case GameObject::BulletType:
-    // TODO: Player-Bullet collision
+    return player_circle(player.get_vertices(), collider.get_position(),
+                         collider.get_radius());
   case GameObject::SaucerType:
     // TODO: Player-Saucer collision
   default:
@@ -80,18 +81,19 @@ bool CollisionManager::player_collision_checks(const GameObject &player,
   }
 }
 
-bool CollisionManager::asteroid_collision_checks(const GameObject &asteroid,
-                                                 const GameObject &collider)
+bool CollisionManager::circle_collision_checks(const GameObject &circle,
+                                               const GameObject &collider)
       const {
   switch (collider.get_object_type()) {
   case GameObject::PlayerType:
-    return player_asteroid(collider.get_vertices(), asteroid.get_position(),
-                           asteroid.get_radius());
+    return player_circle(collider.get_vertices(), circle.get_position(),
+                         circle.get_radius());
   case GameObject::AsteroidType:
-    return asteroid_asteroid(asteroid.get_position(), asteroid.get_radius(),
-                             collider.get_position(), collider.get_radius());
+    return circle_circle(circle.get_position(), circle.get_radius(),
+                         collider.get_position(), collider.get_radius());
   case GameObject::BulletType:
-    // TODO: Asteroid-Bullet collision
+    return circle_circle(circle.get_position(), circle.get_radius(),
+                         collider.get_position(), collider.get_radius());
   case GameObject::SaucerType:
     // TODO: Asteroid-Saucer collision
   default:
@@ -99,30 +101,30 @@ bool CollisionManager::asteroid_collision_checks(const GameObject &asteroid,
   }
 }
 
-bool CollisionManager::player_asteroid(std::vector<sf::Vector2f> player_vertices,
-                                       sf::Vector2f asteroid_position,
-                                       float asteroid_radius)
+bool CollisionManager::player_circle(std::vector<sf::Vector2f> player_vertices,
+                                     sf::Vector2f circle_position,
+                                     float circle_radius)
     const {
   float distance;
   for (auto vertex : player_vertices) {
-    distance = sqrt(pow((vertex.x - asteroid_position.x), 2) +
-                    pow((vertex.y - asteroid_position.y), 2));
-    if (distance <= asteroid_radius) {
+    distance = sqrt(pow((vertex.x - circle_position.x), 2) +
+                    pow((vertex.y - circle_position.y), 2));
+    if (distance <= circle_radius) {
       return true;
     }
   }
   return false;
 }
 
-bool CollisionManager::asteroid_asteroid(sf::Vector2f asteroid_one_position,
-                                         float asteroid_one_radius,
-                                         sf::Vector2f asteroid_two_position,
-                                         float asteroid_two_radius) const {
+bool CollisionManager::circle_circle(sf::Vector2f circle_one_position,
+                                     float circle_one_radius,
+                                     sf::Vector2f circle_two_position,
+                                     float circle_two_radius) const {
   float delta_x, delta_y, distance;
-  delta_x = asteroid_one_position.x - asteroid_two_position.x;
-  delta_y = asteroid_one_position.y - asteroid_two_position.y;
+  delta_x = circle_one_position.x - circle_two_position.x;
+  delta_y = circle_one_position.y - circle_two_position.y;
   distance = sqrt(pow((delta_x), 2) + pow((delta_y), 2));
-  return distance <= asteroid_one_radius + asteroid_two_radius;
+  return distance <= circle_one_radius + circle_two_radius;
 }
 
 }
