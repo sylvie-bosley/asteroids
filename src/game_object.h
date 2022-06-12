@@ -22,6 +22,7 @@ class GameObject {
   GameObject::ObjectType get_object_type() const;
   sf::Vector2f get_velocity() const;
   bool is_destroyed() const;
+  void destroy();
   virtual const sf::Drawable *get_sprite() const {};
   virtual sf::FloatRect get_bounds() const {};
   virtual sf::Vector2f get_position() const {};
@@ -31,7 +32,6 @@ class GameObject {
   virtual bool is_shooting() const {};
   virtual std::shared_ptr<GameObject> spawn_bullet(unsigned int id) {};
   virtual void move_to(sf::Vector2f new_position) {};
-  virtual void collide() {};
   virtual void update(float dt) {};
   virtual std::shared_ptr<GameObject> spawn_child(float direction,
                                                   unsigned int id) {};
@@ -40,7 +40,7 @@ class GameObject {
   void set_object_id(unsigned int id);
   void set_object_type(ObjectType type);
   void set_velocity(sf::Vector2f velocity);
-  void set_destroyed(bool state);
+  void not_destroyed();
 
  private:
   unsigned int m_object_id;

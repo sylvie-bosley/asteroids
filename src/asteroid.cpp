@@ -18,7 +18,7 @@ Asteroid::Asteroid(float size, unsigned int id, sf::Vector2f position,
   float r_cos = static_cast<float>(std::cos(rotation * (M_PI / 180.0F)));
   sf::Vector2f heading{r_sin, -r_cos};
   set_velocity(heading * ASTEROID_SPEED);
-  set_destroyed(false);
+  not_destroyed();
   m_sprite.setOrigin(sf::Vector2f{size, size});
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
@@ -49,10 +49,6 @@ float Asteroid::get_rotation() const {
 void Asteroid::move_to(sf::Vector2f new_position) {
   m_sprite.move(new_position.x - m_sprite.getPosition().x,
                 new_position.y - m_sprite.getPosition().y);
-}
-
-void Asteroid::collide() {
-  set_destroyed(true);
 }
 
 void Asteroid::update(float dt) {

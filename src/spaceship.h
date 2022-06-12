@@ -29,7 +29,6 @@ class Spaceship : public GameObject {
   bool is_shooting() const override;
   std::shared_ptr<GameObject> spawn_bullet(unsigned int id) override;
   void move_to(sf::Vector2f new_position) override;
-  void collide() override;
   void update(float dt) override;
   void control_ship(float dt);
   void reset_ship(sf::Vector2f new_position, float new_rotation,

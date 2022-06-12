@@ -17,7 +17,7 @@ Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
-  set_destroyed(false);
+  not_destroyed();
   m_sprite.setPointCount(3);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
@@ -100,10 +100,6 @@ void Spaceship::move_to(sf::Vector2f new_position) {
                 new_position.y - m_sprite.getPosition().y);
 }
 
-void Spaceship::collide() {
-  set_destroyed(true);
-}
-
 void Spaceship::update(float dt) {
   double r_sin = std::sin(m_sprite.getRotation() * (M_PI / 180.0F));
   double r_cos = std::cos(m_sprite.getRotation() * (M_PI / 180.0F));
@@ -161,7 +157,7 @@ void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
   m_gun_cd = 0.0F;
   m_shooting = false;
   set_velocity(new_velocity);
-  set_destroyed(false);
+  not_destroyed();
 
 #ifdef DEBUG
   update_ship_stats();

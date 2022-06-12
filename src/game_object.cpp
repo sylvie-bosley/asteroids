@@ -26,6 +26,8 @@ bool GameObject::is_destroyed() const{
   return m_destroyed;
 }
 
+void destroy();
+
 void GameObject::set_object_id(unsigned int id) {
   m_object_id = id;
 }
@@ -38,8 +40,12 @@ void GameObject::set_velocity(sf::Vector2f velocity) {
   m_velocity = velocity;
 }
 
-void GameObject::set_destroyed(bool state) {
-  m_destroyed = state;
+void GameObject::not_destroyed() {
+  m_destroyed = false;
+}
+
+void GameObject::destroy() {
+  m_destroyed = true;
 }
 
 }

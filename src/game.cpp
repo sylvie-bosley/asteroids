@@ -159,11 +159,15 @@ void Game::update_game_objects(float dt) {
   }
   for (auto object : m_game_objects) {
     if (m_collision_manager.collision_check(*object, m_game_objects)) {
-      object->collide();
+      object->destroy();
     }
     if (m_display_manager.off_camera(object->get_position(),
-                                     object->get_radius())){
-      m_display_manager.wrap_object(*object);
+                                     object->get_radius())) {
+      if (object->get_object_type() != GameObject::SaucerType) {
+        m_display_manager.wrap_object(*object);
+      } else {
+        object->destroy();
+      }
     }
   }
 }
