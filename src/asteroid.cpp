@@ -9,7 +9,7 @@
 
 namespace ag {
 
-Asteroid::Asteroid(float size, unsigned int id, sf::Vector2f position,
+Asteroid::Asteroid(unsigned int id, float size, sf::Vector2f position,
                    float rotation)
     : m_sprite{size} {
   set_object_id(id);
@@ -42,10 +42,6 @@ float Asteroid::get_radius() const {
   return m_sprite.getRadius();
 }
 
-float Asteroid::get_rotation() const {
-  return m_sprite.getRotation();
-}
-
 void Asteroid::move_to(sf::Vector2f new_position) {
   m_sprite.move(new_position.x - m_sprite.getPosition().x,
                 new_position.y - m_sprite.getPosition().y);
@@ -55,10 +51,10 @@ void Asteroid::update(float dt) {
   m_sprite.move(get_velocity() * dt);
 }
 
-std::shared_ptr<GameObject> Asteroid::spawn_child(float direction,
-                                                  unsigned int id) {
+std::shared_ptr<GameObject> Asteroid::spawn_child(unsigned int id,
+                                                  float direction) {
   std::shared_ptr<Asteroid> new_asteroid;
-  new_asteroid = std::make_shared<Asteroid>(m_sprite.getRadius() / 2.0F, id,
+  new_asteroid = std::make_shared<Asteroid>(id, m_sprite.getRadius() / 2.0F,
                                             get_position(),
                                             m_sprite.getRotation() + direction);
   new_asteroid->update(new_asteroid->get_radius() / ASTEROID_SPEED);

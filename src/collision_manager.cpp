@@ -35,10 +35,10 @@ bool CollisionManager::collision_check(const GameObject &object,
   other_objects = m_collidables.retrieve(object.get_bounds());
   bool collision = false;
   for (auto &&collider : other_objects) {
-    if (object != *collider) {
+    if (&object != collider) {
       switch (object.get_object_type()) {
       case GameObject::PlayerType:
-        collision = player_collision_checks(object, *collider);
+        collision = ship_collision_checks(object, *collider);
         break;
       case GameObject::AsteroidType:
         collision = circle_collision_checks(object, *collider);
@@ -46,7 +46,8 @@ bool CollisionManager::collision_check(const GameObject &object,
       case GameObject::BulletType:
         collision = circle_collision_checks(object, *collider);
         break;
-      default:
+      case GameObject::SaucerType:
+        collision = ship_collision_checks(object, *collider);
         break;
       }
     }
@@ -64,20 +65,17 @@ bool CollisionManager::collision_check(const GameObject &object,
   return collision;
 }
 
-bool CollisionManager::player_collision_checks(const GameObject &player,
-                                               const GameObject &collider)
+bool CollisionManager::ship_collision_checks(const GameObject &ship,
+                                             const GameObject &collider)
     const {
   switch (collider.get_object_type()) {
-  case GameObject::AsteroidType:
-    return player_circle(player.get_vertices(), collider.get_position(),
-                         collider.get_radius());
-  case GameObject::BulletType:
-    return player_circle(player.get_vertices(), collider.get_position(),
-                         collider.get_radius());
+  case GameObject::PlayerType:
   case GameObject::SaucerType:
-    // TODO: Player-Saucer collision
-  default:
-    return false;
+    return ship_ship(ship.get_vertices(), collider.get_vertices());
+  case GameObject::AsteroidType:
+  case GameObject::BulletType:
+    return ship_circle(ship.get_vertices(), collider.get_position(),
+                       collider.get_radius());
   }
 }
 
@@ -86,27 +84,27 @@ bool CollisionManager::circle_collision_checks(const GameObject &circle,
       const {
   switch (collider.get_object_type()) {
   case GameObject::PlayerType:
-    return player_circle(collider.get_vertices(), circle.get_position(),
-                         circle.get_radius());
+  case GameObject::SaucerType:
+    return ship_circle(collider.get_vertices(), circle.get_position(),
+                       circle.get_radius());
   case GameObject::AsteroidType:
-    return circle_circle(circle.get_position(), circle.get_radius(),
-                         collider.get_position(), collider.get_radius());
   case GameObject::BulletType:
     return circle_circle(circle.get_position(), circle.get_radius(),
                          collider.get_position(), collider.get_radius());
-  case GameObject::SaucerType:
-    // TODO: Asteroid-Saucer collision
-  default:
-    return false;
   }
 }
 
-bool CollisionManager::player_circle(std::vector<sf::Vector2f> player_vertices,
-                                     sf::Vector2f circle_position,
-                                     float circle_radius)
-    const {
+bool CollisionManager::ship_ship(
+    std::vector<sf::Vector2f> ship_one_vertices,
+    std::vector<sf::Vector2f> ship_two_vertices) const {
+  return false;
+}
+
+bool CollisionManager::ship_circle(std::vector<sf::Vector2f> ship_vertices,
+                                   sf::Vector2f circle_position,
+                                   float circle_radius) const {
   float distance;
-  for (auto vertex : player_vertices) {
+  for (auto vertex : ship_vertices) {
     distance = sqrt(pow((vertex.x - circle_position.x), 2) +
                     pow((vertex.y - circle_position.y), 2));
     if (distance <= circle_radius) {

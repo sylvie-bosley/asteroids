@@ -11,7 +11,7 @@ namespace ag {
 class Spaceship : public GameObject {
  public:
   Spaceship() {};
-  explicit Spaceship(sf::Vector2f starting_pos, unsigned int id);
+  explicit Spaceship(unsigned int id, sf::Vector2f starting_pos);
   ~Spaceship() {};
 
 #ifdef DEBUG
@@ -25,11 +25,11 @@ class Spaceship : public GameObject {
   sf::Vector2f get_position() const override;
   std::vector<sf::Vector2f> get_vertices() const override;
   float get_radius() const override;
-  float get_rotation() const override;
   bool is_shooting() const override;
-  std::shared_ptr<GameObject> spawn_bullet(unsigned int id) override;
   void move_to(sf::Vector2f new_position) override;
   void update(float dt) override;
+  std::shared_ptr<GameObject> spawn_child(unsigned int id,
+                                          float _direction = 0.0F) override;
   void control_ship(float dt);
   void reset_ship(sf::Vector2f new_position, float new_rotation,
                   sf::Vector2f new_velocity);

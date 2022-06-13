@@ -7,8 +7,8 @@
 namespace ag {
 
 Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
-               sf::Vector2f spawn_position, float ship_radius)
-    : m_sprite{BULLET_SIZE}, m_ttl{BULLET_LIFETIME} {
+               sf::Vector2f spawn_position, float lifetime)
+    : m_sprite{BULLET_SIZE}, m_ttl{lifetime} {
   set_object_id(id);
   set_object_type(BulletType);
   float r_sin = static_cast<float>(std::sin(rotation * (M_PI / 180.0F)));
@@ -36,10 +36,6 @@ sf::Vector2f Bullet::get_position() const {
 
 float Bullet::get_radius() const {
   return m_sprite.getRadius();
-}
-
-float Bullet::get_rotation() const {
-  return m_sprite.getRotation();
 }
 
 void Bullet::move_to(sf::Vector2f new_position) {

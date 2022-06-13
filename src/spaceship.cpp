@@ -11,7 +11,7 @@
 
 namespace ag {
 
-Spaceship::Spaceship(const sf::Vector2f starting_pos, const unsigned int id)
+Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_pos)
     : m_sprite{3U}, m_radius{10.0F}, m_thrust{0.0F}, m_angular_velocity{0.0F},
       m_gun_cd{0.0F}, m_shooting{false} {
   set_object_id(id);
@@ -79,20 +79,8 @@ float Spaceship::get_radius() const {
   return m_radius;
 }
 
-float Spaceship::get_rotation() const {
-  return m_sprite.getRotation();
-}
-
 bool Spaceship::is_shooting() const {
   return m_shooting;
-}
-
-std::shared_ptr<GameObject> Spaceship::spawn_bullet(unsigned int id) {
-  sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
-    m_sprite.getPoint(0) - sf::Vector2f{0.0F, 2.0F});
-  m_gun_sound.play();
-  return std::make_shared<Bullet>(id, m_sprite.getRotation(), get_velocity(),
-                                  gun_position, m_radius);
 }
 
 void Spaceship::move_to(sf::Vector2f new_position) {
@@ -113,16 +101,24 @@ void Spaceship::update(float dt) {
   if (m_angular_velocity != 0.0F) {
     m_sprite.rotate(-(m_angular_velocity * dt));
   }
-  if (is_shooting()) {
-    m_shooting = false;
-    m_gun_cd = GUN_COOLDOWN;
-  } else if (m_gun_cd > 0.0F) {
+  if (!m_shooting && m_gun_cd > 0.0F) {
     m_gun_cd -= dt;
   }
 
 #ifdef DEBUG
   update_ship_stats();
 #endif
+}
+
+std::shared_ptr<GameObject> Spaceship::spawn_child(unsigned int id,
+                                                   float _direction) {
+  m_shooting = false;
+  m_gun_cd = GUN_COOLDOWN;
+  m_gun_sound.play();
+  sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
+    m_sprite.getPoint(0) - sf::Vector2f{0.0F, 3.0F});
+  return std::make_shared<Bullet>(id, m_sprite.getRotation(), get_velocity(),
+                                  gun_position, 2.0F);
 }
 
 void Spaceship::control_ship(float dt) {

@@ -19,6 +19,11 @@ sf::Vector2f DisplayManager::screen_center() const {
   return DISPLAY_SIZE / 2.0F;
 }
 
+sf::Vector2f DisplayManager::saucer_spawn_position() const {
+  int position_index = rand() % 2;
+  return SAUCER_SPAWNS.at(position_index);
+}
+
 bool DisplayManager::poll_event(sf::Event &event) {
   return m_game_window.pollEvent(event);
 }

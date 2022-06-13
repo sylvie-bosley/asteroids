@@ -11,21 +11,19 @@ class Bullet : public GameObject {
  public:
   Bullet() {};
   explicit Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
-                  sf::Vector2f ship_position, float ship_radius);
+                  sf::Vector2f ship_position, float lifetime);
   ~Bullet() {};
 
   const sf::Drawable *get_sprite() const override;
   sf::FloatRect get_bounds() const override;
   sf::Vector2f get_position() const override;
   float get_radius() const override;
-  float get_rotation() const override;
   void move_to(sf::Vector2f new_position) override;
   void update(float dt) override;
 
  private:
   const float BULLET_SPEED = 250.0F;
   const float BULLET_SIZE = 2.0F;
-  const float BULLET_LIFETIME = 2.0F;
 
   float m_ttl;
   sf::CircleShape m_sprite;

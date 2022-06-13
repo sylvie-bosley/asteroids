@@ -24,12 +24,14 @@ class CollisionManager {
 #endif
 
  private:
-  bool player_collision_checks(const GameObject &player,
-                               const GameObject &collider) const;
+  bool ship_collision_checks(const GameObject &ship,
+                             const GameObject &collider) const;
   bool circle_collision_checks(const GameObject &circle,
                                const GameObject &collider) const;
-  bool player_circle(std::vector<sf::Vector2f> player_vertices,
-                     sf::Vector2f circle_position, float circle_radius) const;
+  bool ship_ship(std::vector<sf::Vector2f> ship_one_vertices,
+                 std::vector<sf::Vector2f> ship_two_vertices) const;
+  bool ship_circle(std::vector<sf::Vector2f> ship_vertices,
+                   sf::Vector2f circle_position, float circle_radius) const;
   bool circle_circle(sf::Vector2f circle_one_position, float circle_one_radius,
                      sf::Vector2f circle_two_position,
                      float circle_two_radius) const;

@@ -16,27 +16,29 @@ class GameObject {
     SaucerType
   };
 
-  bool operator ==(GameObject other) const;
-  bool operator !=(GameObject other) const;
-  unsigned int get_object_id() const;
+  bool operator ==(GameObject &other) const;
+  bool operator ==(GameObject::ObjectType type) const;
+  bool operator !=(GameObject &other) const;
+  bool operator !=(GameObject::ObjectType type) const;
   GameObject::ObjectType get_object_type() const;
   sf::Vector2f get_velocity() const;
   bool is_destroyed() const;
   void destroy();
-  virtual const sf::Drawable *get_sprite() const {};
-  virtual sf::FloatRect get_bounds() const {};
-  virtual sf::Vector2f get_position() const {};
-  virtual std::vector<sf::Vector2f> get_vertices() const {};
-  virtual float get_radius() const {};
-  virtual float get_rotation() const {};
-  virtual bool is_shooting() const {};
-  virtual std::shared_ptr<GameObject> spawn_bullet(unsigned int id) {};
-  virtual void move_to(sf::Vector2f new_position) {};
-  virtual void update(float dt) {};
-  virtual std::shared_ptr<GameObject> spawn_child(float direction,
-                                                  unsigned int id) {};
+  virtual const sf::Drawable *get_sprite() const=0;
+  virtual sf::FloatRect get_bounds() const=0;
+  virtual sf::Vector2f get_position() const=0;
+  virtual std::vector<sf::Vector2f> get_vertices() const {
+    return std::vector<sf::Vector2f>{}; };
+  virtual float get_radius() const=0;
+  virtual bool is_shooting() const { return false; };
+  virtual void move_to(sf::Vector2f new_position)=0;
+  virtual void update(float dt)=0;
+  virtual void aim(sf::Vector2f player_position) {};
+  virtual std::shared_ptr<GameObject> spawn_child(unsigned int id,
+    float direction = 0.0F) { return nullptr; };
 
  protected:
+  unsigned int get_object_id() const;
   void set_object_id(unsigned int id);
   void set_object_type(ObjectType type);
   void set_velocity(sf::Vector2f velocity);

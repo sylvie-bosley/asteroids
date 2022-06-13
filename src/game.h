@@ -28,17 +28,17 @@ class Game {
   void render();
 
  private:
-  unsigned int STARTING_ASTEROIDS = 3U;
-  float L_ASTEROID = 50.0F;
-  float M_ASTEROID = 25.0F;
-  float S_ASTEROID = 12.5F;
+  const unsigned int STARTING_ASTEROIDS = 3U;
+  const float L_ASTEROID = 50.0F;
+  const float M_ASTEROID = 25.0F;
+  const float S_ASTEROID = 12.5F;
+  const float SAUCER_INTERVAL = 30.0F;
 
   void spawn_asteroids(unsigned int asteroid_count);
   void process_menu_keys(sf::Keyboard::Key key);
   void reset_game();
   void update_game_objects(float dt);
-  void spawn_child_asteroids(float dt);
-  void delete_destroyed_objects(float dt);
+  void delete_destroyed_objects();
   sf::Text generate_game_over_string() const;
 
   StateManager m_game_state;
@@ -49,6 +49,7 @@ class Game {
   unsigned int m_next_object_id;
   sf::Font m_game_font;
   unsigned int m_difficulty;
+  float m_saucer_timer;
 };
 
 }

@@ -9,15 +9,17 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "asteroid.h"
+#include "saucer.h"
 #include "collision_manager.h"
 #include "display_manager.h"
 #include "state_manager.h"
 
 namespace ag {
 
-Game::Game() : m_difficulty{0U}, m_next_object_id{0U} {
-  m_player = std::make_shared<Spaceship>(m_display_manager.screen_center(),
-                                         m_next_object_id++);
+Game::Game()
+    : m_difficulty{0U}, m_next_object_id{0U}, m_saucer_timer{SAUCER_INTERVAL} {
+  m_player = std::make_shared<Spaceship>(m_next_object_id++,
+                                         m_display_manager.screen_center());
   m_game_objects.push_back(m_player);
   spawn_asteroids(STARTING_ASTEROIDS);
 }
@@ -74,12 +76,56 @@ void Game::process_input(float dt) {
 
 bool Game::update(float dt) {
   if (m_game_state.in_game()) {
-    if (m_player->is_shooting()) {
-      m_game_objects.push_back(m_player->spawn_bullet(m_next_object_id++));
+    for (auto object : m_game_objects) {
+      object->update(dt);
+      if (*object == GameObject::SaucerType) {
+        object->aim(m_player->get_position());
+      }
     }
-    update_game_objects(dt);
-    spawn_child_asteroids(dt);
-    delete_destroyed_objects(dt);
+    std::vector<std::shared_ptr<GameObject>> new_objects;
+    for (auto object : m_game_objects) {
+      if (m_collision_manager.collision_check(*object, m_game_objects)) {
+        object->destroy();
+      }
+      if ((*object == GameObject::PlayerType ||
+           *object == GameObject::SaucerType) &&
+          object->is_shooting()) {
+        new_objects.push_back(object->spawn_child(m_next_object_id++));
+      } else if (*object == GameObject::AsteroidType &&
+                 object->is_destroyed() &&
+                 object->get_radius() > S_ASTEROID) {
+        new_objects.push_back(object->spawn_child(m_next_object_id++, 90.0F));
+        new_objects.push_back(object->spawn_child(m_next_object_id++, -90.0F));
+      }
+      if (m_display_manager.off_camera(object->get_position(),
+                                       object->get_radius())) {
+        if (*object != GameObject::SaucerType) {
+          m_display_manager.wrap_object(*object);
+        } else {
+          object->destroy();
+        }
+      }
+    }
+    if (m_saucer_timer <= 0.0F) {
+      sf::Vector2f position = m_display_manager.saucer_spawn_position();
+      float rotation = 0.0F;
+      if (position.y > m_display_manager.screen_center().y) {
+        rotation = 180.0F;
+      }
+      new_objects.push_back(std::make_shared<Saucer>(m_next_object_id++,
+                                                     position, rotation));
+      m_saucer_timer = SAUCER_INTERVAL;
+    } else {
+      m_saucer_timer -= dt;
+    }
+    m_game_objects.insert(m_game_objects.end(), new_objects.begin(),
+                          new_objects.end());
+    m_game_objects.erase(std::remove_copy_if(m_game_objects.begin() + 1U,
+                                             m_game_objects.end(),
+                                             m_game_objects.begin() + 1U,
+                                             [](std::shared_ptr<GameObject> obj)
+                                             { return obj->is_destroyed(); }),
+                         m_game_objects.end());
   }
   if (m_player->is_destroyed()) {
     m_game_state.end_game();
@@ -107,7 +153,7 @@ void Game::render() {
 void Game::spawn_asteroids(unsigned int asteroid_count) {
   std::shared_ptr<Asteroid> new_asteroid;
   for (unsigned int i = 0U; i < asteroid_count; ++i) {
-    new_asteroid = std::make_shared<Asteroid>(L_ASTEROID, m_next_object_id++,
+    new_asteroid = std::make_shared<Asteroid>(m_next_object_id++, L_ASTEROID,
         m_display_manager.valid_asteroid_position(m_game_objects),
         static_cast<float>(rand() % 360U));
     m_game_objects.push_back(new_asteroid);
@@ -154,44 +200,9 @@ void Game::reset_game() {
 }
 
 void Game::update_game_objects(float dt) {
-  for (auto object : m_game_objects) {
-    object->update(dt);
-  }
-  for (auto object : m_game_objects) {
-    if (m_collision_manager.collision_check(*object, m_game_objects)) {
-      object->destroy();
-    }
-    if (m_display_manager.off_camera(object->get_position(),
-                                     object->get_radius())) {
-      if (object->get_object_type() != GameObject::SaucerType) {
-        m_display_manager.wrap_object(*object);
-      } else {
-        object->destroy();
-      }
-    }
-  }
 }
 
-void Game::spawn_child_asteroids(float dt) {
-  std::vector<std::shared_ptr<GameObject>> new_children;
-  for (auto object : m_game_objects) {
-    if (object->get_object_type() == GameObject::AsteroidType &&
-        object->is_destroyed() && object->get_radius() > S_ASTEROID) {
-      new_children.push_back(object->spawn_child(90.0F, m_next_object_id++));
-      new_children.push_back(object->spawn_child(-90.0F, m_next_object_id++));
-    }
-  }
-  m_game_objects.insert(m_game_objects.end(), new_children.begin(),
-                        new_children.end());
-}
-
-void Game::delete_destroyed_objects(float dt) {
-  m_game_objects.erase(std::remove_copy_if(m_game_objects.begin() + 1U,
-                                           m_game_objects.end(),
-                                           m_game_objects.begin() + 1U,
-                                           [](std::shared_ptr<GameObject> obj)
-                                           { return obj->is_destroyed(); }),
-                       m_game_objects.end());
+void Game::delete_destroyed_objects() {
 }
 
 sf::Text Game::generate_game_over_string() const {

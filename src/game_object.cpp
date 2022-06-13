@@ -2,16 +2,20 @@
 
 namespace ag {
 
-bool GameObject::operator ==(GameObject other) const {
-  return other.get_object_id() == get_object_id();
+bool GameObject::operator ==(GameObject &other) const {
+  return m_object_id == other.get_object_id();
 }
 
-bool GameObject::operator !=(GameObject other) const {
-  return other.get_object_id() != get_object_id();
+bool GameObject::operator ==(GameObject::ObjectType type) const {
+  return m_object_type == type;
 }
 
-unsigned int GameObject::get_object_id() const {
-  return m_object_id;
+bool GameObject::operator !=(GameObject &other) const {
+  return m_object_id != other.get_object_id();
+}
+
+bool GameObject::operator !=(GameObject::ObjectType type) const {
+  return m_object_type != type;
 }
 
 GameObject::ObjectType GameObject::get_object_type() const {
@@ -26,7 +30,13 @@ bool GameObject::is_destroyed() const{
   return m_destroyed;
 }
 
-void destroy();
+void GameObject::destroy() {
+  m_destroyed = true;
+}
+
+unsigned int GameObject::get_object_id() const {
+  return m_object_id;
+}
 
 void GameObject::set_object_id(unsigned int id) {
   m_object_id = id;
@@ -42,10 +52,6 @@ void GameObject::set_velocity(sf::Vector2f velocity) {
 
 void GameObject::not_destroyed() {
   m_destroyed = false;
-}
-
-void GameObject::destroy() {
-  m_destroyed = true;
 }
 
 }
