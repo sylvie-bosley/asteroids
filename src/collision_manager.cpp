@@ -68,10 +68,13 @@ bool CollisionManager::collision_check(const GameObject &object,
 bool CollisionManager::ship_collision_checks(const GameObject &ship,
                                              const GameObject &collider)
     const {
+  float x_offset = collider.get_position().x - ship.get_position().x;
+  float y_offset = collider.get_position().y - ship.get_position().y;
+  sf::Vector2f distance{x_offset, y_offset};
   switch (collider.get_object_type()) {
   case GameObject::PlayerType:
   case GameObject::SaucerType:
-    return ship_ship(ship.get_vertices(), collider.get_vertices());
+    return ship_ship(distance, ship.get_vertices(), collider.get_vertices());
   case GameObject::AsteroidType:
   case GameObject::BulletType:
     return ship_circle(ship.get_vertices(), collider.get_position(),
@@ -94,10 +97,56 @@ bool CollisionManager::circle_collision_checks(const GameObject &circle,
   }
 }
 
-bool CollisionManager::ship_ship(
+bool CollisionManager::ship_ship(sf::Vector2f distance,
     std::vector<sf::Vector2f> ship_one_vertices,
     std::vector<sf::Vector2f> ship_two_vertices) const {
-  return false;
+  std::vector<sf::Vector2f> all_axes, ship_one_axes, ship_two_axes;
+  ship_one_axes = vertices_to_axes(ship_one_vertices);
+  ship_two_axes = vertices_to_axes(ship_two_vertices);
+  all_axes.insert(all_axes.end(), ship_one_axes.begin(), ship_one_axes.end());
+  all_axes.insert(all_axes.end(), ship_two_axes.begin(), ship_two_axes.end());
+  for (auto axis : all_axes) {
+    if (!ships_overlap(distance, axis, ship_one_vertices, ship_two_vertices)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::vector<sf::Vector2f> CollisionManager::vertices_to_axes(
+    std::vector<sf::Vector2f> vertices) const {
+  float x1, x2, y1, y2;
+  std::vector<sf::Vector2f> normals;
+  for (unsigned int i = 0; i < vertices.size(); i++) {
+    x1 = vertices.at(i).x;
+    y1 = vertices.at(i).y;
+    x2 = vertices.at((i + 1) % vertices.size()).x;
+    y2 = vertices.at((i + 1) % vertices.size()).y;
+    normals.push_back(sf::Vector2f{-(y2 - y1), (x2 - x1)});
+  }
+  return normals;
+}
+
+bool CollisionManager::ships_overlap(sf::Vector2f axis, sf::Vector2f distance,
+    std::vector<sf::Vector2f> ship_one_vertices,
+    std::vector<sf::Vector2f> ship_two_vertices) const {
+  float min_one = vector2f_dot_product(ship_one_vertices.at(0), axis);
+  float max_one = min_one;
+  float min_two = vector2f_dot_product(ship_two_vertices.at(0), axis);
+  float max_two = min_one;
+  float dot_product;
+  for (auto vertex : ship_one_vertices) {
+    dot_product = vector2f_dot_product(vertex, axis);
+    min_one = std::min(min_one, dot_product);
+    max_one = std::max(max_one, dot_product);
+  }
+  for (auto vertex : ship_two_vertices) {
+    dot_product = vector2f_dot_product(vertex, axis);
+    min_two = std::min(min_two, dot_product);
+    max_two = std::max(max_two, dot_product);
+  }
+  return (min_two < max_one && min_two > min_one) ||
+         (max_two > min_one && max_two < max_one);
 }
 
 bool CollisionManager::ship_circle(std::vector<sf::Vector2f> ship_vertices,

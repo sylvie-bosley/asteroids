@@ -7,6 +7,8 @@ namespace ag {
 
 sf::Vector2f normalize_vector2f(const sf::Vector2f &vector);
 float vector2f_length(const sf::Vector2f &vector);
+float vector2f_dot_product(const sf::Vector2f &vector_one,
+                           const sf::Vector2f &vector_two);
 
 }
 
