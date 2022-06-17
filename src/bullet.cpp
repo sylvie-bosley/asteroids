@@ -15,7 +15,7 @@ Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
   float r_cos = static_cast<float>(std::cos(rotation * (M_PI / 180.0F)));
   sf::Vector2f heading{r_sin, -r_cos};
   set_velocity(ship_velocity + (heading * BULLET_SPEED));
-  not_destroyed();
+  set_destroyed(true);
   m_sprite.setOrigin(sf::Vector2f{BULLET_SIZE, 0.0F});
   m_sprite.setFillColor(sf::Color::White);
   m_sprite.move(spawn_position);
@@ -38,6 +38,10 @@ float Bullet::get_radius() const {
   return m_sprite.getRadius();
 }
 
+void Bullet::collide() {
+  set_destroyed(true);
+}
+
 void Bullet::move_to(sf::Vector2f new_position) {
   m_sprite.move(new_position.x - m_sprite.getPosition().x,
                 new_position.y - m_sprite.getPosition().y);
@@ -47,7 +51,7 @@ void Bullet::update(float dt) {
   m_sprite.move(get_velocity() * dt);
   m_ttl -= dt;
   if (m_ttl <= 0.0F) {
-    destroy();
+    set_destroyed(true);
   }
 }
 

@@ -85,7 +85,7 @@ bool Game::update(float dt) {
     std::vector<std::shared_ptr<GameObject>> new_objects;
     for (auto object : m_game_objects) {
       if (m_collision_manager.collision_check(*object, m_game_objects)) {
-        object->destroy();
+        object->collide();
       }
       if ((*object == GameObject::PlayerType ||
            *object == GameObject::SaucerType) &&
@@ -102,7 +102,7 @@ bool Game::update(float dt) {
         if (*object != GameObject::SaucerType) {
           m_display_manager.wrap_object(*object);
         } else {
-          object->destroy();
+          object->collide();
         }
       }
     }
@@ -139,6 +139,7 @@ void Game::render() {
     sf::Text game_over_string = generate_game_over_string();
     m_display_manager.draw(&game_over_string);
   } else {
+    m_display_manager.draw_hud(m_player->get_lives());
     for (auto object : m_game_objects) {
       m_display_manager.draw(object->get_sprite());
     }
@@ -192,8 +193,8 @@ void Game::process_menu_keys(sf::Keyboard::Key key) {
 void Game::reset_game() {
   m_difficulty = 0U;
   m_game_state.reset_state();
-  m_player->reset_ship(m_display_manager.screen_center(), 0.0F,
-                       sf::Vector2f{0.0F, 0.0F});
+  m_player->reset_ship();
+  m_player->reset_lives();
   m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
   spawn_asteroids(STARTING_ASTEROIDS);

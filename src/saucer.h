@@ -21,6 +21,7 @@ class Saucer : public GameObject {
   std::vector<sf::Vector2f> get_vertices() const override;
   float get_radius() const override;
   bool is_shooting() const override;
+  void collide() override;
   void move_to(sf::Vector2f new_position) override;
   void aim(sf::Vector2f player_position) override;
   void update(float dt) override;

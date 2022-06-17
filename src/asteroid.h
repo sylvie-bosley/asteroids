@@ -21,6 +21,7 @@ class Asteroid : public GameObject {
   sf::FloatRect get_bounds() const override;
   sf::Vector2f get_position() const override;
   float get_radius() const override;
+  void collide() override;
   void move_to(sf::Vector2f new_position) override;
   void update(float dt) override;
   std::shared_ptr<GameObject> spawn_child(unsigned int id,

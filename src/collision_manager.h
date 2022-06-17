@@ -28,16 +28,19 @@ class CollisionManager {
                              const GameObject &collider) const;
   bool circle_collision_checks(const GameObject &circle,
                                const GameObject &collider) const;
-  bool ship_ship(sf::Vector2f distance,
-                 std::vector<sf::Vector2f> ship_one_vertices,
+  bool ship_ship(std::vector<sf::Vector2f> ship_one_vertices,
                  std::vector<sf::Vector2f> ship_two_vertices) const;
-  std::vector<sf::Vector2f> vertices_to_axes(
-    std::vector<sf::Vector2f> vertices) const;
-  bool ships_overlap(sf::Vector2f axis, sf::Vector2f distance,
-                     std::vector<sf::Vector2f> ship_one_vertices,
-                     std::vector<sf::Vector2f> ship_two_vertices) const;
   bool ship_circle(std::vector<sf::Vector2f> ship_vertices,
                    sf::Vector2f circle_position, float circle_radius) const;
+  std::vector<sf::Vector2f> calculate_normals(
+    std::vector<sf::Vector2f> vertices) const;
+  bool ships_overlap(sf::Vector2f axis,
+                     std::vector<sf::Vector2f> ship_one_vertices,
+                     std::vector<sf::Vector2f> ship_two_vertices) const;
+  bool ship_circle_overlap(sf::Vector2f axis,
+                           std::vector<sf::Vector2f> ship_vertices,
+                           sf::Vector2f circle_position,
+                           float circle_radius) const;
   bool circle_circle(sf::Vector2f circle_one_position, float circle_one_radius,
                      sf::Vector2f circle_two_position,
                      float circle_two_radius) const;

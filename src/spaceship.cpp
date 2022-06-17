@@ -11,13 +11,14 @@
 
 namespace ag {
 
-Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_pos)
-    : m_sprite{3U}, m_radius{10.0F}, m_thrust{0.0F}, m_angular_velocity{0.0F},
-      m_gun_cd{0.0F}, m_shooting{false} {
+Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_position)
+    : m_starting_position{starting_position}, m_sprite{3U}, m_radius{10.0F},
+      m_thrust{0.0F}, m_angular_velocity{0.0F}, m_gun_cd{0.0F},
+      m_shooting{false}, m_lives{STARTING_LIVES} {
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
-  not_destroyed();
+  set_destroyed(false);
   m_sprite.setPointCount(3);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
@@ -25,7 +26,7 @@ Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_pos)
   m_sprite.setOrigin(sf::Vector2f{7.5F, 10.0F});
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
-  m_sprite.move(starting_pos);
+  m_sprite.move(m_starting_position);
 
 #ifdef DEBUG
   initialize_stats_string();
@@ -83,6 +84,15 @@ bool Spaceship::is_shooting() const {
   return m_shooting;
 }
 
+void Spaceship::collide() {
+  m_lives--;
+  if (m_lives <= 0U) {
+    set_destroyed(true);
+  } else {
+    reset_ship();
+  }
+}
+
 void Spaceship::move_to(sf::Vector2f new_position) {
   m_sprite.move(new_position.x - m_sprite.getPosition().x,
                 new_position.y - m_sprite.getPosition().y);
@@ -121,6 +131,18 @@ std::shared_ptr<GameObject> Spaceship::spawn_child(unsigned int id,
                                   gun_position, 2.0F);
 }
 
+unsigned int Spaceship::get_lives() {
+  return m_lives;
+}
+
+unsigned int Spaceship::get_score() {
+  return m_score;
+}
+
+void Spaceship::increment_score(unsigned int increment) {
+  m_score += increment;
+}
+
 void Spaceship::control_ship(float dt) {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
     if (m_gun_cd <= 0.0F) {
@@ -145,15 +167,22 @@ void Spaceship::control_ship(float dt) {
   }
 }
 
-void Spaceship::reset_ship(sf::Vector2f new_position, float new_rotation,
-                           sf::Vector2f new_velocity) {
-  m_sprite.move(new_position.x - m_sprite.getPosition().x,
-                new_position.y - m_sprite.getPosition().y);
-  m_sprite.rotate(-(m_sprite.getRotation() - new_rotation));
+void Spaceship::reset_lives() {
+  m_lives = STARTING_LIVES;
+}
+
+void Spaceship::reset_score() {
+  m_score = 0U;
+}
+
+void Spaceship::reset_ship() {
+  m_sprite.move(m_starting_position.x - m_sprite.getPosition().x,
+                m_starting_position.y - m_sprite.getPosition().y);
+  m_sprite.rotate(-(m_sprite.getRotation() - 0.0F));
   m_gun_cd = 0.0F;
   m_shooting = false;
-  set_velocity(new_velocity);
-  not_destroyed();
+  set_velocity(sf::Vector2f{0.0F, 0.0F});
+  set_destroyed(false);
 
 #ifdef DEBUG
   update_ship_stats();

@@ -16,7 +16,7 @@ Saucer::Saucer(unsigned int id, sf::Vector2f starting_pos, float rotation)
   set_object_id(id);
   set_object_type(SaucerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
-  not_destroyed();
+  set_destroyed(false);
   m_sprite.setPointCount(4);
   m_sprite.setPoint(std::size_t(0U), sf::Vector2f{0.0F, 40.0F});
   m_sprite.setPoint(std::size_t(1U), sf::Vector2f{20.0F, 0.0F});
@@ -69,6 +69,10 @@ float Saucer::get_radius() const {
 
 bool Saucer::is_shooting() const {
   return m_shooting;
+}
+
+void Saucer::collide() {
+  set_destroyed(true);
 }
 
 void Saucer::move_to(sf::Vector2f new_position) {
