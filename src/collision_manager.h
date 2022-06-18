@@ -16,7 +16,7 @@ class CollisionManager {
   explicit CollisionManager(sf::Vector2f display_size);
   ~CollisionManager() {};
 
-  bool collision_check(const GameObject &object,
+  GameObject::ObjectType collision_check(const GameObject &object,
     const std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
 #ifdef DEBUG
@@ -25,9 +25,9 @@ class CollisionManager {
 
  private:
   bool ship_collision_checks(const GameObject &ship,
-                             const GameObject &collider) const;
+                             const GameObject &collidable) const;
   bool circle_collision_checks(const GameObject &circle,
-                               const GameObject &collider) const;
+                               const GameObject &collidable) const;
   bool ship_ship(std::vector<sf::Vector2f> ship_one_vertices,
                  std::vector<sf::Vector2f> ship_two_vertices) const;
   bool ship_circle(std::vector<sf::Vector2f> ship_vertices,

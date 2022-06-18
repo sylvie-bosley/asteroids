@@ -26,7 +26,7 @@ bool CollisionManager::load_resources(std::string collision_sfx) {
 }
 #endif
 
-bool CollisionManager::collision_check(const GameObject &object,
+GameObject::ObjectType CollisionManager::collision_check(const GameObject &object,
     const std::vector<std::shared_ptr<GameObject>> m_game_objects) {
   std::vector<const GameObject *> other_objects;
   for (auto other_object : m_game_objects) {
@@ -34,6 +34,7 @@ bool CollisionManager::collision_check(const GameObject &object,
   }
   other_objects = m_collidables.retrieve(object.get_bounds());
   bool collision = false;
+  GameObject::ObjectType collider_type = GameObject::NullType;
   for (auto &&collider : other_objects) {
     if (&object != collider &&
         object.get_bounds().intersects(collider->get_bounds())) {
@@ -58,12 +59,12 @@ bool CollisionManager::collision_check(const GameObject &object,
         m_collision_sfx.play();
       }
 #endif
+      collider_type = collider->get_object_type();
       break;
-
     }
   }
   m_collidables.clear();
-  return collision;
+  return collider_type;
 }
 
 bool CollisionManager::ship_collision_checks(const GameObject &ship,

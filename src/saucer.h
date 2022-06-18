@@ -10,6 +10,8 @@ namespace ag {
 
 class Saucer : public GameObject {
  public:
+  static const unsigned int SCORE_VALUE = 10000U;
+
   Saucer() {};
   explicit Saucer(unsigned int id, sf::Vector2f starting_pos, float rotation);
   ~Saucer() {};
@@ -23,10 +25,10 @@ class Saucer : public GameObject {
   bool is_shooting() const override;
   void collide() override;
   void move_to(sf::Vector2f new_position) override;
-  void aim(sf::Vector2f player_position) override;
   void update(float dt) override;
   std::shared_ptr<GameObject> spawn_child(unsigned int id,
                                           float _direction = 0.0F) override;
+  void aim(sf::Vector2f player_position);
 
  private:
   const float SAUCER_SPEED = 100.0F;

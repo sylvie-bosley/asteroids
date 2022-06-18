@@ -9,6 +9,7 @@
 #include "game_object.h"
 #include "spaceship.h"
 #include "asteroid.h"
+#include "bullet.h"
 #include "saucer.h"
 #include "collision_manager.h"
 #include "display_manager.h"
@@ -78,14 +79,26 @@ bool Game::update(float dt) {
   if (m_game_state.in_game()) {
     for (auto object : m_game_objects) {
       object->update(dt);
-      if (*object == GameObject::SaucerType) {
-        object->aim(m_player->get_position());
-      }
     }
     std::vector<std::shared_ptr<GameObject>> new_objects;
+    GameObject::ObjectType collider_type;
     for (auto object : m_game_objects) {
-      if (m_collision_manager.collision_check(*object, m_game_objects)) {
+      collider_type = m_collision_manager.collision_check(*object,
+                                                          m_game_objects);
+      if (collider_type != GameObject::NullType) {
         object->collide();
+        if (*object == GameObject::BulletType &&
+            std::dynamic_pointer_cast<Bullet>(object)->get_parent_type() ==
+              GameObject::PlayerType) {
+          if (collider_type == GameObject::AsteroidType) {
+            m_player->increment_score(Asteroid::SCORE_VALUE);
+          } else if (collider_type == GameObject::SaucerType) {
+            m_player->increment_score(Saucer::SCORE_VALUE);
+          }
+        }
+      }
+      if (*object == GameObject::SaucerType) {
+        std::dynamic_pointer_cast<Saucer>(object)->aim(m_player->get_position());
       }
       if ((*object == GameObject::PlayerType ||
            *object == GameObject::SaucerType) &&
@@ -193,8 +206,9 @@ void Game::process_menu_keys(sf::Keyboard::Key key) {
 void Game::reset_game() {
   m_difficulty = 0U;
   m_game_state.reset_state();
-  m_player->reset_ship();
   m_player->reset_lives();
+  m_player->reset_score();
+  m_player->reset_ship();
   m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
   spawn_asteroids(STARTING_ASTEROIDS);

@@ -14,7 +14,7 @@ namespace ag {
 Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_position)
     : m_starting_position{starting_position}, m_sprite{3U}, m_radius{10.0F},
       m_thrust{0.0F}, m_angular_velocity{0.0F}, m_gun_cd{0.0F},
-      m_shooting{false}, m_lives{STARTING_LIVES} {
+      m_shooting{false}, m_lives{STARTING_LIVES}, m_score{0U} {
   set_object_id(id);
   set_object_type(PlayerType);
   set_velocity(sf::Vector2f{0.0F, 0.0F});
@@ -127,8 +127,8 @@ std::shared_ptr<GameObject> Spaceship::spawn_child(unsigned int id,
   m_gun_sound.play();
   sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
     m_sprite.getPoint(0) - sf::Vector2f{0.0F, 3.0F});
-  return std::make_shared<Bullet>(id, m_sprite.getRotation(), get_velocity(),
-                                  gun_position, 2.0F);
+  return std::make_shared<Bullet>(id, get_object_type(), m_sprite.getRotation(),
+                                  get_velocity(), gun_position, 2.0F);
 }
 
 unsigned int Spaceship::get_lives() {
@@ -207,7 +207,9 @@ void Spaceship::update_ship_stats() {
       std::to_string(m_sprite.getPosition().y) + ")\n" + "X Velocity: " +
       std::to_string(get_velocity().x) + "\n" + "Y Velocity: " +
       std::to_string(get_velocity().y) + "\n" + "Rotation: " +
-      std::to_string(m_sprite.getRotation());
+      std::to_string(m_sprite.getRotation()) + "\n" + "Score: " +
+      std::to_string(m_score) + "\n" + "Lives: " +
+      std::to_string(m_lives);
   m_ship_stats.setString(stats_str);
 }
 #endif

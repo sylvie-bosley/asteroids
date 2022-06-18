@@ -13,12 +13,13 @@ class GameObject {
     PlayerType,
     AsteroidType,
     BulletType,
-    SaucerType
+    SaucerType,
+    NullType
   };
 
-  bool operator ==(GameObject &other) const;
+  bool operator ==(const GameObject &other) const;
   bool operator ==(GameObject::ObjectType type) const;
-  bool operator !=(GameObject &other) const;
+  bool operator !=(const GameObject &other) const;
   bool operator !=(GameObject::ObjectType type) const;
   GameObject::ObjectType get_object_type() const;
   sf::Vector2f get_velocity() const;
@@ -33,20 +34,19 @@ class GameObject {
   virtual void collide()=0;
   virtual void move_to(sf::Vector2f new_position)=0;
   virtual void update(float dt)=0;
-  virtual void aim(sf::Vector2f player_position) {};
   virtual std::shared_ptr<GameObject> spawn_child(unsigned int id,
     float direction = 0.0F) { return nullptr; };
 
  protected:
   unsigned int get_object_id() const;
   void set_object_id(unsigned int id);
-  void set_object_type(ObjectType type);
+  void set_object_type(GameObject::ObjectType type);
   void set_velocity(sf::Vector2f velocity);
   void set_destroyed(bool new_state);
 
  private:
   unsigned int m_object_id;
-  ObjectType m_object_type;
+  GameObject::ObjectType m_object_type;
   sf::Vector2f m_velocity;
   bool m_destroyed;
 };

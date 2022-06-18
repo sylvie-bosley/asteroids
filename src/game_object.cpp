@@ -2,7 +2,7 @@
 
 namespace ag {
 
-bool GameObject::operator ==(GameObject &other) const {
+bool GameObject::operator ==(const GameObject &other) const {
   return m_object_id == other.get_object_id();
 }
 
@@ -10,7 +10,7 @@ bool GameObject::operator ==(GameObject::ObjectType type) const {
   return m_object_type == type;
 }
 
-bool GameObject::operator !=(GameObject &other) const {
+bool GameObject::operator !=(const GameObject &other) const {
   return m_object_id != other.get_object_id();
 }
 
@@ -38,7 +38,7 @@ void GameObject::set_object_id(unsigned int id) {
   m_object_id = id;
 }
 
-void GameObject::set_object_type(ObjectType type) {
+void GameObject::set_object_type(GameObject::ObjectType type) {
   m_object_type = type;
 }
 

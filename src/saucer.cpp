@@ -80,14 +80,6 @@ void Saucer::move_to(sf::Vector2f new_position) {
                 new_position.y - m_sprite.getPosition().y);
 }
 
-void Saucer::aim(sf::Vector2f player_position) {
-  sf::Vector2f distance_v{player_position.x - m_sprite.getPosition().x,
-                          player_position.y - m_sprite.getPosition().y};
-  m_trajectory_a = std::atan2(distance_v.y, distance_v.x) * (180.0F / M_PI);
-  m_trajectory_a += 90.0F;
-  m_trajectory_v = normalize_vector2f(distance_v);
-}
-
 void Saucer::update(float dt) {
   m_sprite.move(get_velocity() * dt);
   if (m_gun_cd <= 0.0F) {
@@ -104,8 +96,16 @@ std::shared_ptr<GameObject> Saucer::spawn_child(unsigned int id,
   m_gun_sound.play();
   sf::Vector2f gun_position = m_sprite.getTransform().transformPoint(
     m_sprite.getPoint(0) - sf::Vector2f{3.0F, 0.0F});
-  return std::make_shared<Bullet>(id, m_trajectory_a, m_trajectory_v,
-                                  gun_position, 4.0F);
+  return std::make_shared<Bullet>(id, get_object_type(), m_trajectory_a,
+                                  m_trajectory_v, gun_position, 4.0F);
+}
+
+void Saucer::aim(sf::Vector2f player_position) {
+  sf::Vector2f distance_v{player_position.x - m_sprite.getPosition().x,
+                          player_position.y - m_sprite.getPosition().y};
+  m_trajectory_a = std::atan2(distance_v.y, distance_v.x) * (180.0F / M_PI);
+  m_trajectory_a += 90.0F;
+  m_trajectory_v = normalize_vector2f(distance_v);
 }
 
 }

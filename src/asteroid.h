@@ -12,6 +12,8 @@ namespace ag {
 
 class Asteroid : public GameObject {
  public:
+  static const unsigned int SCORE_VALUE = 100U;
+
   Asteroid() {};
   explicit Asteroid(unsigned int id, float size,
                     sf::Vector2f position, float rotation);

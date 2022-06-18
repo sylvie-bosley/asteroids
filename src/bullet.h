@@ -10,7 +10,8 @@ namespace ag {
 class Bullet : public GameObject {
  public:
   Bullet() {};
-  explicit Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
+  explicit Bullet(unsigned int id, GameObject::ObjectType parent_type,
+                  float rotation, sf::Vector2f ship_velocity,
                   sf::Vector2f ship_position, float lifetime);
   ~Bullet() {};
 
@@ -21,6 +22,7 @@ class Bullet : public GameObject {
   void collide() override;
   void move_to(sf::Vector2f new_position) override;
   void update(float dt) override;
+  GameObject::ObjectType get_parent_type() const;
 
  private:
   const float BULLET_SPEED = 250.0F;
@@ -28,6 +30,7 @@ class Bullet : public GameObject {
 
   float m_ttl;
   sf::CircleShape m_sprite;
+  GameObject::ObjectType m_parent_type;
 };
 
 }

@@ -33,8 +33,6 @@ class Game {
   const float M_ASTEROID = 25.0F;
   const float S_ASTEROID = 12.5F;
   const float SAUCER_INTERVAL = 30.0F;
-  const unsigned int SAUCER_SCORE_VALUE = 10000U;
-  const unsigned int ASTEROID_SCORE_VALUE = 100U;
 
   void spawn_asteroids(unsigned int asteroid_count);
   void process_menu_keys(sf::Keyboard::Key key);

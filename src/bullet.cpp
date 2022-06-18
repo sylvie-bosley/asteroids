@@ -6,16 +6,17 @@
 
 namespace ag {
 
-Bullet::Bullet(unsigned int id, float rotation, sf::Vector2f ship_velocity,
+Bullet::Bullet(unsigned int id, GameObject::ObjectType parent_type,
+               float rotation, sf::Vector2f ship_velocity,
                sf::Vector2f spawn_position, float lifetime)
-    : m_sprite{BULLET_SIZE}, m_ttl{lifetime} {
+    :  m_ttl{lifetime}, m_sprite{BULLET_SIZE}, m_parent_type{parent_type} {
   set_object_id(id);
   set_object_type(BulletType);
   float r_sin = static_cast<float>(std::sin(rotation * (M_PI / 180.0F)));
   float r_cos = static_cast<float>(std::cos(rotation * (M_PI / 180.0F)));
   sf::Vector2f heading{r_sin, -r_cos};
   set_velocity(ship_velocity + (heading * BULLET_SPEED));
-  set_destroyed(true);
+  set_destroyed(false);
   m_sprite.setOrigin(sf::Vector2f{BULLET_SIZE, 0.0F});
   m_sprite.setFillColor(sf::Color::White);
   m_sprite.move(spawn_position);
@@ -53,6 +54,10 @@ void Bullet::update(float dt) {
   if (m_ttl <= 0.0F) {
     set_destroyed(true);
   }
+}
+
+GameObject::ObjectType Bullet::get_parent_type() const {
+  return m_parent_type;
 }
 
 }
