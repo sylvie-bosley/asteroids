@@ -23,16 +23,18 @@ Game::Game()
                                          m_display_manager.screen_center());
   m_game_objects.push_back(m_player);
   spawn_asteroids(STARTING_ASTEROIDS);
+  m_asteroid_count = STARTING_ASTEROIDS;
 }
 
-bool Game::load_resources(std::string game_bgm, std::string ship_gun_sfx,
-                          std::string game_font) {
-  if (!m_player->load_resources(ship_gun_sfx) ||
-      !m_collision_manager.load_resources(ship_gun_sfx) ||
-      !m_game_state.load_resources(game_bgm) ||
+bool Game::load_resources(std::string game_bgm, std::string collision_sfx,
+                          std::string ship_gun_sfx, std::string game_font) {
+  if (!m_game_state.load_resources(game_bgm) ||
+      !m_collision_manager.load_resources(collision_sfx) ||
+      !m_player->load_resources(ship_gun_sfx) ||
       !m_display_manager.load_resources(game_font)) {
     return false;
   }
+  m_ship_gun_sfx = ship_gun_sfx;
   return true;
 }
 
@@ -69,15 +71,12 @@ void Game::process_input(float dt) {
   }
 }
 
-bool Game::update(float dt) {
+void Game::update(float dt) {
   if (m_game_state.load()) {
-    for (auto object : m_game_objects) {
-      if (*object == GameObject::AsteroidType) {
-        m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
-        m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
-        spawn_asteroids(STARTING_ASTEROIDS);
-      }
-    }
+    m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
+    m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
+    spawn_asteroids(STARTING_ASTEROIDS + m_difficulty);
+    m_asteroid_count = STARTING_ASTEROIDS + m_difficulty;
     m_game_state.start_game();
   } else if (m_game_state.in_game()) {
     for (auto object : m_game_objects) {
@@ -108,10 +107,14 @@ bool Game::update(float dt) {
           object->is_shooting()) {
         new_objects.push_back(object->spawn_child(m_next_object_id++));
       } else if (*object == GameObject::AsteroidType &&
-                 object->is_destroyed() &&
-                 object->get_radius() > S_ASTEROID) {
-        new_objects.push_back(object->spawn_child(m_next_object_id++, 90.0F));
-        new_objects.push_back(object->spawn_child(m_next_object_id++, -90.0F));
+                 object->is_destroyed()) {
+        if (object->get_radius() > S_ASTEROID) {
+          new_objects.push_back(object->spawn_child(m_next_object_id++, 90.0F));
+          new_objects.push_back(object->spawn_child(m_next_object_id++, -90.0F));
+          m_asteroid_count++;
+        } else if (object->get_radius() < M_ASTEROID) {
+          m_asteroid_count--;
+        }
       }
       if (m_display_manager.off_camera(object->get_position(),
                                        object->get_radius())) {
@@ -128,8 +131,12 @@ bool Game::update(float dt) {
       if (position.y > m_display_manager.screen_center().y) {
         rotation = 180.0F;
       }
-      new_objects.push_back(std::make_shared<Saucer>(m_next_object_id++,
-                                                     position, rotation));
+      std::shared_ptr<Saucer> new_saucer = std::make_shared<Saucer>(
+        m_next_object_id++,
+        position, rotation
+      );
+      new_saucer->load_resources(m_ship_gun_sfx);
+      new_objects.push_back(new_saucer);
       m_saucer_timer = SAUCER_INTERVAL;
     } else {
       m_saucer_timer -= dt;
@@ -142,6 +149,14 @@ bool Game::update(float dt) {
                                              [](std::shared_ptr<GameObject> obj)
                                              { return obj->is_destroyed(); }),
                          m_game_objects.end());
+    if (m_asteroid_count == 0U) {
+      m_game_state.next_level();
+      m_difficulty++;
+      m_player->reset_ship();
+    }
+    if (m_player->is_destroyed()) {
+      m_game_state.end_game();
+    }
   } else if (m_game_state.title_screen()) {
     for (auto object : m_game_objects) {
       if (*object == GameObject::AsteroidType) {
@@ -151,14 +166,8 @@ bool Game::update(float dt) {
   } else if (m_game_state.reset()) {
     reset_game();
   }
-  if (m_player->is_destroyed()) {
-    m_game_state.end_game();
-  }
-  return true;
-}
-
-void Game::render(float dt) {
-  m_display_manager.draw_screen(m_game_state, dt, m_game_objects);
+  m_display_manager.draw_screen(m_game_state, dt, m_game_objects,
+                                m_difficulty + 1);
 }
 
 void Game::spawn_asteroids(unsigned int asteroid_count) {
@@ -173,6 +182,7 @@ void Game::spawn_asteroids(unsigned int asteroid_count) {
 
 void Game::reset_game() {
   m_difficulty = 0U;
+  m_saucer_timer = SAUCER_INTERVAL;
   m_game_state.reset_game_state();
   m_player->reset_lives();
   m_player->reset_score();
@@ -180,6 +190,7 @@ void Game::reset_game() {
   m_game_objects.erase(m_game_objects.begin() + 1U, m_game_objects.end());
   m_next_object_id = static_cast<unsigned int>(m_game_objects.size());
   spawn_asteroids(STARTING_ASTEROIDS);
+  m_asteroid_count = STARTING_ASTEROIDS;
 }
 
 }

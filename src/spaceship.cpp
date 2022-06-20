@@ -118,15 +118,17 @@ unsigned int Spaceship::get_score() {
 }
 
 void Spaceship::increment_score(unsigned int increment) {
+  unsigned int previous_score = m_score;
   m_score = std::min(m_score + increment, 999999U);
+  if (m_score / 50000U > previous_score / 50000U) {
+    m_lives++;
+  }
 }
 
 void Spaceship::control_ship(float dt) {
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
     if (m_gun_cd <= 0.0F) {
       m_shooting = true;
-    } else {
-      // TODO: Add sound effect for still reloading
     }
   }
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {

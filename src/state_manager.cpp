@@ -88,6 +88,11 @@ void StateManager::pause_game() {
   m_game_bgm.setVolume(25.0F);
 }
 
+void StateManager::next_level() {
+  m_state = StateManager::LoadGame;
+  m_game_bgm.stop();
+}
+
 void StateManager::end_game() {
   m_state = StateManager::GameOver;
   m_game_bgm.stop();

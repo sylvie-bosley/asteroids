@@ -20,6 +20,9 @@ DisplayManager::DisplayManager ()
   m_life_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
   m_life_sprite.setOutlineThickness(1.0F);
   m_life_sprite.setFillColor(sf::Color::Black);
+  m_level_label.setCharacterSize(20U);
+  m_level_label.setString("LEVEL 1");
+  m_level_label.setFillColor(sf::Color::White);
   m_score.setCharacterSize(20U);
   m_score.setFillColor(sf::Color::White);
   m_score.move(SCORE_POSITION);
@@ -43,6 +46,7 @@ bool DisplayManager::load_resources(std::string game_font) {
   m_score.setFont(m_game_font);
   m_title_text.setFont(m_game_font);
   m_press_enter.setFont(m_game_font);
+  m_level_label.setFont(m_game_font);
   return true;
 }
 
@@ -60,7 +64,8 @@ bool DisplayManager::poll_event(sf::Event &event) {
 }
 
 void DisplayManager::draw_screen(const StateManager &game_state, float dt,
-    const std::vector<std::shared_ptr<GameObject>> &objects) {
+    const std::vector<std::shared_ptr<GameObject>> &objects,
+    unsigned int level) {
   std::shared_ptr<Spaceship> player = nullptr;
   float lives_offset = 20.0F;
   sf::Vector2f offset_vector{0.0F, 0.0F};
@@ -84,6 +89,10 @@ void DisplayManager::draw_screen(const StateManager &game_state, float dt,
       m_game_window.draw(m_score);
       offset_vector = {0.0F, 0.0F};
     }
+    m_level_label.setString("LEVEL " + std::to_string(level));
+    m_level_label.setOrigin(m_level_label.getLocalBounds().width / 2.0F, 0.0F);
+    m_level_label.setPosition(LEVEL_POSITION);
+    m_game_window.draw(m_level_label);
   } else if (game_state.title_screen()) {
     for (auto object : objects) {
       m_game_window.draw(*object->get_sprite());

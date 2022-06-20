@@ -33,6 +33,7 @@ class StateManager {
   void update_game_state(sf::Keyboard::Key key);
   void start_game();
   void pause_game();
+  void next_level();
   void end_game();
   void reset_game_state ();
   void close_game();
