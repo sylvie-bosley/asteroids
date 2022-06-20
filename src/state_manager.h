@@ -4,6 +4,7 @@
 #include <string>
 
 #include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace ag {
 
@@ -11,33 +12,35 @@ class StateManager {
  public:
   enum GameState {
     TitleScreen,
+    LoadGame,
     InGame,
     Paused,
-    GameOver
+    GameOver,
+    Reset
   };
 
   StateManager();
   ~StateManager() {};
 
-  bool load_resources(std::string title_bgm, std::string game_bgm,
-                      std::string end_bgm);
-  GameState state() const;
+  bool load_resources(std::string game_bgm);
   bool is_running() const;
+  bool title_screen() const;
+  bool load() const;
   bool in_game() const;
+  bool paused() const;
   bool game_over() const;
+  bool reset() const;
+  void update_game_state(sf::Keyboard::Key key);
   void start_game();
   void pause_game();
-  void resume_game();
   void end_game();
-  void reset_state ();
+  void reset_game_state ();
   void close_game();
 
  private:
   GameState m_state;
   bool m_running;
-  sf::Music m_title_bgm;
   sf::Music m_game_bgm;
-  sf::Music m_end_bgm;
 };
 
 }

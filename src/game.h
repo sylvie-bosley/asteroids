@@ -19,13 +19,12 @@ class Game {
   Game();
   ~Game() {};
 
-  bool load_resources(std::string title_bgm, std::string game_bgm,
-                      std::string end_bgm, std::string ship_gun_sfx,
+  bool load_resources(std::string game_bgm, std::string ship_gun_sfx,
                       std::string game_font);
   bool is_running() const;
   void process_input(float dt);
   bool update(float dt);
-  void render();
+  void render(float dt);
 
  private:
   const unsigned int STARTING_ASTEROIDS = 3U;
@@ -35,11 +34,7 @@ class Game {
   const float SAUCER_INTERVAL = 30.0F;
 
   void spawn_asteroids(unsigned int asteroid_count);
-  void process_menu_keys(sf::Keyboard::Key key);
   void reset_game();
-  void update_game_objects(float dt);
-  void delete_destroyed_objects();
-  sf::Text generate_game_over_string() const;
 
   StateManager m_game_state;
   CollisionManager m_collision_manager;
@@ -47,7 +42,6 @@ class Game {
   std::vector<std::shared_ptr<GameObject>> m_game_objects;
   std::shared_ptr<Spaceship> m_player;
   unsigned int m_next_object_id;
-  sf::Font m_game_font;
   unsigned int m_difficulty;
   float m_saucer_timer;
 };

@@ -3,46 +3,83 @@
 #include <string>
 
 #include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp>
 
 namespace ag {
 
 StateManager::StateManager() : m_state{TitleScreen}, m_running{true} {}
 
-bool StateManager::load_resources(std::string title_bgm, std::string game_bgm,
-                                  std::string end_bgm) {
-  bool loaded = true;
-  if (!m_title_bgm.openFromFile(title_bgm) ||
-      !m_game_bgm.openFromFile(game_bgm) ||
-      !m_end_bgm.openFromFile(end_bgm)) {
-    loaded - false;
+bool StateManager::load_resources(std::string game_bgm) {
+  if (!m_game_bgm.openFromFile(game_bgm)) {
+    return false;
   } else {
-    m_title_bgm.setLoop(true);
     m_game_bgm.setLoop(true);
-    m_end_bgm.setLoop(true);
-    m_title_bgm.play();
   }
-  return loaded;
-}
-
-StateManager::GameState StateManager::state() const {
-  return m_state;
+  return true;
 }
 
 bool StateManager::is_running() const {
   return m_running;
 }
 
+bool StateManager::title_screen() const {
+  return m_state == TitleScreen;
+}
+
+bool StateManager::load() const {
+  return m_state == LoadGame;
+}
+
 bool StateManager::in_game() const {
   return m_state == InGame;
+}
+
+bool StateManager::paused() const {
+  return m_state == Paused;
 }
 
 bool StateManager::game_over() const {
   return m_state == GameOver;
 }
 
+bool StateManager::reset() const {
+  return m_state == Reset;
+}
+
+void StateManager::update_game_state(sf::Keyboard::Key key) {
+  switch (m_state) {
+    case StateManager::TitleScreen:
+      if (key == sf::Keyboard::Key::Enter) {
+        m_state = StateManager::LoadGame;
+      } else if (key == sf::Keyboard::Key::Escape) {
+        m_running = false;
+      }
+      break;
+    case StateManager::InGame:
+      if (key == sf::Keyboard::Key::Escape) {
+        m_state = StateManager::Paused;
+        m_game_bgm.setVolume(25.0F);
+      }
+      break;
+    case StateManager::Paused:
+      if (key == sf::Keyboard::Key::Escape) {
+        m_state = StateManager::Reset;
+        m_game_bgm.stop();
+      } else if (key == sf::Keyboard::Key::Enter) {
+        m_state = StateManager::InGame;
+        m_game_bgm.setVolume(100.0F);
+      }
+      break;
+    case StateManager::GameOver:
+      if (key == sf::Keyboard::Key::Enter) {
+        m_state = StateManager::Reset;
+      }
+      break;
+  }
+}
+
 void StateManager::start_game() {
   m_state = StateManager::InGame;
-  m_title_bgm.stop();
   m_game_bgm.play();
 }
 
@@ -51,20 +88,13 @@ void StateManager::pause_game() {
   m_game_bgm.setVolume(25.0F);
 }
 
-void StateManager::resume_game() {
-  m_state = StateManager::InGame;
-  m_game_bgm.setVolume(100.0F);
-}
-
 void StateManager::end_game() {
   m_state = StateManager::GameOver;
   m_game_bgm.stop();
-  m_end_bgm.play();
 }
 
-void StateManager::reset_state() {
+void StateManager::reset_game_state() {
   m_state = TitleScreen;
-  m_title_bgm.play();
   m_game_bgm.setVolume(100.0F);
 }
 

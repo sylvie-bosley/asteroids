@@ -27,33 +27,15 @@ Spaceship::Spaceship(unsigned int id, sf::Vector2f starting_position)
   m_sprite.setOutlineThickness(1.0F);
   m_sprite.setFillColor(sf::Color::Black);
   m_sprite.move(m_starting_position);
-
-#ifdef DEBUG
-  initialize_stats_string();
-#endif
 }
 
-#ifdef DEBUG
-bool Spaceship::load_resources(std::string gun_sfx, std::string game_font) {
-  bool loaded = true;
-  if (!m_gun_sound_buffer.loadFromFile(gun_sfx) ||
-      !m_stats_font.loadFromFile(game_font)) {
-    loaded - false;
-  }
-  m_gun_sound.setBuffer(m_gun_sound_buffer);
-  m_ship_stats.setFont(m_stats_font);
-  return loaded;
-}
-#else
 bool Spaceship::load_resources(std::string gun_sfx) {
-  bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx)) {
-    loaded - false;
+    return false;
   }
   m_gun_sound.setBuffer(m_gun_sound_buffer);
-  return loaded;
+  return true;
 }
-#endif
 
 const sf::Drawable *Spaceship::get_sprite() const {
   return &m_sprite;
@@ -114,10 +96,6 @@ void Spaceship::update(float dt) {
   if (!m_shooting && m_gun_cd > 0.0F) {
     m_gun_cd -= dt;
   }
-
-#ifdef DEBUG
-  update_ship_stats();
-#endif
 }
 
 std::shared_ptr<GameObject> Spaceship::spawn_child(unsigned int id,
@@ -140,7 +118,7 @@ unsigned int Spaceship::get_score() {
 }
 
 void Spaceship::increment_score(unsigned int increment) {
-  m_score += increment;
+  m_score = std::min(m_score + increment, 999999U);
 }
 
 void Spaceship::control_ship(float dt) {
@@ -183,35 +161,6 @@ void Spaceship::reset_ship() {
   m_shooting = false;
   set_velocity(sf::Vector2f{0.0F, 0.0F});
   set_destroyed(false);
-
-#ifdef DEBUG
-  update_ship_stats();
-#endif
 }
-
-#ifdef DEBUG
-const sf::Text *Spaceship::get_ship_stats() {
-  return &m_ship_stats;
-}
-
-void Spaceship::initialize_stats_string() {
-  m_ship_stats.setCharacterSize(20U);
-  m_ship_stats.setFillColor(sf::Color::White);
-  m_ship_stats.move(5.0F, 5.0F);
-  update_ship_stats();
-}
-
-void Spaceship::update_ship_stats() {
-  std::string stats_str = "Position: (" +
-      std::to_string(m_sprite.getPosition().x) + ", " +
-      std::to_string(m_sprite.getPosition().y) + ")\n" + "X Velocity: " +
-      std::to_string(get_velocity().x) + "\n" + "Y Velocity: " +
-      std::to_string(get_velocity().y) + "\n" + "Rotation: " +
-      std::to_string(m_sprite.getRotation()) + "\n" + "Score: " +
-      std::to_string(m_score) + "\n" + "Lives: " +
-      std::to_string(m_lives);
-  m_ship_stats.setString(stats_str);
-}
-#endif
 
 }

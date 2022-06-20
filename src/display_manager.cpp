@@ -4,15 +4,46 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "game_object.h"
+#include "spaceship.h"
+#include "state_manager.h"
+
 namespace ag{
 
 DisplayManager::DisplayManager ()
   : m_game_window{sf::VideoMode(static_cast<unsigned int>(DISPLAY_SIZE.x),
                                 static_cast<unsigned int>(DISPLAY_SIZE.y)),
-                  "Asteroids"} {}
+                  "Asteroids"}, m_life_sprite{3U}, m_blink_timer{BLINK_TIMER} {
+  m_life_sprite.setPointCount(3);
+  m_life_sprite.setPoint(std::size_t(0U), sf::Vector2f{7.50F, 0.0F});
+  m_life_sprite.setPoint(std::size_t(1U), sf::Vector2f{0.0F, 20.0F});
+  m_life_sprite.setPoint(std::size_t(2U), sf::Vector2f{15.0F, 20.0F});
+  m_life_sprite.setOutlineThickness(1.0F);
+  m_life_sprite.setFillColor(sf::Color::Black);
+  m_score.setCharacterSize(20U);
+  m_score.setFillColor(sf::Color::White);
+  m_score.move(SCORE_POSITION);
+  m_score.setString("SCORE: 000000");
+  m_title_text.setCharacterSize(150U);
+  m_title_text.setString("ASTEROIDS");
+  m_title_text.setFillColor(sf::Color::White);
+  m_press_enter.setCharacterSize(20U);
+  m_press_enter.setString("PRESS ENTER TO START");
+  m_press_enter.setFillColor(sf::Color::White);
+}
 
 DisplayManager::~DisplayManager() {
   m_game_window.close();
+}
+
+bool DisplayManager::load_resources(std::string game_font) {
+  if (!m_game_font.loadFromFile(game_font)) {
+    return false;
+  }
+  m_score.setFont(m_game_font);
+  m_title_text.setFont(m_game_font);
+  m_press_enter.setFont(m_game_font);
+  return true;
 }
 
 sf::Vector2f DisplayManager::screen_center() const {
@@ -28,15 +59,49 @@ bool DisplayManager::poll_event(sf::Event &event) {
   return m_game_window.pollEvent(event);
 }
 
-void DisplayManager::clear_screen() {
+void DisplayManager::draw_screen(const StateManager &game_state, float dt,
+    const std::vector<std::shared_ptr<GameObject>> &objects) {
+  std::shared_ptr<Spaceship> player = nullptr;
+  float lives_offset = 20.0F;
+  sf::Vector2f offset_vector{0.0F, 0.0F};
   m_game_window.clear(sf::Color::Black);
-}
-
-void DisplayManager::draw(const sf::Drawable *object) {
-  m_game_window.draw(*object);
-}
-
-void DisplayManager::render() {
+  if (game_state.game_over()) {
+    m_game_window.draw(gameover_string());
+  } else if (game_state.in_game() || game_state.paused()) {
+    for (auto object : objects) {
+      m_game_window.draw(*object->get_sprite());
+      if (*object == GameObject::PlayerType) {
+        player = std::dynamic_pointer_cast<Spaceship>(object);
+      }
+    }
+    if (player) {
+      for (unsigned int i = 0U; i < player->get_lives(); i++) {
+        offset_vector = {(lives_offset * i), 0.0F};
+        m_life_sprite.setPosition(LIFE_POSITION + offset_vector);
+        m_game_window.draw(m_life_sprite);
+      }
+      m_score.setString("SCORE: " + std::to_string(player->get_score()));
+      m_game_window.draw(m_score);
+      offset_vector = {0.0F, 0.0F};
+    }
+  } else if (game_state.title_screen()) {
+    for (auto object : objects) {
+      m_game_window.draw(*object->get_sprite());
+    }
+    m_title_text.setOrigin(m_title_text.getLocalBounds().width / 2.0F,
+                           m_title_text.getLocalBounds().height / 2.0F);
+    m_title_text.setPosition(TITLE_POSITION);
+    m_game_window.draw(m_title_text);
+    m_press_enter.setOrigin(m_press_enter.getLocalBounds().width / 2.0F,
+                            m_press_enter.getLocalBounds().height / 2.0F);
+    m_press_enter.setPosition(START_POSITION);
+    m_blink_timer -= dt;
+    if (m_blink_timer > 0.0F) {
+      m_game_window.draw(m_press_enter);
+    } else if (m_blink_timer <= -BLINK_TIMER) {
+      m_blink_timer = BLINK_TIMER;
+    }
+  }
   m_game_window.display();
 }
 
@@ -93,6 +158,16 @@ sf::Vector2f DisplayManager::valid_asteroid_position(
     }
   } while (invalid);
   return sf::Vector2f{new_x, new_y};
+}
+
+sf::Text DisplayManager::gameover_string() const {
+  sf::Text string{"GAME OVER", m_game_font, 100U};
+  string.setFillColor(sf::Color::White);
+  sf::Vector2f new_origin{string.getLocalBounds().width / 2.0F,
+      string.getLocalBounds().height};
+  string.setOrigin(new_origin);
+  string.move(screen_center());
+  return string;
 }
 
 }

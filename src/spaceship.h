@@ -14,11 +14,7 @@ class Spaceship : public GameObject {
   explicit Spaceship(unsigned int id, sf::Vector2f starting_pos);
   ~Spaceship() {};
 
-#ifdef DEBUG
-  bool load_resources(std::string gun_sfx, std::string game_font);
-#else
   bool load_resources(std::string gun_sfx);
-#endif
 
   const sf::Drawable *get_sprite() const override;
   sf::FloatRect get_bounds() const override;
@@ -38,10 +34,6 @@ class Spaceship : public GameObject {
   void reset_lives();
   void reset_score();
   void reset_ship();
-
-#ifdef DEBUG
-  const sf::Text *get_ship_stats();
-#endif
 
  private:
   const float ROTATION_SPEED = 180.0F;
@@ -63,13 +55,6 @@ class Spaceship : public GameObject {
   bool m_shooting;
   unsigned int m_lives;
   unsigned int m_score;
-
-#ifdef DEBUG
-  void initialize_stats_string();
-  void update_ship_stats();
-  sf::Font m_stats_font;
-  sf::Text m_ship_stats;
-#endif
 };
 
 }

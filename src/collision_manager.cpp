@@ -15,16 +15,13 @@ CollisionManager::CollisionManager(sf::Vector2f display_size)
   : m_collidables{0U, sf::FloatRect(0.0F, 0.0F, display_size.x, display_size.y)}
 {}
 
-#ifdef DEBUG
 bool CollisionManager::load_resources(std::string collision_sfx) {
-  bool loaded = true;
   if (!m_collision_sfx_buffer.loadFromFile(collision_sfx)) {
-    loaded - false;
+    return false;
   }
   m_collision_sfx.setBuffer(m_collision_sfx_buffer);
-  return loaded;
+  return true;
 }
-#endif
 
 GameObject::ObjectType CollisionManager::collision_check(const GameObject &object,
     const std::vector<std::shared_ptr<GameObject>> m_game_objects) {
@@ -54,11 +51,9 @@ GameObject::ObjectType CollisionManager::collision_check(const GameObject &objec
       }
     }
     if (collision) {
-#ifdef DEBUG
       if (m_collision_sfx.getStatus() == sf::Sound::Stopped) {
         m_collision_sfx.play();
       }
-#endif
       collider_type = collider->get_object_type();
       break;
     }

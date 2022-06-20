@@ -19,9 +19,7 @@ class CollisionManager {
   GameObject::ObjectType collision_check(const GameObject &object,
     const std::vector<std::shared_ptr<GameObject>> m_game_objects);
 
-#ifdef DEBUG
   bool load_resources(std::string collision_sfx);
-#endif
 
  private:
   bool ship_collision_checks(const GameObject &ship,
@@ -46,10 +44,8 @@ class CollisionManager {
                      float circle_two_radius) const;
 
   QuadTree m_collidables;
-#ifdef DEBUG
   sf::SoundBuffer m_collision_sfx_buffer;
   sf::Sound m_collision_sfx;
-#endif
 };
 
 }

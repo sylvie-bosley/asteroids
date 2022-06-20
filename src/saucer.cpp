@@ -34,12 +34,11 @@ Saucer::Saucer(unsigned int id, sf::Vector2f starting_pos, float rotation)
 }
 
 bool Saucer::load_resources(std::string gun_sfx) {
-  bool loaded = true;
   if (!m_gun_sound_buffer.loadFromFile(gun_sfx)) {
-    loaded - false;
+    return false;
   }
   m_gun_sound.setBuffer(m_gun_sound_buffer);
-  return loaded;
+  return true;
 }
 
 const sf::Drawable *Saucer::get_sprite() const {
