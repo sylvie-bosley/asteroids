@@ -5,8 +5,8 @@
 
 #include <SFML/Audio.hpp>
 
-#include "game_object.h"
-#include "quadtree.h"
+#include "game_object.hpp"
+#include "quadtree.hpp"
 
 namespace ag {
 

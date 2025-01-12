@@ -1,11 +1,11 @@
-#include "quadtree.h"
+#include "quadtree.hpp"
 
 #include <memory>
 
 #include <SFML/Graphics.hpp>
 
-#include "game_object.h"
-#include "helpers.h"
+#include "game_object.hpp"
+#include "helpers.hpp"
 
 namespace ag {
 

@@ -1,13 +1,13 @@
-#include "collision_manager.h"
+#include "collision_manager.hpp"
 
 #include <cmath>
 #include <memory>
 
 #include <SFML/System.hpp>
 
-#include "game_object.h"
-#include "quadtree.h"
-#include "display_manager.h"
+#include "game_object.hpp"
+#include "quadtree.hpp"
+#include "display_manager.hpp"
 
 namespace ag {
 

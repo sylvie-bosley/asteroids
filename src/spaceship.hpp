@@ -4,7 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "game_object.h"
+#include "game_object.hpp"
 
 namespace ag {
 

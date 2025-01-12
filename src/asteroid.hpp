@@ -5,8 +5,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "game_object.h"
-#include "display_manager.h"
+#include "game_object.hpp"
+#include "display_manager.hpp"
 
 namespace ag {
 

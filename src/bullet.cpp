@@ -1,8 +1,8 @@
-#include "bullet.h"
+#include "bullet.hpp"
 
 #include <cmath>
 
-#include "game_object.h"
+#include "game_object.hpp"
 
 namespace ag {
 

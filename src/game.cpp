@@ -1,4 +1,4 @@
-#include "game.h"
+#include "game.hpp"
 
 #include <string>
 #include <cmath>
@@ -6,14 +6,14 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "game_object.h"
-#include "spaceship.h"
-#include "asteroid.h"
-#include "bullet.h"
-#include "saucer.h"
-#include "collision_manager.h"
-#include "display_manager.h"
-#include "state_manager.h"
+#include "game_object.hpp"
+#include "spaceship.hpp"
+#include "asteroid.hpp"
+#include "bullet.hpp"
+#include "saucer.hpp"
+#include "collision_manager.hpp"
+#include "display_manager.hpp"
+#include "state_manager.hpp"
 
 namespace ag {
 

@@ -1,13 +1,13 @@
-#include "saucer.h"
+#include "saucer.hpp"
 
 #include <cmath>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-#include "game_object.h"
-#include "bullet.h"
-#include "helpers.h"
+#include "game_object.hpp"
+#include "bullet.hpp"
+#include "helpers.hpp"
 
 namespace ag {
 

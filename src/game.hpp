@@ -6,11 +6,11 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "game_object.h"
-#include "spaceship.h"
-#include "collision_manager.h"
-#include "display_manager.h"
-#include "state_manager.h"
+#include "game_object.hpp"
+#include "spaceship.hpp"
+#include "collision_manager.hpp"
+#include "display_manager.hpp"
+#include "state_manager.hpp"
 
 namespace ag {
 

@@ -5,8 +5,8 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "game_object.h"
-#include "state_manager.h"
+#include "game_object.hpp"
+#include "state_manager.hpp"
 
 namespace ag {
 
