@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cppbuild",
+      "label": "Build : debug",
+      "command": "C:/mingw/mingw32/bin/g++.exe",
+      "args": [
+        "-g",
+        "${workspaceFolder}/src/*.cpp",
+        "-o",
+        "${workspaceFolder}/bin/debug/asteroids.exe",
+        "-IE:/workspace/repos/gamedev/asteroids_game/ext/sfml-2.5.1/include",
+        "-LE:/workspace/repos/gamedev/asteroids_game/ext/sfml-2.5.1/lib",
+        "-lsfml-audio-d",
+        "-lsfml-graphics-d",
+        "-lsfml-window-d",
+        "-lsfml-system-d",
+        "-DDEBUG"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+      "detail": "compiler: \"C:/mingw/mingw32/bin/g++.exe\""
+    },
+    {
+      "type": "cppbuild",
+      "label": "Build : prod",
+      "command": "C:/mingw/mingw32/bin/g++.exe",
+      "args": [
+        "${workspaceFolder}/src/*.cpp",
+        "-o",
+        "${workspaceFolder}/bin/prod/asteroids.exe",
+        "-IE:/workspace/repos/gamedev/asteroids_game/ext/sfml-2.5.1/include",
+        "-LE:/workspace/repos/gamedev/asteroids_game/ext/sfml-2.5.1/lib",
+        "-lsfml-audio",
+        "-lsfml-graphics",
+        "-lsfml-window",
+        "-lsfml-system",
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "compiler: \"C:/mingw/mingw32/bin/g++.exe\""
+    }
+  ]
+}
